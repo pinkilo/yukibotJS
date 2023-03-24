@@ -1,0 +1,12 @@
+{
+  "name": "yuki-bot",
+  "version": "0.0.1",
+  "description": "yt bot",
+  "main": "index.js",
+  "repository": "https://github.com/pinkilo/yuki-bot.git",
+  "author": "Pinkilo <hello@pinkilo.org>",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
