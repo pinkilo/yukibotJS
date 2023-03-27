@@ -80,7 +80,11 @@ var file = {
     read: util.promisify(fs.readFile),
 };
 
-//const yt = google.youtube("v3")
+var yt = googleapis.google.youtube("v3");
+var liveChatId;
+var nextPage;
+var ratelimit = 5000;
+var chatMessages = [];
 var scope = [
     "https://www.googleapis.com/auth/youtube.readonly",
     "https://www.googleapis.com/auth/youtube",
@@ -88,9 +92,7 @@ var scope = [
 ];
 var auth = new googleapis.google.auth.OAuth2(ENV.GOOGLE.G_CLIENT_ID, ENV.GOOGLE.G_CLIENT_SECRET, ENV.GOOGLE.G_REDIRECT_URI);
 var getCode = function (res) {
-    console.log("generating auth url");
     var authUrl = auth.generateAuthUrl({ access_type: "offline", scope: scope });
-    console.log(authUrl, "redirecting");
     res.redirect(authUrl);
 };
 var authorize = function (tokens) {
@@ -110,21 +112,116 @@ var getTokensWithCode = function (code) { return __awaiter(void 0, void 0, void 
         }
     });
 }); };
-var yt = {
+auth.on("tokens", function (tokens) {
+    console.log("Tokens Updated");
+    file.write("./.private/tokens.json", JSON.stringify(tokens));
+});
+var checkTokens = function () { return __awaiter(void 0, void 0, void 0, function () {
+    var raw, tokens;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, file.read("./.private/tokens.json")];
+            case 1:
+                raw = _a.sent();
+                tokens = JSON.parse(raw.toString());
+                if (tokens) {
+                    console.log("loading saved tokens");
+                    auth.setCredentials(tokens);
+                }
+                else {
+                    console.log("No saved tokens");
+                }
+                return [2 /*return*/];
+        }
+    });
+}); };
+var findChat = function () { return __awaiter(void 0, void 0, void 0, function () {
+    var response, latest;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, yt.liveBroadcasts.list({
+                    auth: auth,
+                    part: "snippet",
+                    broadcastStatus: "active",
+                })];
+            case 1:
+                response = _a.sent();
+                latest = response.data.items[0];
+                liveChatId = latest.snippet.liveChatId;
+                console.log(liveChatId);
+                return [2 /*return*/];
+        }
+    });
+}); };
+var getChatMessages = function () { return __awaiter(void 0, void 0, void 0, function () {
+    var response, newMessages;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, yt.liveChatMessages.list({
+                    auth: auth,
+                    part: ["authorDetails"],
+                    liveChatId: liveChatId,
+                    pageToken: nextPage,
+                })];
+            case 1:
+                response = _a.sent();
+                newMessages = response.data.items;
+                chatMessages.push.apply(chatMessages, newMessages);
+                nextPage = response.data.nextPageToken;
+                console.log(chatMessages);
+                return [2 /*return*/];
+        }
+    });
+}); };
+var trackChat = function () { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        setInterval(getChatMessages, ratelimit);
+        return [2 /*return*/];
+    });
+}); };
+var yt$1 = {
     getCode: getCode,
     getTokensWithCode: getTokensWithCode,
+    findChat: findChat,
+    trackChat: trackChat,
+    checkTokens: checkTokens,
 };
 
 var server = express();
-server.get("/", function (_, res) {
-    res.sendFile(path.join(__dirname, "assets/index.html"));
-});
-server.get("/auth", function (_, res) {
-    yt.getCode(res);
-});
-server.get("/callback", function (req, res) {
-    var code = req.query.code;
-    yt.getTokensWithCode(code);
-    res.redirect("/");
-});
-server.listen(3000, function () { return console.log("http://localhost:3000"); });
+function main() {
+    return __awaiter(this, void 0, void 0, function () {
+        var _this = this;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, yt$1.checkTokens()];
+                case 1:
+                    _a.sent();
+                    server.get("/", function (_, res) { return __awaiter(_this, void 0, void 0, function () {
+                        return __generator(this, function (_a) {
+                            res.sendFile(path.join(__dirname, "assets/index.html"));
+                            return [2 /*return*/];
+                        });
+                    }); });
+                    server.get("/auth", function (_, res) {
+                        yt$1.getCode(res);
+                    });
+                    server.get("/callback", function (req, res) {
+                        var code = req.query.code;
+                        yt$1.getTokensWithCode(code);
+                        res.redirect("/");
+                    });
+                    server.get("/findchat", function (_, res) {
+                        yt$1.findChat();
+                        res.redirect("/");
+                    });
+                    server.get("/trackchat", function (_, res) {
+                        yt$1.trackChat();
+                        res.redirect("/");
+                    });
+                    server.listen(3000, function () { return console.log("http://localhost:3000"); });
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+main();
