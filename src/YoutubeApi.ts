@@ -1,8 +1,8 @@
 import ENV from "./env"
 import { google } from "googleapis"
-import { Response } from "express"
 import { Credentials } from "google-auth-library"
 import { file } from "./util"
+import * as console from "console"
 
 const yt = google.youtube("v3")
 let liveChatId: string
@@ -11,6 +11,7 @@ let pollingInterval: NodeJS.Timer
 const ratelimit = 5000
 const chatMessages = []
 const tokenPath = "./.private/tokens.json"
+const onAuthUpdate: Array<((Credentials) => any)> = []
 
 const scope = [
   "https://www.googleapis.com/auth/youtube.readonly",
@@ -24,51 +25,33 @@ const auth = new google.auth.OAuth2(
   ENV.GOOGLE.G_REDIRECT_URI,
 )
 
-const getCode = (res: Response) => {
-  const authUrl = auth.generateAuthUrl({ access_type: "offline", scope })
-  res.redirect(authUrl)
+const getAuthUrl = () => {
+  return auth.generateAuthUrl({ access_type: "offline", scope })
 }
 
-const authorize = (tokens: Credentials) => {
-  auth.setCredentials(tokens)
-  console.log("credentials updated")
-  file.write("./.private/tokens.json", JSON.stringify(tokens))
-}
+/** Sets auth credentials and writes tokens to file */
+const authorize = (tokens: Credentials) => auth.setCredentials(tokens)
 
-const getTokensWithCode = async (code: string) => {
+/** Get auth tokens with callback code */
+const getTokens = async (code: string): Promise<Credentials> => {
   const creds = await auth.getToken(code)
-  authorize(creds.tokens)
+  return creds.tokens
 }
 
-auth.on("tokens", (tokens) => {
-  console.log("Tokens Updated")
-  file.write("./.private/tokens.json", JSON.stringify(tokens))
-})
-
-const checkTokens = async () => {
+const loadTokens = async () => {
   if (file.exists(tokenPath)) {
     const raw = await file.read(tokenPath)
     const tokens = JSON.parse(raw.toString())
     if (tokens) {
       console.log("loading saved tokens")
       auth.setCredentials(tokens)
+      onAuthUpdate.forEach(f => f(tokens))
     } else {
       console.log("No saved tokens")
     }
   } else {
     console.log("No saved tokens")
   }
-}
-
-const findChat = async () => {
-  const response = await yt.liveBroadcasts.list({
-    auth,
-    part: ["snippet"],
-    broadcastStatus: "active",
-  })
-  const latest = response.data.items[0]
-  liveChatId = latest.snippet.liveChatId
-  console.log(liveChatId)
 }
 
 const getChatMessages = async () => {
@@ -84,7 +67,19 @@ const getChatMessages = async () => {
   console.log(chatMessages)
 }
 
+const findChat = async () => {
+  const response = await yt.liveBroadcasts.list({
+    auth,
+    part: ["snippet"],
+    broadcastStatus: "active",
+  })
+  const latest = response.data.items[0]
+  liveChatId = latest.snippet.liveChatId
+  console.log(liveChatId)
+}
+
 const trackChat = async () => {
+  console.log("Attempting to track chat")
   await findChat()
   pollingInterval = setInterval(getChatMessages, ratelimit)
 }
@@ -93,10 +88,21 @@ const untrackChat = () => {
   clearInterval(pollingInterval)
 }
 
+const onTokenUpdate = (callback: (Credentials) => any) => onAuthUpdate.push(callback)
+
+auth.on("tokens", (tokens) => {
+  console.log("Tokens Updated")
+  onAuthUpdate.forEach(f => f(tokens))
+  file.write("./.private/tokens.json", JSON.stringify(tokens))
+})
+
 export default {
-  getCode,
-  getTokensWithCode,
+  getAuthUrl,
+  getTokens,
   findChat,
   trackChat,
-  checkTokens,
+  loadTokens,
+  authorize,
+  untrackChat,
+  onTokenUpdate,
 }

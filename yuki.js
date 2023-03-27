@@ -5,8 +5,28 @@
 var googleapis = require('googleapis');
 var util = require('util');
 var fs = require('fs');
-var path = require('path');
+var console$1 = require('console');
 var express = require('express');
+var path = require('path');
+
+function _interopNamespaceDefault(e) {
+    var n = Object.create(null);
+    if (e) {
+        Object.keys(e).forEach(function (k) {
+            if (k !== 'default') {
+                var d = Object.getOwnPropertyDescriptor(e, k);
+                Object.defineProperty(n, k, d.get ? d : {
+                    enumerable: true,
+                    get: function () { return e[k]; }
+                });
+            }
+        });
+    }
+    n.default = e;
+    return Object.freeze(n);
+}
+
+var console__namespace = /*#__PURE__*/_interopNamespaceDefault(console$1);
 
 /*! *****************************************************************************
 Copyright (c) Microsoft Corporation.
@@ -84,42 +104,36 @@ var file = {
 var yt = googleapis.google.youtube("v3");
 var liveChatId;
 var nextPage;
+var pollingInterval;
 var ratelimit = 5000;
 var chatMessages = [];
 var tokenPath = "./.private/tokens.json";
+var onAuthUpdate = [];
 var scope = [
     "https://www.googleapis.com/auth/youtube.readonly",
     "https://www.googleapis.com/auth/youtube",
     "https://www.googleapis.com/auth/youtube.force-ssl",
 ];
 var auth = new googleapis.google.auth.OAuth2(ENV.GOOGLE.G_CLIENT_ID, ENV.GOOGLE.G_CLIENT_SECRET, ENV.GOOGLE.G_REDIRECT_URI);
-var getCode = function (res) {
-    var authUrl = auth.generateAuthUrl({ access_type: "offline", scope: scope });
-    res.redirect(authUrl);
+var getAuthUrl = function () {
+    return auth.generateAuthUrl({ access_type: "offline", scope: scope });
 };
-var authorize = function (tokens) {
-    auth.setCredentials(tokens);
-    console.log("credentials updated");
-    file.write("./.private/tokens.json", JSON.stringify(tokens));
-};
-var getTokensWithCode = function (code) { return __awaiter(void 0, void 0, void 0, function () {
+/** Sets auth credentials and writes tokens to file */
+var authorize = function (tokens) { return auth.setCredentials(tokens); };
+/** Get auth tokens with callback code */
+var getTokens = function (code) { return __awaiter(void 0, void 0, void 0, function () {
     var creds;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, auth.getToken(code)];
             case 1:
                 creds = _a.sent();
-                authorize(creds.tokens);
-                return [2 /*return*/];
+                return [2 /*return*/, creds.tokens];
         }
     });
 }); };
-auth.on("tokens", function (tokens) {
-    console.log("Tokens Updated");
-    file.write("./.private/tokens.json", JSON.stringify(tokens));
-});
-var checkTokens = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var raw, tokens;
+var loadTokens = function () { return __awaiter(void 0, void 0, void 0, function () {
+    var raw, tokens_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -127,37 +141,20 @@ var checkTokens = function () { return __awaiter(void 0, void 0, void 0, functio
                 return [4 /*yield*/, file.read(tokenPath)];
             case 1:
                 raw = _a.sent();
-                tokens = JSON.parse(raw.toString());
-                if (tokens) {
-                    console.log("loading saved tokens");
-                    auth.setCredentials(tokens);
+                tokens_1 = JSON.parse(raw.toString());
+                if (tokens_1) {
+                    console__namespace.log("loading saved tokens");
+                    auth.setCredentials(tokens_1);
+                    onAuthUpdate.forEach(function (f) { return f(tokens_1); });
                 }
                 else {
-                    console.log("No saved tokens");
+                    console__namespace.log("No saved tokens");
                 }
                 return [3 /*break*/, 3];
             case 2:
-                console.log("No saved tokens");
+                console__namespace.log("No saved tokens");
                 _a.label = 3;
             case 3: return [2 /*return*/];
-        }
-    });
-}); };
-var findChat = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var response, latest;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, yt.liveBroadcasts.list({
-                    auth: auth,
-                    part: "snippet",
-                    broadcastStatus: "active",
-                })];
-            case 1:
-                response = _a.sent();
-                latest = response.data.items[0];
-                liveChatId = latest.snippet.liveChatId;
-                console.log(liveChatId);
-                return [2 /*return*/];
         }
     });
 }); };
@@ -176,7 +173,25 @@ var getChatMessages = function () { return __awaiter(void 0, void 0, void 0, fun
                 newMessages = response.data.items;
                 chatMessages.push.apply(chatMessages, newMessages);
                 nextPage = response.data.nextPageToken;
-                console.log(chatMessages);
+                console__namespace.log(chatMessages);
+                return [2 /*return*/];
+        }
+    });
+}); };
+var findChat = function () { return __awaiter(void 0, void 0, void 0, function () {
+    var response, latest;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, yt.liveBroadcasts.list({
+                    auth: auth,
+                    part: ["snippet"],
+                    broadcastStatus: "active",
+                })];
+            case 1:
+                response = _a.sent();
+                latest = response.data.items[0];
+                liveChatId = latest.snippet.liveChatId;
+                console__namespace.log(liveChatId);
                 return [2 /*return*/];
         }
     });
@@ -184,50 +199,77 @@ var getChatMessages = function () { return __awaiter(void 0, void 0, void 0, fun
 var trackChat = function () { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, findChat()];
+            case 0:
+                console__namespace.log("Attempting to track chat");
+                return [4 /*yield*/, findChat()];
             case 1:
                 _a.sent();
-                setInterval(getChatMessages, ratelimit);
+                pollingInterval = setInterval(getChatMessages, ratelimit);
                 return [2 /*return*/];
         }
     });
 }); };
+var untrackChat = function () {
+    clearInterval(pollingInterval);
+};
+var onTokenUpdate = function (callback) { return onAuthUpdate.push(callback); };
+auth.on("tokens", function (tokens) {
+    console__namespace.log("Tokens Updated");
+    onAuthUpdate.forEach(function (f) { return f(tokens); });
+    file.write("./.private/tokens.json", JSON.stringify(tokens));
+});
 var yt$1 = {
-    getCode: getCode,
-    getTokensWithCode: getTokensWithCode,
+    getAuthUrl: getAuthUrl,
+    getTokens: getTokens,
     findChat: findChat,
     trackChat: trackChat,
-    checkTokens: checkTokens,
+    loadTokens: loadTokens,
+    authorize: authorize,
+    untrackChat: untrackChat,
+    onTokenUpdate: onTokenUpdate,
 };
 
-var server = express();
-function main() {
-    return __awaiter(this, void 0, void 0, function () {
-        var _this = this;
+var server = (function () {
+    var svr = express();
+    svr.get("/", function (_, res) { return __awaiter(void 0, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            res.sendFile(path.join(__dirname, "assets/index.html"));
+            return [2 /*return*/];
+        });
+    }); });
+    svr.get("/auth", function (_, res) {
+        res.redirect(yt$1.getAuthUrl());
+    });
+    svr.get("/callback", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+        var code, creds;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, yt$1.checkTokens()];
+                case 0:
+                    code = req.query.code;
+                    return [4 /*yield*/, yt$1.getTokens(code)];
+                case 1:
+                    creds = _a.sent();
+                    yt$1.authorize(creds);
+                    res.redirect("/");
+                    return [2 /*return*/];
+            }
+        });
+    }); });
+    return svr;
+});
+
+function main() {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    yt$1.onTokenUpdate(function () {
+                        yt$1.trackChat();
+                    });
+                    return [4 /*yield*/, yt$1.loadTokens()];
                 case 1:
                     _a.sent();
-                    server.get("/", function (_, res) { return __awaiter(_this, void 0, void 0, function () {
-                        return __generator(this, function (_a) {
-                            res.sendFile(path.join(__dirname, "assets/index.html"));
-                            return [2 /*return*/];
-                        });
-                    }); });
-                    server.get("/auth", function (_, res) {
-                        yt$1.getCode(res);
-                    });
-                    server.get("/callback", function (req, res) {
-                        var code = req.query.code;
-                        yt$1.getTokensWithCode(code);
-                        res.redirect("/");
-                    });
-                    server.get("/trackchat", function (_, res) {
-                        yt$1.trackChat();
-                        res.redirect("/");
-                    });
-                    server.listen(3000, function () { return console.log("http://localhost:3000"); });
+                    server().listen(3000, function () { return console.log("http://localhost:3000"); });
                     return [2 /*return*/];
             }
         });

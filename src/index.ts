@@ -1,32 +1,14 @@
 import yt from "./YoutubeApi"
-import { join } from "path"
-import express from "express"
-
-const server = express()
+import server from "./server"
 
 async function main() {
-  await yt.checkTokens()
-
-  server.get("/", async (_, res) => {
-    res.sendFile(join(__dirname, "assets/index.html"))
-  })
-
-  server.get("/auth", (_, res) => {
-    yt.getCode(res)
-  })
-
-  server.get("/callback", (req, res) => {
-    const { code } = req.query
-    yt.getTokensWithCode(code as string)
-    res.redirect("/")
-  })
-
-  server.get("/trackchat", (_, res) => {
+  yt.onTokenUpdate(() => {
     yt.trackChat()
-    res.redirect("/")
   })
+  await yt.loadTokens()
 
-  server.listen(3000, () => console.log("http://localhost:3000"))
+
+  server().listen(3000, () => console.log("http://localhost:3000"))
 }
 
 main()
