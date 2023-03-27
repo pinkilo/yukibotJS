@@ -132,3 +132,4 @@ dist
 #
 .private
 *.d.ts
+.idea

@@ -1,5 +1,5 @@
 import ENV from "./env"
-import { google, GoogleApis } from "googleapis"
+import { google } from "googleapis"
 import { Response } from "express"
 import { Credentials } from "google-auth-library"
 import { file } from "./util"
@@ -63,7 +63,7 @@ const checkTokens = async () => {
 const findChat = async () => {
   const response = await yt.liveBroadcasts.list({
     auth,
-    part: "snippet",
+    part: ["snippet"],
     broadcastStatus: "active",
   })
   const latest = response.data.items[0]
@@ -87,6 +87,10 @@ const getChatMessages = async () => {
 const trackChat = async () => {
   await findChat()
   pollingInterval = setInterval(getChatMessages, ratelimit)
+}
+
+const untrackChat = () => {
+  clearInterval(pollingInterval)
 }
 
 export default {
