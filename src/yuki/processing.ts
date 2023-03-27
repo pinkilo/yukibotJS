@@ -1,5 +1,5 @@
 import { youtube_v3 } from "googleapis"
-import { getCmd } from "./commands"
+import { runCmd } from "./commands/command"
 import ChatMessage = youtube_v3.Schema$LiveChatMessage
 
 export type TokenBin = {
@@ -19,11 +19,6 @@ export const tokenize = (msg: string): TokenBin => {
 
 export const processMessage = (msg: ChatMessage): void => {
   const tokens = tokenize(msg.snippet.displayMessage)
-  if (tokens.isCommand) {
-    const cmd = getCmd(tokens.command)?.invoke
-    if (!cmd) return null
-    console.log(`RUNNING: ${ tokens.command }`)
-    cmd(msg, tokens)
-  }
+  if (tokens.isCommand) runCmd(tokens.command, msg, tokens)
   // TODO process passives
 }

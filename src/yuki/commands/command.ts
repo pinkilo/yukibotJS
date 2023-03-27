@@ -10,3 +10,11 @@ export type Command = {
 }
 
 export const getCmd = (name: string): Command | undefined => commandMap.get(name)
+
+export const runCmd = (name: string, msg: ChatMessage, tokens: TokenBin) => {
+  const cmd = getCmd(name)
+  if (cmd) {
+    console.log(`RUNNING: ${ name }`)
+    cmd?.invoke(msg, tokens)
+  }
+}

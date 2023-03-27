@@ -8,8 +8,6 @@ import ChatMessage = youtube_v3.Schema$LiveChatMessage
 const yt = google.youtube("v3")
 let liveChatId: string
 let nextPage: string
-let pollingInterval: NodeJS.Timer
-const ratelimit = 5000
 const chatMessages = []
 const tokenPath = "./.private/tokens.json"
 const tokenListeners: Array<((c: Credentials) => any)> = []
@@ -26,6 +24,14 @@ const auth = new google.auth.OAuth2(
   ENV.GOOGLE.G_CLIENT_SECRET,
   ENV.GOOGLE.G_REDIRECT_URI,
 )
+
+const onTokenUpdate = (callback: (Credentials) => any) => tokenListeners.push(callback)
+
+auth.on("tokens", (tokens) => {
+  console.log("Tokens Updated")
+  tokenListeners.forEach(f => f(tokens))
+  file.write("./.private/tokens.json", JSON.stringify(tokens))
+})
 
 const getAuthUrl = () => {
   return auth.generateAuthUrl({ access_type: "offline", scope })
@@ -70,7 +76,8 @@ const getChatMessages = async () => {
   const newMessages = response.data.items
   chatMessages.push(...newMessages)
   nextPage = response.data.nextPageToken
-  console.log(chatMessages)
+  chatListeners.forEach(cb => cb(newMessages, chatMessages))
+  setTimeout(getChatMessages, response.data.pollingIntervalMillis)
 }
 
 const findChat = async () => {
@@ -87,20 +94,8 @@ const findChat = async () => {
 const trackChat = async () => {
   console.log("Attempting to track chat")
   await findChat()
-  pollingInterval = setInterval(getChatMessages, ratelimit)
+  await getChatMessages()
 }
-
-const untrackChat = () => {
-  clearInterval(pollingInterval)
-}
-
-const onTokenUpdate = (callback: (Credentials) => any) => tokenListeners.push(callback)
-
-auth.on("tokens", (tokens) => {
-  console.log("Tokens Updated")
-  tokenListeners.forEach(f => f(tokens))
-  file.write("./.private/tokens.json", JSON.stringify(tokens))
-})
 
 export default {
   getAuthUrl,
@@ -109,7 +104,6 @@ export default {
   trackChat,
   loadTokens,
   authorize,
-  untrackChat,
   onTokenUpdate,
   onChatUpdate,
 }
