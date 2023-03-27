@@ -1,8 +1,9 @@
 import ENV from "./env"
-import { google } from "googleapis"
+import { google, youtube_v3 } from "googleapis"
 import { Credentials } from "google-auth-library"
 import { file } from "./util"
 import * as console from "console"
+import ChatMessage = youtube_v3.Schema$LiveChatMessage
 
 const yt = google.youtube("v3")
 let liveChatId: string
@@ -11,7 +12,8 @@ let pollingInterval: NodeJS.Timer
 const ratelimit = 5000
 const chatMessages = []
 const tokenPath = "./.private/tokens.json"
-const onAuthUpdate: Array<((Credentials) => any)> = []
+const tokenListeners: Array<((c: Credentials) => any)> = []
+const chatListeners: Array<((incoming: ChatMessage[], all: ChatMessage[]) => any)> = []
 
 const scope = [
   "https://www.googleapis.com/auth/youtube.readonly",
@@ -45,13 +47,17 @@ const loadTokens = async () => {
     if (tokens) {
       console.log("loading saved tokens")
       auth.setCredentials(tokens)
-      onAuthUpdate.forEach(f => f(tokens))
+      tokenListeners.forEach(f => f(tokens))
     } else {
       console.log("No saved tokens")
     }
   } else {
     console.log("No saved tokens")
   }
+}
+
+const onChatUpdate = (cb: (i: ChatMessage[], a: ChatMessage[]) => any) => {
+  chatListeners.push(cb)
 }
 
 const getChatMessages = async () => {
@@ -88,11 +94,11 @@ const untrackChat = () => {
   clearInterval(pollingInterval)
 }
 
-const onTokenUpdate = (callback: (Credentials) => any) => onAuthUpdate.push(callback)
+const onTokenUpdate = (callback: (Credentials) => any) => tokenListeners.push(callback)
 
 auth.on("tokens", (tokens) => {
   console.log("Tokens Updated")
-  onAuthUpdate.forEach(f => f(tokens))
+  tokenListeners.forEach(f => f(tokens))
   file.write("./.private/tokens.json", JSON.stringify(tokens))
 })
 
@@ -105,4 +111,5 @@ export default {
   authorize,
   untrackChat,
   onTokenUpdate,
+  onChatUpdate,
 }
