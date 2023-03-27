@@ -10,6 +10,7 @@ let nextPage: string
 let pollingInterval: NodeJS.Timer
 const ratelimit = 5000
 const chatMessages = []
+const tokenPath = "./.private/tokens.json"
 
 const scope = [
   "https://www.googleapis.com/auth/youtube.readonly",
@@ -45,17 +46,18 @@ auth.on("tokens", (tokens) => {
 })
 
 const checkTokens = async () => {
-  try {
-    const raw = await file.read("./.private/tokens.json")
-
+  if (file.exists(tokenPath)) {
+    const raw = await file.read(tokenPath)
     const tokens = JSON.parse(raw.toString())
     if (tokens) {
       console.log("loading saved tokens")
       auth.setCredentials(tokens)
-      return
+    } else {
+      console.log("No saved tokens")
     }
-  } catch (error) {}
-  console.log("No saved tokens")
+  } else {
+    console.log("No saved tokens")
+  }
 }
 
 const findChat = async () => {
@@ -72,7 +74,7 @@ const findChat = async () => {
 const getChatMessages = async () => {
   const response = await yt.liveChatMessages.list({
     auth,
-    part: ["authorDetails"],
+    part: ["snippet", "authorDetails"],
     liveChatId,
     pageToken: nextPage,
   })
@@ -83,6 +85,7 @@ const getChatMessages = async () => {
 }
 
 const trackChat = async () => {
+  await findChat()
   pollingInterval = setInterval(getChatMessages, ratelimit)
 }
 

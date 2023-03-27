@@ -78,6 +78,7 @@ var ENV = {
 var file = {
     write: util.promisify(fs.writeFile),
     read: util.promisify(fs.readFile),
+    exists: fs.existsSync,
 };
 
 var yt = googleapis.google.youtube("v3");
@@ -85,6 +86,7 @@ var liveChatId;
 var nextPage;
 var ratelimit = 5000;
 var chatMessages = [];
+var tokenPath = "./.private/tokens.json";
 var scope = [
     "https://www.googleapis.com/auth/youtube.readonly",
     "https://www.googleapis.com/auth/youtube",
@@ -120,7 +122,9 @@ var checkTokens = function () { return __awaiter(void 0, void 0, void 0, functio
     var raw, tokens;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, file.read("./.private/tokens.json")];
+            case 0:
+                if (!file.exists(tokenPath)) return [3 /*break*/, 2];
+                return [4 /*yield*/, file.read(tokenPath)];
             case 1:
                 raw = _a.sent();
                 tokens = JSON.parse(raw.toString());
@@ -131,7 +135,11 @@ var checkTokens = function () { return __awaiter(void 0, void 0, void 0, functio
                 else {
                     console.log("No saved tokens");
                 }
-                return [2 /*return*/];
+                return [3 /*break*/, 3];
+            case 2:
+                console.log("No saved tokens");
+                _a.label = 3;
+            case 3: return [2 /*return*/];
         }
     });
 }); };
@@ -159,7 +167,7 @@ var getChatMessages = function () { return __awaiter(void 0, void 0, void 0, fun
         switch (_a.label) {
             case 0: return [4 /*yield*/, yt.liveChatMessages.list({
                     auth: auth,
-                    part: ["authorDetails"],
+                    part: ["snippet", "authorDetails"],
                     liveChatId: liveChatId,
                     pageToken: nextPage,
                 })];
@@ -175,8 +183,13 @@ var getChatMessages = function () { return __awaiter(void 0, void 0, void 0, fun
 }); };
 var trackChat = function () { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
-        setInterval(getChatMessages, ratelimit);
-        return [2 /*return*/];
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, findChat()];
+            case 1:
+                _a.sent();
+                setInterval(getChatMessages, ratelimit);
+                return [2 /*return*/];
+        }
     });
 }); };
 var yt$1 = {
@@ -215,6 +228,7 @@ function main() {
                         res.redirect("/");
                     });
                     server.get("/trackchat", function (_, res) {
+                        yt$1.findChat();
                         yt$1.trackChat();
                         res.redirect("/");
                     });

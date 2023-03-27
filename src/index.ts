@@ -21,11 +21,6 @@ async function main() {
     res.redirect("/")
   })
 
-  server.get("/findchat", (_, res) => {
-    yt.findChat()
-    res.redirect("/")
-  })
-
   server.get("/trackchat", (_, res) => {
     yt.trackChat()
     res.redirect("/")
