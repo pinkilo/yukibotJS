@@ -5,7 +5,9 @@ import { file } from "./util"
 import * as console from "console"
 import ChatMessage = youtube_v3.Schema$LiveChatMessage
 
-const yt = google.youtube("v3")
+// TODO Track chat participants
+
+const ytApi = google.youtube("v3")
 let liveChatId: string
 let nextPage: string
 const chatMessages = []
@@ -62,12 +64,21 @@ const loadTokens = async () => {
   }
 }
 
+const getBroadcast = async () => {
+  const response = await ytApi.liveBroadcasts.list({
+    auth,
+    part: ["snippet"],
+    broadcastStatus: "active",
+  })
+  return response.data.items[0]
+}
+
 const onChatUpdate = (cb: (i: ChatMessage[], a: ChatMessage[]) => any) => {
   chatListeners.push(cb)
 }
 
 const getChatMessages = async () => {
-  const response = await yt.liveChatMessages.list({
+  const response = await ytApi.liveChatMessages.list({
     auth,
     part: ["snippet", "authorDetails"],
     liveChatId,
@@ -81,13 +92,7 @@ const getChatMessages = async () => {
 }
 
 const findChat = async () => {
-  const response = await yt.liveBroadcasts.list({
-    auth,
-    part: ["snippet"],
-    broadcastStatus: "active",
-  })
-  const latest = response.data.items[0]
-  liveChatId = latest.snippet.liveChatId
+  liveChatId = (await getBroadcast()).snippet.liveChatId
   console.log(liveChatId)
 }
 
@@ -95,6 +100,24 @@ const trackChat = async () => {
   console.log("Attempting to track chat")
   await findChat()
   await getChatMessages()
+}
+
+const sendMessage = async (text: string) => {
+  const response = await ytApi.liveChatMessages.insert({
+    auth,
+    part: ["snippet"],
+    requestBody: {
+      snippet: {
+        liveChatId,
+        type: "textMessageEvent",
+        textMessageDetails: {
+          messageText: text,
+        },
+      },
+    },
+  })
+  console.log(response)
+  return response.status == 201
 }
 
 export default {
@@ -106,4 +129,6 @@ export default {
   authorize,
   onTokenUpdate,
   onChatUpdate,
+  sendMessage,
+  api: ytApi,
 }

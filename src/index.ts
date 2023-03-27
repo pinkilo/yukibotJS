@@ -1,13 +1,17 @@
 import yt from "./YoutubeApi"
 import server from "./server"
 import { processMessage } from "./yuki"
+import * as console from "console"
 
 async function main() {
   yt.onTokenUpdate(() => yt.trackChat())
-  yt.onChatUpdate((incoming, all) => {
-    console.log(`all ${ all.length }`, incoming.length > 0 ? incoming : "")
+  //yt.onChatUpdate((incoming, all) => {
+  //  console.log(`all ${ all.length }`, incoming.length > 0 ? incoming : "")
+  //})
+  yt.onChatUpdate((incoming) => {
+    if (incoming.length > 0) console.log("Processing Message Batch")
+    incoming.forEach(processMessage)
   })
-  yt.onChatUpdate((incoming) => incoming.forEach(processMessage))
 
   await yt.loadTokens()
 
