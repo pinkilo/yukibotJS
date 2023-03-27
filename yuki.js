@@ -223,12 +223,7 @@ function main() {
                         yt$1.getTokensWithCode(code);
                         res.redirect("/");
                     });
-                    server.get("/findchat", function (_, res) {
-                        yt$1.findChat();
-                        res.redirect("/");
-                    });
                     server.get("/trackchat", function (_, res) {
-                        yt$1.findChat();
                         yt$1.trackChat();
                         res.redirect("/");
                     });
