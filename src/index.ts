@@ -4,6 +4,7 @@ import { processMessage } from "./yuki"
 import * as console from "console"
 
 async function main() {
+  yt.onTokenUpdate(() => console.log("Tokens Updated"))
   yt.onTokenUpdate(() => yt.trackChat())
   //yt.onChatUpdate((incoming, all) => {
   //  console.log(`all ${ all.length }`, incoming.length > 0 ? incoming : "")

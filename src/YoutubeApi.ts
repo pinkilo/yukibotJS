@@ -4,6 +4,7 @@ import { Credentials } from "google-auth-library"
 import { file } from "./util"
 import * as console from "console"
 import ChatMessage = youtube_v3.Schema$LiveChatMessage
+import User = youtube_v3.Schema$LiveChatMessageAuthorDetails
 
 // TODO Track chat participants
 
@@ -14,6 +15,7 @@ const chatMessages = []
 const tokenPath = "./.private/tokens.json"
 const tokenListeners: Array<((c: Credentials) => any)> = []
 const chatListeners: Array<((incoming: ChatMessage[], all: ChatMessage[]) => any)> = []
+const chatters = new Map<string, User>()
 
 const scope = [
   "https://www.googleapis.com/auth/youtube.readonly",
@@ -29,10 +31,10 @@ const auth = new google.auth.OAuth2(
 
 const onTokenUpdate = (callback: (Credentials) => any) => tokenListeners.push(callback)
 
-auth.on("tokens", (tokens) => {
+auth.on("tokens", async (tokens) => {
   console.log("Tokens Updated")
   tokenListeners.forEach(f => f(tokens))
-  file.write("./.private/tokens.json", JSON.stringify(tokens))
+  await file.write("./.private/tokens.json", JSON.stringify(tokens))
 })
 
 const getAuthUrl = () => {
@@ -87,8 +89,10 @@ const getChatMessages = async () => {
   const newMessages = response.data.items
   chatMessages.push(...newMessages)
   nextPage = response.data.nextPageToken
+  newMessages.map(m => m.authorDetails)
+    .forEach(user => chatters.set(user.channelId, user))
   chatListeners.forEach(cb => cb(newMessages, chatMessages))
-  setTimeout(getChatMessages, response.data.pollingIntervalMillis)
+  setTimeout(getChatMessages, 5000) //response.data.pollingIntervalMillis
 }
 
 const findChat = async () => {
@@ -120,7 +124,10 @@ const sendMessage = async (text: string) => {
   return response.status == 201
 }
 
+const getChatters = () => Array.from(chatters.values())
+
 export default {
+  api: ytApi,
   getAuthUrl,
   getTokens,
   findChat,
@@ -130,5 +137,5 @@ export default {
   onTokenUpdate,
   onChatUpdate,
   sendMessage,
-  api: ytApi,
+  getChatters,
 }

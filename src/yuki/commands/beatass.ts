@@ -8,12 +8,19 @@ import * as console from "console"
  * Announces winner in chat
  *
  * TODO add monetary system hook
+ * TODO Additional text version
  */
 const beatass: Command = {
   name: "beatass",
-  invoke: async () => {
-    // TODO actual command stuff
-    const failed = await yt.sendMessage("BEAT ASS")
+  alias: ["pickfight"],
+  invoke: async ({ authorDetails: { displayName, channelId } }) => {
+    const chatters = yt.getChatters().filter(u => u.channelId !== channelId)
+    const target = chatters[Math.floor(Math.random() * chatters.length)]
+    const failed = await yt.sendMessage(
+      Math.random() > 0.5
+        ? `${ displayName } beat ${ target.displayName }'s ass`
+        : `${ target.displayName } smacked the shit outta ${ displayName }`,
+    )
     if (failed) console.error("Failed to send message")
   },
 }
