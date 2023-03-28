@@ -47,6 +47,7 @@ const authorize = (tokens: Credentials) => auth.setCredentials(tokens)
 /** Get auth tokens with callback code */
 const getTokens = async (code: string): Promise<Credentials> => {
   const creds = await auth.getToken(code)
+  console.log(creds)
   return creds.tokens
 }
 

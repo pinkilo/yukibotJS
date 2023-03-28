@@ -1,5 +1,5 @@
 import { youtube_v3 } from "googleapis"
-import { runCmd } from "./commands/command"
+import { runCmd } from "./commands"
 import ChatMessage = youtube_v3.Schema$LiveChatMessage
 import * as console from "console"
 

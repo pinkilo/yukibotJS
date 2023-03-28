@@ -1,5 +1,5 @@
 import yt from "../../YoutubeApi"
-import { Command } from "./command"
+import Command from "./Command"
 import * as console from "console"
 
 /**
@@ -7,13 +7,11 @@ import * as console from "console"
  * Rolls odds (for now 50:50)
  * Announces winner in chat
  *
- * TODO add monetary system hook
  * TODO Additional text version
  */
-const beatass: Command = {
-  name: "beatass",
-  alias: ["pickfight"],
-  invoke: async ({ authorDetails: { displayName, channelId } }) => {
+export default new Command(
+  "beatass", ["pickfight"], 10,
+  async ({ authorDetails: { displayName, channelId } }) => {
     const chatters = yt.getChatters().filter(u => u.channelId !== channelId)
     const target = chatters[Math.floor(Math.random() * chatters.length)]
     const failed = await yt.sendMessage(
@@ -23,6 +21,4 @@ const beatass: Command = {
     )
     if (failed) console.error("Failed to send message")
   },
-}
-
-export default beatass
+)

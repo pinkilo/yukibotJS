@@ -5,12 +5,12 @@ const shebang = require("rollup-plugin-add-shebang")
 module.exports = {
   input: "src/index.ts",
   output: {
-    file: "yuki.js",
+    file: "build/yuki.js",
     format: "cjs",
   },
   plugins: [
-    ts({ outputToFilesystem: false }),
-    watch({ dir: "src" }),
+    ts({outputToFilesystem: false}),
+    watch({dir: "src"}),
     shebang({
       include: "yuki.js",
       shebang: "#!/usr/bin/env node",
