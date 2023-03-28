@@ -1,4 +1,4 @@
-import yt from "../../YoutubeApi"
+import yt from "../../youtube"
 import Command from "./Command"
 import * as console from "console"
 
@@ -12,9 +12,9 @@ import * as console from "console"
 export default new Command(
   "beatass", ["pickfight"], 10,
   async ({ authorDetails: { displayName, channelId } }) => {
-    const chatters = yt.getChatters().filter(u => u.channelId !== channelId)
+    const chatters = yt.chat.getChatters().filter(u => u.channelId !== channelId)
     const target = chatters[Math.floor(Math.random() * chatters.length)]
-    const failed = await yt.sendMessage(
+    const failed = await yt.chat.sendMessage(
       Math.random() > 0.5
         ? `${ displayName } beat ${ target.displayName }'s ass`
         : `${ target.displayName } smacked the shit outta ${ displayName }`,

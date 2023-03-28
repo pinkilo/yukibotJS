@@ -1,7 +1,7 @@
 import express from "express"
 import { join } from "path"
-import yt from "./YoutubeApi"
-import * as console from "console"
+import yt from "./youtube"
+import logger from "winston"
 
 export default () => {
   const svr = express()
@@ -11,15 +11,15 @@ export default () => {
   })
 
   svr.get("/auth", (_, res) => {
-    res.redirect(yt.getAuthUrl())
+    res.redirect(yt.auth.getAuthUrl())
   })
 
   svr.get("/callback", async (req, res) => {
     const { code } = req.query
-    console.debug("callback", code)
-    const creds = await yt.getTokens(code as string)
-    console.debug(creds)
-    yt.authorize(creds)
+    logger.info("auth code received")
+    const tokens = await yt.auth.getTokens(code as string)
+    logger.info("tokens received")
+    await yt.auth.setCredentials(tokens)
     res.redirect("/")
   })
 
