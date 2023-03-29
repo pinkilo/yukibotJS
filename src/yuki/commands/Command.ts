@@ -1,5 +1,5 @@
 import { TokenBin } from "../processing"
-import MoneySystem from "../monetary"
+import MoneySystem from "../MoneySystem"
 import { ChatMessage } from "../../types/google"
 
 // TODO add ratelimiter
@@ -22,15 +22,14 @@ export default class Command {
   }
 
   async execute(msg: ChatMessage, tokens: TokenBin): Promise<void> {
-    const uid = msg.authorDetails.channelId
-    if (this.canAfford(uid)) {
-      MoneySystem.bank[uid] = MoneySystem.bank[uid] - this.cost
+    if (this.canAfford(msg.authorDetails.channelId)) {
+      await MoneySystem.removeMoney(msg.authorDetails.channelId, this.cost)
       return this.invoke(msg, tokens)
     }
   }
 
   canAfford(uid: string): boolean {
-    return this.cost ? MoneySystem.bank[uid] < this.cost : true
+    return this.cost ? MoneySystem.getWallet(uid) >= this.cost : true
   }
 
 }

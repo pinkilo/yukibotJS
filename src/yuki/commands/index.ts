@@ -17,6 +17,8 @@ const runCmd = async (name: string, msg: ChatMessage, tokens: TokenBin) => {
   if (cmd) {
     logger.info(`RUNNING: ${ name }`)
     await cmd?.execute(msg, tokens)
+  } else {
+    logger.debug(`no command found with name "${ name }"`)
   }
 }
 

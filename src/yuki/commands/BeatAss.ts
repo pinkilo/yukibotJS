@@ -1,6 +1,7 @@
 import yt from "../../youtube"
 import Command from "./Command"
-import * as console from "console"
+import logger from "winston"
+import { getRandomChatter } from "../../youtube/chat"
 
 /**
  * Randomly selects another chat member to "fight"
@@ -12,13 +13,13 @@ import * as console from "console"
 export default new Command(
   "beatass", ["pickfight"], 10,
   async ({ authorDetails: { displayName, channelId } }) => {
-    const chatters = yt.chat.getChatters().filter(u => u.channelId !== channelId)
-    const target = chatters[Math.floor(Math.random() * chatters.length)]
+    const target = getRandomChatter([channelId])
+    logger.debug("running beatass", { target: target?.displayName, displayName })
     const failed = await yt.chat.sendMessage(
       Math.random() > 0.5
         ? `${ displayName } beat ${ target.displayName }'s ass`
         : `${ target.displayName } smacked the shit outta ${ displayName }`,
     )
-    if (failed) console.error("Failed to send message")
+    if (failed) logger.error("failed to send message")
   },
 )

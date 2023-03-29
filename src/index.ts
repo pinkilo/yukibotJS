@@ -3,6 +3,7 @@ import server from "./server"
 import { processMessage } from "./yuki"
 import * as console from "console"
 import logger, { transports, format } from "winston"
+import { MoneySystem } from "./yuki"
 
 // Configure Logger
 logger.configure({
@@ -20,6 +21,7 @@ async function main() {
   })
 
   await yt.auth.loadTokens()
+  await MoneySystem.loadBank()
 
   server().listen(3000, () => console.log("http://localhost:3000"))
 }

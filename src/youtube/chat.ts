@@ -1,10 +1,8 @@
 import { google } from "googleapis"
-import * as console from "console"
 import { ChatMessage, User } from "../types/google"
 import { auth } from "./auth"
 import logger from "winston"
-
-// TODO Track chat participants
+import yt from "./index"
 
 const ytApi = google.youtube("v3")
 let liveChatId: string
@@ -15,7 +13,6 @@ const chatListeners: Array<((incoming: ChatMessage[], all: ChatMessage[]) => any
 const chatters = new Map<string, User>()
 
 const getBroadcast = async () => {
-  logger.debug({ tokens: auth.credentials })
   const response = await ytApi.liveBroadcasts.list({
     auth,
     part: ["snippet"],
@@ -39,7 +36,10 @@ const getChatMessages = async () => {
   chatMessages.push(...newMessages)
   nextPage = response.data.nextPageToken
   newMessages.map(m => m.authorDetails)
-    .forEach(user => chatters.set(user.channelId, user))
+    .forEach(user => {
+      chatters.set(user.channelId, user)
+      chatters.set(user.displayName, user)
+    })
   chatListeners.forEach(cb => cb(newMessages, chatMessages))
   setTimeout(getChatMessages, 5000) //response.data.pollingIntervalMillis
 }
@@ -69,11 +69,15 @@ const sendMessage = async (text: string) => {
       },
     },
   })
-  console.log(response)
   return response.status == 201
 }
 
 const getChatters = () => Array.from(chatters.values())
+const getChatter = (uidOrName: string) => chatters.get(uidOrName)
+const getRandomChatter = (exclude: string[] = []): User => {
+  const chatters = yt.chat.getChatters().filter(u => !exclude.includes(u.channelId))
+  return chatters[Math.floor(Math.random() * chatters.length)]
+}
 
 export {
   ytApi as api,
@@ -82,4 +86,6 @@ export {
   onChatUpdate,
   sendMessage,
   getChatters,
+  getChatter,
+  getRandomChatter,
 }

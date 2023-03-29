@@ -1,4 +1,5 @@
 import { processMessage } from "./processing"
+import MoneySystem from "./MoneySystem"
 
-export { processMessage }
+export { processMessage, MoneySystem }
 
