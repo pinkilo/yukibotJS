@@ -3,7 +3,7 @@ import logger from "winston"
 
 const bankFile = "./.private/bank.json"
 const startingWallet = 1000
-const name = "rupees"
+const name = "rupee"
 let bank: Map<string, number>
 
 const loadBank = async () => {
@@ -16,12 +16,17 @@ const loadBank = async () => {
   bank = new Map()
 }
 
+const getBank = async () => {
+  if (!bank) await loadBank()
+  return bank
+}
+
 const saveBank = () => {
   logger.info("saving bank")
   return file.write(bankFile, JSON.stringify(bank))
 }
 
-const getWallet = (uid: string) => {
+const getWallet = (uid: string): number => {
   if (!bank[uid]) bank[uid] = startingWallet
   return bank[uid]
 }
@@ -32,4 +37,4 @@ const transactionBatch = async (map: [string, number][]) => {
   await saveBank()
 }
 
-export default { name, loadBank, getWallet, transactionBatch }
+export default { name, loadBank, getWallet, transactionBatch, getBank }

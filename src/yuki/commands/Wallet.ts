@@ -10,7 +10,10 @@ export default new Command(
       // TODO add modification commands
       return
     }
-    const failed = await yt.chat.sendMessage(MS.getWallet(authorDetails.channelId))
+    const wallet = MS.getWallet(authorDetails.channelId)
+    const failed = await yt.chat.sendMessage(
+      `${ authorDetails.displayName } has ${ wallet } ${ MS.name }s`,
+    )
     if (failed) logger.error("failed to send message")
   },
 )
