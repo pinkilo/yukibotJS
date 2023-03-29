@@ -134,3 +134,4 @@ dist
 *.d.ts
 .idea
 /build/
+.*
