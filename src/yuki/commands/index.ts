@@ -6,10 +6,11 @@ import { ChatMessage } from "../../types/google"
 import logger from "winston"
 import Socials from "./Socials"
 import Wallet from "./Wallet"
+import { Beans } from "./Memes"
 
 const commandMap = new Map<string, Command>();
 
-(() => [ListCommands, BeatAss, Socials, Wallet]
+(() => [ListCommands, BeatAss, Socials, Wallet, Beans]
     .forEach(cmd => [cmd.name, ...cmd.alias]
       .forEach(name => commandMap[name] = cmd))
 )()

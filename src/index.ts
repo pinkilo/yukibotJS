@@ -16,6 +16,7 @@ async function main() {
 
   await MoneySystem.loadBank()
   await yt.auth.loadTokens()
+  await yt.chat.sendMessage("Yuki is Here!")
 
   yt.chat.onChatUpdate((incoming) => {
     if (incoming.length > 0) logger.debug("Processing Message Batch")
