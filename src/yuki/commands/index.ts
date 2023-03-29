@@ -4,11 +4,15 @@ import BeatAss from "./BeatAss"
 import { TokenBin } from "../processing"
 import { ChatMessage } from "../../types/google"
 import logger from "winston"
+import Socials from "./Socials"
+import Wallet from "./Wallet"
 
-const commandMap = new Map<string, Command>()
+const commandMap = new Map<string, Command>();
 
-commandMap[ListCommands.name] = ListCommands
-commandMap[BeatAss.name] = BeatAss
+(() => [ListCommands, BeatAss, Socials, Wallet]
+    .forEach(cmd => [cmd.name, ...cmd.alias]
+      .forEach(name => commandMap[name] = cmd))
+)()
 
 const getCmd = (name: string): Command | undefined => commandMap[name]
 
