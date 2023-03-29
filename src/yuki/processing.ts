@@ -22,7 +22,7 @@ export const tokenize = (msg: string): TokenBin => {
 export const processMessage = async (msg: ChatMessage) => {
   logger.debug("tokenizing")
   const tokens = tokenize(msg.snippet.displayMessage)
-  logger.debug({ tokens })
+  logger.debug("", { tokens })
   if (tokens.isCommand) {
     await runCmd(tokens.command, msg, tokens)
   }

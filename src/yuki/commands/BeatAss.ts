@@ -12,14 +12,24 @@ import { getRandomChatter } from "../../youtube/chat"
  */
 export default new Command(
   "beatass", ["pickfight"], 10,
-  async ({ authorDetails: { displayName, channelId } }) => {
+  async ({ authorDetails: { displayName, channelId } }, _, _this) => {
     const target = getRandomChatter([channelId])
     logger.debug("running beatass", { target: target?.displayName, displayName })
+    const succeeds = Math.random() > 0.5
+    const successPayout = _this.cost * 1.5
+    const defensePayout = _this.cost * 2.0
     const failed = await yt.chat.sendMessage(
-      Math.random() > 0.5
-        ? `${ displayName } beat ${ target.displayName }'s ass`
-        : `${ target.displayName } smacked the shit outta ${ displayName }`,
+      succeeds
+        ? `${ displayName } beat ${ target.displayName } 's ass (+${ successPayout })`
+        : `${ target.displayName } smacked the shit outta ${ displayName } (+${ defensePayout })`,
     )
-    if (failed) logger.error("failed to send message")
+    if (failed) {
+      logger.error("failed to send message")
+      return undefined
+    }
+    return {
+      uids: [succeeds ? channelId : target.channelId],
+      amount: succeeds ? successPayout : defensePayout,
+    }
   },
 )

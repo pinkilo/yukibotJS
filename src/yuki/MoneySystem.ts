@@ -2,7 +2,7 @@ import { file } from "../util"
 import logger from "winston"
 
 const bankFile = "./.private/bank.json"
-const startingWallet = 100
+const startingWallet = 1000
 const name = "rupees"
 let bank: Map<string, number>
 
@@ -25,13 +25,11 @@ const getWallet = (uid: string) => {
   if (!bank[uid]) bank[uid] = startingWallet
   return bank[uid]
 }
-const addMoney = async (uid: string, amount: number) => {
-  bank[uid] = bank[uid] + amount
-  await saveBank()
-}
-const removeMoney = async (uid: string, amount: number) => {
-  bank[uid] = bank[uid] - amount
+
+/** Modify all given wallets by uid. Use negative numbers to remove money */
+const transactionBatch = async (map: [string, number][]) => {
+  map.forEach(([uid, amount]) => bank[uid] = getWallet(uid) + amount)
   await saveBank()
 }
 
-export default { name, loadBank, getWallet, addMoney, removeMoney }
+export default { name, loadBank, getWallet, transactionBatch }

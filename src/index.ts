@@ -1,9 +1,7 @@
 import yt from "./youtube"
 import server from "./server"
-import { processMessage } from "./yuki"
-import * as console from "console"
-import logger, { transports, format } from "winston"
-import { MoneySystem } from "./yuki"
+import logger, { format, transports } from "winston"
+import { MoneySystem, processMessage } from "./yuki"
 
 // Configure Logger
 logger.configure({
@@ -13,17 +11,18 @@ logger.configure({
 })
 
 async function main() {
-  yt.auth.onTokenUpdate(() => console.log("Tokens Updated"))
+  yt.auth.onTokenUpdate(() => logger.debug("Tokens Updated"))
   yt.auth.onTokenUpdate(() => yt.chat.trackChat())
+
+  await MoneySystem.loadBank()
+  await yt.auth.loadTokens()
+
   yt.chat.onChatUpdate((incoming) => {
-    if (incoming.length > 0) console.log("Processing Message Batch")
+    if (incoming.length > 0) logger.debug("Processing Message Batch")
     incoming.forEach(processMessage)
   })
 
-  await yt.auth.loadTokens()
-  await MoneySystem.loadBank()
-
-  server().listen(3000, () => console.log("http://localhost:3000"))
+  server().listen(3000, () => logger.info("http://localhost:3000"))
 }
 
 export default main
