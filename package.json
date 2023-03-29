@@ -53,6 +53,7 @@
     "rollup-plugin-watch": "^1.0.2",
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.1.0",
+    "tslib": "^2.5.0",
     "url": "^0.11.0",
     "util": "^0.12.3"
   },
