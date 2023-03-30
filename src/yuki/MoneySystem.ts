@@ -8,13 +8,15 @@ let bank: Map<string, number>
 
 const loadBank = async () => {
   logger.info("checking for saved bank")
+  bank = new Map()
   if (file.exists(bankFile)) {
     logger.info("loading saved bank")
-    bank = JSON.parse(await file.read(bankFile) + "")
+    const raw = JSON.parse(await file.read(bankFile) + "")
+    Object.entries(raw).forEach(e => bank[e[0]] = e[1])
+    logger.debug("loaded saved bank", { bank })
     return
   }
   logger.info("making new bank")
-  bank = new Map()
 }
 
 const getBank = async () => {
@@ -33,9 +35,12 @@ const getWallet = (uid: string): number => {
 }
 
 /** Modify all given wallets by uid. Use negative numbers to remove money */
-const transactionBatch = async (map: [string, number][]) => {
-  map.forEach(([uid, amount]) => bank[uid] = getWallet(uid) + amount)
+const transactionBatch = async (batch: [string, number][]) => {
+  batch.forEach(([uid, amount]) => bank[uid] = getWallet(uid) + amount)
   await saveBank()
 }
 
-export default { name, loadBank, getWallet, transactionBatch, getBank }
+const getLeaderboard = (): Array<[string, number]> => Array.from(bank.entries())
+  .sort(([_, a], [__, b]) => b - a)
+
+export default { name, loadBank, getWallet, transactionBatch, getBank, getLeaderboard }

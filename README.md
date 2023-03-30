@@ -5,12 +5,12 @@
         - beatass
         - raidboss
         - sending messages in chat
-            - maybe don't give currency if no one else has typed between two messages?
+            - maybe don't give currency if no one else has typed between N messages?
 
 ## Roadmap
 
 - Command rate-limiting
-    - global & user
+    - global ~~& user~~
 - Fox
     - Remake Yuki the fox animation and their commands
     - https://goo.gl/a65QTX
@@ -25,3 +25,6 @@
     - $userid is $randnum(100)% in love with $dummy $touser
     - should have cost
 - Raidboss fighting
+- UI
+  - route that displays the money leaderboard
+    - /leaderboard

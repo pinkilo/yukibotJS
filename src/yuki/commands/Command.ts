@@ -11,7 +11,7 @@ export default class Command {
 
   readonly name: string
   readonly alias?: string[]
-  readonly cost?: number
+  readonly cost: number
   /** ratelimit in seconds */
   readonly ratelimit: number
   private cooldowns: Map<string, number> = new Map()
@@ -40,7 +40,9 @@ export default class Command {
   async execute(msg: ChatMessage, tokens: TokenBin): Promise<void> {
     if (this.getCooldownInSec(msg.authorDetails.channelId) > 0) return
     if (this.canAfford(msg.authorDetails.channelId)) {
-      await MoneySystem.transactionBatch([[msg.authorDetails.channelId, this.cost]])
+      if (this.cost > 0) {
+        await MoneySystem.transactionBatch([[msg.authorDetails.channelId, this.cost]])
+      }
       const result = await this.invoke(msg, tokens, this)
       if (this.payout && result) await this.payout(result)
     }
@@ -48,7 +50,7 @@ export default class Command {
   }
 
   canAfford(uid: string): boolean {
-    return this.cost ? MoneySystem.getWallet(uid) >= this.cost : true
+    return this.cost > 0 ? MoneySystem.getWallet(uid) >= this.cost : true
   }
 
   addCooldown(uid: string) {

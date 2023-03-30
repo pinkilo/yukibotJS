@@ -79,6 +79,11 @@ const getRandomChatter = (exclude: string[] = []): User => {
   return chatters[Math.floor(Math.random() * chatters.length)]
 }
 
+const getChannel = async (uid: string) => {
+  const result = await ytApi.channels.list({ id: [uid], part: ["snippet"], auth })
+  return result.data.items[0].snippet
+}
+
 export {
   ytApi as api,
   findChat,
@@ -88,4 +93,5 @@ export {
   getChatters,
   getChatter,
   getRandomChatter,
+  getChannel,
 }

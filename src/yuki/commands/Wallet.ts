@@ -4,9 +4,39 @@ import MS from "../MoneySystem"
 import logger from "winston"
 
 /**
- * TODO add params for leaderboard/rank
+ * If RANK send ranking
+ * else if WEALTHGAP send number of people below you in rank
  */
-export default new Command(
+export const Ranking = new Command("rank", ["wealthgap"], 0, 120,
+  async ({ authorDetails: { channelId, displayName } }, { command }) => {
+    const wallet = MS.getWallet(channelId)
+    const lb = MS.getLeaderboard()
+    const rank = lb.findIndex(([uid]) => uid === channelId)
+    let msg = command == "rank"
+      ? `#${ rank + 1 }: ${ displayName } | ${ wallet } ${ MS.name }`
+      : `${ lb.length - rank } citizen(s) are poorer than ${ displayName }`
+    const failed = await yt.chat.sendMessage(msg)
+    if (failed) logger.error("failed to send message")
+  })
+
+// TODO IF PARAM:ME send leaderboard centered on user
+export const Leaderboard = new Command("leaderboard", ["forbes"], 0, 120,
+  async () => {
+    const lb = MS.getLeaderboard()
+    if (lb.length === 0) {
+      await yt.chat.sendMessage("No wallets are active :(")
+      return
+    }
+    const sub = lb.slice(0, 10)
+    // get channels (users)
+    const channels = await Promise.all(sub.map(([uid]) => yt.chat.getChannel(uid)))
+    // send messages
+    for (let i = 0; i < sub.length; i++) {
+      await yt.chat.sendMessage(`#${ i + 1 }: ${ channels[i].title } | ${ sub[i][1] }`)
+    }
+  })
+
+export const Wallet = new Command(
   "wallet", ["bank"], 0, 120,
   async ({ authorDetails }, tokens) => {
     if (tokens.params.length > 0 && authorDetails.isChatModerator) {
@@ -15,10 +45,6 @@ export default new Command(
     }
     let msg: string
     switch (tokens.params[0]) {
-      case "leaderboard":
-        break
-      case "rank":
-        break
       case undefined:
       default:
         const wallet = MS.getWallet(authorDetails.channelId)
@@ -27,5 +53,4 @@ export default new Command(
     }
     const failed = await yt.chat.sendMessage(msg)
     if (failed) logger.error("failed to send message")
-  },
-)
+  })
