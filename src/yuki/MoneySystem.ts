@@ -11,6 +11,7 @@ const loadBank = async () => {
   if (file.exists(bankFile)) {
     logger.info("loading saved bank")
     bank = JSON.parse(await file.read(bankFile) + "")
+    return
   }
   logger.info("making new bank")
   bank = new Map()
