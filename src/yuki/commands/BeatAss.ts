@@ -11,7 +11,7 @@ import { getRandomChatter } from "../../youtube/chat"
  * TODO Additional text version
  */
 export default new Command(
-  "beatass", ["pickfight"], 10,
+  "beatass", ["pickfight"], 10, 30,
   async ({ authorDetails: { displayName, channelId } }, _, _this) => {
     const target = getRandomChatter([channelId])
     logger.debug("running beatass", { target: target?.displayName, displayName })

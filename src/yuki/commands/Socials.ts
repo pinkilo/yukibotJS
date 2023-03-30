@@ -4,7 +4,8 @@ import logger from "winston"
 
 type Socials = "discord" | "twitter" | "youtube"
 export default new Command(
-  "discord", ["twitter", "youtube"], 0, async (_, { command }) => {
+  "discord", ["twitter", "youtube"], 0, 60,
+  async (_, { command }) => {
     let outMsg: string
     switch (command as Socials) {
       case "discord":

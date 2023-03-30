@@ -3,8 +3,11 @@ import yt from "../../youtube"
 import MS from "../MoneySystem"
 import logger from "winston"
 
+/**
+ * TODO add params for leaderboard/rank
+ */
 export default new Command(
-  "wallet", ["bank"], 0,
+  "wallet", ["bank"], 0, 120,
   async ({ authorDetails }, tokens) => {
     if (tokens.params.length > 0 && authorDetails.isChatModerator) {
       // TODO add modification commands

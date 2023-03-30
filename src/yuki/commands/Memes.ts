@@ -4,7 +4,7 @@ import yt from "../../youtube"
 type BeanType = "bean" | "🫘" | "beans";
 
 export const Beans = new Command(
-  "bean", ["🫘", "beans"], 0,
+  "bean", ["🫘", "beans"], 0, 120,
   async (_, { command }) => {
     let msg: string
     switch (command as BeanType) {
