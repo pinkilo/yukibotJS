@@ -13,10 +13,19 @@ export default new Command(
       // TODO add modification commands
       return
     }
-    const wallet = MS.getWallet(authorDetails.channelId)
-    const failed = await yt.chat.sendMessage(
-      `${ authorDetails.displayName } has ${ wallet } ${ MS.name }s`,
-    )
+    let msg: string
+    switch (tokens.params[0]) {
+      case "leaderboard":
+        break
+      case "rank":
+        break
+      case undefined:
+      default:
+        const wallet = MS.getWallet(authorDetails.channelId)
+        msg = `${ authorDetails.displayName } has ${ wallet } ${ MS.name }s`
+        break
+    }
+    const failed = await yt.chat.sendMessage(msg)
     if (failed) logger.error("failed to send message")
   },
 )
