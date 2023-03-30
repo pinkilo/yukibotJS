@@ -12,7 +12,7 @@ export type TokenBin = {
 
 export const tokenize = (msg: string): TokenBin => {
   const tokens = msg.split(/\s+/)
-  const isCommand = tokens[0].match(/^>.*$/) !== null
+  const isCommand = tokens[0].match(/^[>!].*$/) !== null
   const command = isCommand ? tokens[0].substring(1).toLowerCase() : null
   const params = isCommand ? tokens.slice(1) : null
   return { isCommand, command, params, msg }
