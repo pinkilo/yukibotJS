@@ -7,10 +7,11 @@ import logger from "winston"
 import Socials from "./Socials"
 import { Wallet, Ranking, Leaderboard } from "./Wallet"
 import { Beans } from "./Memes"
+import Fox from "./Fox"
 
 const commandMap = new Map<string, Command>();
 
-(() => [ListCommands, BeatAss, Socials, Wallet, Beans, Ranking, Leaderboard]
+(() => [ListCommands, BeatAss, Socials, Wallet, Beans, Ranking, Leaderboard, Fox.attack]
     .forEach(cmd => [cmd.name, ...cmd.alias]
       .forEach(name => commandMap[name] = cmd))
 )()

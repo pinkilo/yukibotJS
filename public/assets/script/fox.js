@@ -27,9 +27,6 @@ ws.addEventListener("message", event => {
     case "eat":
       eat()
       break;
-    default:
-      break;
-
   }
 })
 
@@ -76,11 +73,10 @@ function idle() {
 
 function attack() {
   display("attack")
-  idleReset(5)
+  idleReset(3)
 }
 
 function greet(name) {
-  console.log(`Greeting ${name}`)
   display("greet")
   const duration = 2.4
   // TODO add more greetings
@@ -90,11 +86,11 @@ function greet(name) {
 
 function dance() {
   display("dance")
-  idleReset(5)
+  idleReset(4.8)
   // TODO
 }
 
 function eat() {
   display("eat")
-  idleReset(5)
+  idleReset(8.3)
 }

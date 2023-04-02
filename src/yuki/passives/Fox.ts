@@ -5,7 +5,8 @@ import { setAnimation } from "../fox"
 const firstMessage: Record<string, any> = {}
 
 export default new Passive(async () => true,
-  async (msg) => {
+  async (msg, { isCommand }) => {
+    if (isCommand) return
     const uid = msg.authorDetails.channelId
     if (firstMessage[uid] === undefined) { // greet
       logger.debug(`Greeting "${ msg.authorDetails.channelId }"`)
