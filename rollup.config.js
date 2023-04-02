@@ -12,7 +12,8 @@ module.exports = {
   plugins: [
     ts({outputToFilesystem: false}),
     watch({dir: "src"}),
-    copy({targets: [{src: "assets", dest: "build"}]}),
+    watch({dir: "public"}),
+    copy({targets: [{src: "public", dest: "build"}]}),
     shebang({
       include: "yuki.js",
       shebang: "#!/usr/bin/env node",
@@ -26,5 +27,9 @@ module.exports = {
     "express",
     "googleapis",
     "typescript",
+    "ws",
+    "winston",
+    "util",
+    "env"
   ],
 }

@@ -1,7 +1,9 @@
 import yt from "./youtube"
 import server from "./server"
 import logger, { format, transports } from "winston"
-import { MoneySystem, processMessage } from "./yuki"
+import { MoneySystem, processMessage, setSocket } from "./yuki"
+import env from "./env"
+import { WebSocketServer } from "ws"
 
 // Configure Logger
 logger.configure({
@@ -15,15 +17,17 @@ async function main() {
   yt.auth.onTokenUpdate(() => yt.chat.trackChat())
 
   await MoneySystem.loadBank()
-  await yt.auth.loadTokens()
-  await yt.chat.sendMessage("Yuki is Here!")
+  //await yt.auth.loadTokens()
+  //await yt.chat.sendMessage("Yuki is Here!")
 
   yt.chat.onChatUpdate((incoming) => {
     if (incoming.length > 0) logger.debug("Processing Message Batch")
     incoming.forEach(processMessage)
   })
 
-  server().listen(3000, () => logger.info("http://localhost:3000"))
+  const svr = server()
+    .listen(env.PORT, () => logger.info(`http://localhost:${ env.PORT }`))
+  setSocket(new WebSocketServer({ server: svr, path: "/fox" }))
 }
 
 export default main

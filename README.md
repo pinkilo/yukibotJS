@@ -17,8 +17,8 @@
 - following
     - time user has been sub'ed to channel
 - Bank/Wallet
-    - \>rank
-        - shows user rank with respect to wallet/bank
+    - ~~\>rank~~
+        - ~~shows user rank with respect to wallet/bank~~
 - \>hug {user?}
     - hugs user or random user
 - \>lovemeter {user?}

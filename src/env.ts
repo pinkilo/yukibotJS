@@ -1,7 +1,10 @@
+import * as process from "process"
+
 require("dotenv").config()
 
 export default {
   NODE_ENV: process.env.NODE_ENV,
+  PORT: process.env.PORT,
   GOOGLE: {
     G_PROJECT_ID: process.env.G_PROJECT_ID,
     G_CLIENT_ID: process.env.G_CLIENT_ID,

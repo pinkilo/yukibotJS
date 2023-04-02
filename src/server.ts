@@ -5,9 +5,14 @@ import logger from "winston"
 
 export default () => {
   const svr = express()
+  svr.use("/assets", express.static(join(__dirname, "public/assets")))
 
   svr.get("/", async (_, res) => {
-    res.sendFile(join(__dirname, "assets/index.html"))
+    res.sendFile(join(__dirname, "public/index.html"))
+  })
+
+  svr.get("/fox", async (_, res) => {
+    res.sendFile(join(__dirname, "public/fox.html"))
   })
 
   svr.get("/auth", (_, res) => {

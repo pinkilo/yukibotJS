@@ -2,16 +2,16 @@ import { file } from "../util"
 import logger from "winston"
 
 const bankFile = "./.private/bank.json"
-const startingWallet = 1000
+const startingWallet = 100
 const name = "rupee"
-let bank: Map<string, number>
+let bank: Record<string, number>
 
 const loadBank = async () => {
   logger.info("checking for saved bank")
-  bank = new Map()
+  bank = {}
   if (file.exists(bankFile)) {
     logger.info("loading saved bank")
-    const raw = JSON.parse(await file.read(bankFile) + "")
+    const raw = JSON.parse(await file.read(bankFile) + "") as Record<string, number>
     Object.entries(raw).forEach(e => bank[e[0]] = e[1])
     logger.debug("loaded saved bank", { bank })
     return
@@ -40,7 +40,7 @@ const transactionBatch = async (batch: [string, number][]) => {
   await saveBank()
 }
 
-const getLeaderboard = (): Array<[string, number]> => Array.from(bank.entries())
+const getLeaderboard = (): Array<[string, number]> => Array.from(Object.entries(bank))
   .sort(([_, a], [__, b]) => b - a)
 
 export default { name, loadBank, getWallet, transactionBatch, getBank, getLeaderboard }
