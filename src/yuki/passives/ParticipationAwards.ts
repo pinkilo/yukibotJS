@@ -8,9 +8,8 @@ const moneyEarnRate = 2
 const cooldowns: Record<string, number> = {}
 
 export default new Passive(
-  async () => true,
-  async ({ authorDetails: { channelId } }, { isCommand }) => {
-    if (isCommand) return
+  async (_, { isCommand }) => !isCommand,
+  async ({ authorDetails: { channelId } }) => {
     for (let k in cooldowns) {
       if (k === channelId) continue
       cooldowns[k] = cooldowns[k] - 1
