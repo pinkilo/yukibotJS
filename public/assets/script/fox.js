@@ -1,4 +1,5 @@
 // noinspection DuplicatedCode
+// TODO Animations should be added to a queue so they are not cancelled
 
 
 const ws = new WebSocket("ws://localhost:3000/fox")
