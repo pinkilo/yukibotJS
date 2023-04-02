@@ -24,7 +24,9 @@ export const processMessage = async (msg: ChatMessage) => {
   const tokens = tokenize(msg.snippet.displayMessage)
   logger.debug("", { tokens })
   if (tokens.isCommand) await runCmd(tokens.command, msg, tokens)
+  // run passives
   const predicates = await Promise.all(passives.map(p => p.predicate(msg, tokens, p)))
+  logger.info(`running ${predicates.length} passives`)
   await Promise.all(
     passives.filter((_, i) => predicates[i])
       .map(p => p.invoke(msg, tokens, p)),

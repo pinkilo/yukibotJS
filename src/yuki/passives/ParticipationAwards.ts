@@ -1,5 +1,6 @@
 import Passive from "./Passive"
 import MoneySystem from "../MoneySystem"
+import logger from "winston"
 
 const moneyCooldown = 2
 /** amount of money earned per cooldown */
@@ -16,6 +17,7 @@ export default new Passive(
       if (cooldowns[k] < 1) delete cooldowns[k]
     }
     if (!cooldowns[channelId]) {
+      logger.debug(`adding passive money to ${ channelId }`)
       await MoneySystem.transactionBatch([[channelId, moneyEarnRate]])
       cooldowns[channelId] = moneyCooldown
     }

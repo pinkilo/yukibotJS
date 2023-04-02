@@ -2,6 +2,7 @@ import express from "express"
 import { join } from "path"
 import yt from "./youtube"
 import logger from "winston"
+import { MoneySystem } from "./yuki"
 
 export default () => {
   const svr = express()
@@ -14,6 +15,9 @@ export default () => {
   svr.get("/fox", async (_, res) => {
     res.sendFile(join(__dirname, "public/fox.html"))
   })
+
+  svr.get("/api/leaderboard", (_, res) => res.send(MoneySystem.getLeaderboard()))
+    .get("api/forbes", (_, res) => res.redirect("/api/leaderboard"))
 
   svr.get("/auth", (_, res) => {
     res.redirect(yt.auth.getAuthUrl())

@@ -5,7 +5,12 @@ export type Animations = "idle" | "greet" | "attack" | "dance" | "eat"
 
 let socket: WebSocket
 export const setAnimation = (anim: Animations, text?: string) => {
-  socket.send(JSON.stringify({ anim, text }))
+  if (socket) {
+    logger.info(`set animation ${ anim }`)
+    socket.send(JSON.stringify({ anim, text }))
+  } else {
+    logger.error("socket not connected")
+  }
 }
 
 export const setSocket = (server: WebSocketServer) => {
