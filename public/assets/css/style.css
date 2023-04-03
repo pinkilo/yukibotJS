@@ -21,15 +21,26 @@ h1 {
 p {
   font-family: monospace;
   font-size: 1rem;
+  text-align: center;
 }
 
 .features {
   margin: 0 auto;
   text-align: center;
+  padding-top: 50px;
 }
 
 .features > a {
-  padding: 5px;
+  padding: 0.5rem 1rem;
+  margin: 5px;
+  border-radius: 5px;
   font-family: sans-serif;
   text-transform: lowercase;
+  background-color: green;
+  color: white;
+}
+
+.features > a:hover {
+  text-decoration: line-through;
+  background-color: rgba(0, 128, 0, 0.527);
 }
