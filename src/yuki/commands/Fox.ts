@@ -7,4 +7,16 @@ const attack = new Command(
     setAnimation("attack", msg.authorDetails.displayName)
   })
 
-export default { attack }
+const feed = new Command(
+  "feed", [], 5, 60, 20,
+  async () => {
+    setAnimation("eat")
+  })
+
+const dance = new Command(
+  "dance", [], 5, 60, 20,
+  async () => {
+    setAnimation("dance")
+  })
+
+export default { attack, feed, dance }
