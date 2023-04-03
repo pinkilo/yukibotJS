@@ -4,15 +4,15 @@
     - Payout commands
         - beatass
         - raidboss
-        - sending messages in chat
-            - maybe don't give currency if no one else has typed between N messages?
+        - ~~sending messages in chat~~
+            - ~~maybe don't give currency if no one else has typed between N messages?~~
 
 ## Roadmap
 
 - Command rate-limiting
     - global ~~& user~~
 - Fox
-    - Remake Yuki the fox animation and their commands
+    - ~~Remake Yuki the fox animation and their commands~~
     - https://goo.gl/a65QTX
 - following
     - time user has been sub'ed to channel

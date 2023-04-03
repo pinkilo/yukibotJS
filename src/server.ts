@@ -8,20 +8,9 @@ export default () => {
   const svr = express()
   svr.use("/assets", express.static(join(__dirname, "public/assets")))
 
-  svr.get("/", async (_, res) => {
-    res.sendFile(join(__dirname, "public/index.html"))
-  })
+  svr.get("/", async (_, res) => res.sendFile(join(__dirname, "public/index.html")))
 
-  svr.get("/fox", async (_, res) => {
-    res.sendFile(join(__dirname, "public/fox.html"))
-  })
-
-  svr.get("/api/leaderboard", (_, res) => res.send(MoneySystem.getLeaderboard()))
-    .get("api/forbes", (_, res) => res.redirect("/api/leaderboard"))
-
-  svr.get("/auth", (_, res) => {
-    res.redirect(yt.auth.getAuthUrl())
-  })
+  svr.get("/auth", (_, res) => res.redirect(yt.auth.getAuthUrl()))
 
   svr.get("/callback", async (req, res) => {
     const { code } = req.query
@@ -31,6 +20,11 @@ export default () => {
     await yt.auth.setCredentials(tokens)
     res.redirect("/")
   })
+
+  svr.get("/fox", async (_, res) => res.sendFile(join(__dirname, "public/fox.html")))
+
+  svr.get("/api/leaderboard", (_, res) => res.send(MoneySystem.getLeaderboard()))
+    .get("api/forbes", (_, res) => res.redirect("/api/leaderboard"))
 
   return svr
 }

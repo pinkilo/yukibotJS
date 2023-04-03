@@ -7,7 +7,7 @@ import logger from "winston"
  * If RANK send ranking
  * else if WEALTHGAP send number of people below you in rank
  */
-export const Ranking = new Command("rank", ["wealthgap"], 0, 120,
+export const Ranking = new Command("rank", ["wealthgap"], 0, 120, 0,
   async ({ authorDetails: { channelId, displayName } }, { command }) => {
     const wallet = MS.getWallet(channelId)
     const lb = MS.getLeaderboard()
@@ -20,7 +20,7 @@ export const Ranking = new Command("rank", ["wealthgap"], 0, 120,
   })
 
 // TODO IF PARAM:ME send leaderboard centered on user
-export const Leaderboard = new Command("leaderboard", ["forbes"], 0, 120,
+export const Leaderboard = new Command("leaderboard", ["forbes"], 0, 0, 120,
   async () => {
     const lb = MS.getLeaderboard()
     if (lb.length === 0) {
@@ -37,7 +37,7 @@ export const Leaderboard = new Command("leaderboard", ["forbes"], 0, 120,
   })
 
 export const Wallet = new Command(
-  "wallet", ["bank"], 0, 120,
+  "wallet", ["bank"], 0, 120, 0,
   async ({ authorDetails }, tokens) => {
     if (tokens.params.length > 0 && authorDetails.isChatModerator) {
       // TODO add modification commands
