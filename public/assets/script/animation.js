@@ -23,13 +23,6 @@ async function main() {
   animations.eat = await loadAnimation("eat")
   animations.dance = await loadAnimation("dance")
   currentAnimation = animations.idle
-  for (let k in animations) {
-    if (animations[k]) {
-      console.log("loading", k)
-      //while (!animations[k].ready) {
-      //}
-    }
-  }
   console.log("starting engine")
   ready = true
   window.dispatchEvent(new Event("fox_ready"))

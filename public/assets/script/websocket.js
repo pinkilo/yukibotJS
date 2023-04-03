@@ -1,5 +1,4 @@
 // noinspection DuplicatedCode
-// TODO Animations should be added to a queue so they are not cancelled
 
 window.addEventListener("fox_ready", () => nextAnim())
 const speechBubble = document.getElementById("speech_bubble")
@@ -13,7 +12,7 @@ const ws = new WebSocket("ws://localhost:3000/fox")
 ws.addEventListener("open", () => {
   console.log("websocket connected")
   speechBubble.hidden = true
-  enqueueAnim(() => greet("Connected!"))
+  enqueueAnim(() => speak("Connected!"))
 })
 
 ws.addEventListener("message", event => {
@@ -34,7 +33,7 @@ ws.addEventListener("message", event => {
       enqueueAnim(eat)
       break;
     case "greet":
-      enqueueAnim(() => greet(packet.text))
+      enqueueAnim(() => speak(packet.text))
       break;
   }
 })
@@ -82,14 +81,15 @@ function idle() {
 
 function attack() {
   display(animations.attack)
-  nextAnim(3)
+  const duration = 3
+  displaySpeech("YOU DARE?", duration)
+  nextAnim(duration)
 }
 
-function greet(name) {
+function speak(text) {
   display(animations.greet)
   const duration = 2.4
-  // TODO add more greetings
-  displaySpeech(`Hello ${name}!`, duration)
+  displaySpeech(text, duration)
   nextAnim(duration)
 }
 
@@ -100,7 +100,9 @@ function dance() {
 
 function eat() {
   display(animations.eat)
-  nextAnim(8.5)
+  const duration = 8.5
+  displaySpeech("YES FOOD", duration)
+  nextAnim(duration)
 }
 
 
