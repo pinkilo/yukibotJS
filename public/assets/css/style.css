@@ -1,5 +1,35 @@
 html,
 body {
   background-color: #000;
+  color: white;
+  padding: 2%;
+}
+
+a {
+  color: #fff;
+  text-decoration: none;
+}
+
+h1 {
   color: green;
+  text-transform: uppercase;
+  font-family: sans-serif;
+  text-align: center;
+  font-size: 5rem;
+}
+
+p {
+  font-family: monospace;
+  font-size: 1rem;
+}
+
+.features {
+  margin: 0 auto;
+  text-align: center;
+}
+
+.features > a {
+  padding: 5px;
+  font-family: sans-serif;
+  text-transform: lowercase;
 }
