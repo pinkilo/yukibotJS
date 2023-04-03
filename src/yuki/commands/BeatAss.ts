@@ -21,7 +21,8 @@ export default new Command(
     const failed = await yt.chat.sendMessage(
       succeeds
         ? `${ displayName } beat ${ target.displayName } 's ass (+${ successPayout })`
-        : `${ target.displayName } smacked the shit outta ${ displayName } (+${ defensePayout })`,
+        : `${ displayName } tried to beat ${ target.displayName } 's ass but failed and got 
+          the shit smacked outta them (+${ defensePayout } to the defender)`,
     )
     if (failed) {
       logger.error("failed to send message")

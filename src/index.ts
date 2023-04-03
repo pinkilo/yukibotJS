@@ -20,7 +20,7 @@ async function main() {
   await MoneySystem.loadBank()
   if (env.NODE_ENV !== "test") {
     await yt.auth.loadTokens()
-    await yt.chat.sendMessage("Yuki is Here!")
+    //await yt.chat.sendMessage("Yuki is Here!")
   }
 
   yt.chat.onChatUpdate((incoming) => {
