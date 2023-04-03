@@ -1,0 +1,477 @@
+{
+  "frames": [
+    {
+      "filename": "fox_orange_greet1",
+      "frame": {
+        "x": 1,
+        "y": 1,
+        "w": 130,
+        "h": 177
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 56,
+        "y": 123,
+        "w": 130,
+        "h": 177
+      },
+      "sourceSize": {
+        "w": 510,
+        "h": 300
+      }
+    },
+    {
+      "filename": "fox_orange_greet2",
+      "frame": {
+        "x": 1,
+        "y": 1,
+        "w": 130,
+        "h": 177
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 56,
+        "y": 123,
+        "w": 130,
+        "h": 177
+      },
+      "sourceSize": {
+        "w": 510,
+        "h": 300
+      }
+    },
+    {
+      "filename": "fox_orange_greet3",
+      "frame": {
+        "x": 273,
+        "y": 1,
+        "w": 130,
+        "h": 177
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 56,
+        "y": 123,
+        "w": 130,
+        "h": 177
+      },
+      "sourceSize": {
+        "w": 510,
+        "h": 300
+      }
+    },
+    {
+      "filename": "fox_orange_greet4",
+      "frame": {
+        "x": 133,
+        "y": 1,
+        "w": 138,
+        "h": 173
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 56,
+        "y": 127,
+        "w": 138,
+        "h": 173
+      },
+      "sourceSize": {
+        "w": 510,
+        "h": 300
+      }
+    },
+    {
+      "filename": "fox_orange_greet5",
+      "frame": {
+        "x": 133,
+        "y": 1,
+        "w": 138,
+        "h": 173
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 56,
+        "y": 127,
+        "w": 138,
+        "h": 173
+      },
+      "sourceSize": {
+        "w": 510,
+        "h": 300
+      }
+    },
+    {
+      "filename": "fox_orange_greet6",
+      "frame": {
+        "x": 265,
+        "y": 180,
+        "w": 130,
+        "h": 177
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 56,
+        "y": 123,
+        "w": 130,
+        "h": 177
+      },
+      "sourceSize": {
+        "w": 510,
+        "h": 300
+      }
+    },
+    {
+      "filename": "fox_orange_greet7",
+      "frame": {
+        "x": 133,
+        "y": 176,
+        "w": 130,
+        "h": 177
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 56,
+        "y": 123,
+        "w": 130,
+        "h": 177
+      },
+      "sourceSize": {
+        "w": 510,
+        "h": 300
+      }
+    },
+    {
+      "filename": "fox_orange_greet8",
+      "frame": {
+        "x": 133,
+        "y": 1,
+        "w": 138,
+        "h": 173
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 56,
+        "y": 127,
+        "w": 138,
+        "h": 173
+      },
+      "sourceSize": {
+        "w": 510,
+        "h": 300
+      }
+    },
+    {
+      "filename": "fox_orange_greet9",
+      "frame": {
+        "x": 133,
+        "y": 1,
+        "w": 138,
+        "h": 173
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 56,
+        "y": 127,
+        "w": 138,
+        "h": 173
+      },
+      "sourceSize": {
+        "w": 510,
+        "h": 300
+      }
+    },
+    {
+      "filename": "fox_orange_greet10",
+      "frame": {
+        "x": 1,
+        "y": 180,
+        "w": 130,
+        "h": 177
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 56,
+        "y": 123,
+        "w": 130,
+        "h": 177
+      },
+      "sourceSize": {
+        "w": 510,
+        "h": 300
+      }
+    },
+    {
+      "filename": "fox_orange_greet11",
+      "frame": {
+        "x": 273,
+        "y": 1,
+        "w": 130,
+        "h": 177
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 56,
+        "y": 123,
+        "w": 130,
+        "h": 177
+      },
+      "sourceSize": {
+        "w": 510,
+        "h": 300
+      }
+    },
+    {
+      "filename": "fox_orange_greet12",
+      "frame": {
+        "x": 1,
+        "y": 1,
+        "w": 130,
+        "h": 177
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 56,
+        "y": 123,
+        "w": 130,
+        "h": 177
+      },
+      "sourceSize": {
+        "w": 510,
+        "h": 300
+      }
+    },
+    {
+      "filename": "fox_orange_greet13",
+      "frame": {
+        "x": 1,
+        "y": 1,
+        "w": 130,
+        "h": 177
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 56,
+        "y": 123,
+        "w": 130,
+        "h": 177
+      },
+      "sourceSize": {
+        "w": 510,
+        "h": 300
+      }
+    },
+    {
+      "filename": "fox_orange_greet14",
+      "frame": {
+        "x": 273,
+        "y": 1,
+        "w": 130,
+        "h": 177
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 56,
+        "y": 123,
+        "w": 130,
+        "h": 177
+      },
+      "sourceSize": {
+        "w": 510,
+        "h": 300
+      }
+    },
+    {
+      "filename": "fox_orange_greet15",
+      "frame": {
+        "x": 133,
+        "y": 1,
+        "w": 138,
+        "h": 173
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 56,
+        "y": 127,
+        "w": 138,
+        "h": 173
+      },
+      "sourceSize": {
+        "w": 510,
+        "h": 300
+      }
+    },
+    {
+      "filename": "fox_orange_greet16",
+      "frame": {
+        "x": 133,
+        "y": 1,
+        "w": 138,
+        "h": 173
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 56,
+        "y": 127,
+        "w": 138,
+        "h": 173
+      },
+      "sourceSize": {
+        "w": 510,
+        "h": 300
+      }
+    },
+    {
+      "filename": "fox_orange_greet17",
+      "frame": {
+        "x": 1,
+        "y": 180,
+        "w": 130,
+        "h": 177
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 56,
+        "y": 123,
+        "w": 130,
+        "h": 177
+      },
+      "sourceSize": {
+        "w": 510,
+        "h": 300
+      }
+    },
+    {
+      "filename": "fox_orange_greet18",
+      "frame": {
+        "x": 133,
+        "y": 176,
+        "w": 130,
+        "h": 177
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 56,
+        "y": 123,
+        "w": 130,
+        "h": 177
+      },
+      "sourceSize": {
+        "w": 510,
+        "h": 300
+      }
+    },
+    {
+      "filename": "fox_orange_greet19",
+      "frame": {
+        "x": 133,
+        "y": 1,
+        "w": 138,
+        "h": 173
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 56,
+        "y": 127,
+        "w": 138,
+        "h": 173
+      },
+      "sourceSize": {
+        "w": 510,
+        "h": 300
+      }
+    },
+    {
+      "filename": "fox_orange_greet20",
+      "frame": {
+        "x": 133,
+        "y": 1,
+        "w": 138,
+        "h": 173
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 56,
+        "y": 127,
+        "w": 138,
+        "h": 173
+      },
+      "sourceSize": {
+        "w": 510,
+        "h": 300
+      }
+    },
+    {
+      "filename": "fox_orange_greet21",
+      "frame": {
+        "x": 1,
+        "y": 180,
+        "w": 130,
+        "h": 177
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 56,
+        "y": 123,
+        "w": 130,
+        "h": 177
+      },
+      "sourceSize": {
+        "w": 510,
+        "h": 300
+      }
+    },
+    {
+      "filename": "fox_orange_greet22",
+      "frame": {
+        "x": 273,
+        "y": 1,
+        "w": 130,
+        "h": 177
+      },
+      "rotated": false,
+      "trimmed": true,
+      "spriteSourceSize": {
+        "x": 56,
+        "y": 123,
+        "w": 130,
+        "h": 177
+      },
+      "sourceSize": {
+        "w": 510,
+        "h": 300
+      }
+    }
+  ],
+  "meta": {
+    "app": "",
+    "version": "1.0",
+    "image": "fox_orange_greet",
+    "format": "RGBA8888",
+    "size": {
+      "w": 512,
+      "h": 512
+    },
+    "scale": "1"
+  }
+}

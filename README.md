@@ -12,7 +12,7 @@
 - Command rate-limiting
     - global ~~& user~~
 - Fox
-    - ~~Remake Yuki the fox animation and their commands~~
+    - ~~Remake Yuki the websocket animation and their commands~~
     - https://goo.gl/a65QTX
 - following
     - time user has been sub'ed to channel

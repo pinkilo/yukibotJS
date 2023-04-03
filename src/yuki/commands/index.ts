@@ -11,8 +11,11 @@ import Fox from "./Fox"
 
 const commandMap = new Map<string, Command>();
 
-(() => [ListCommands, BeatAss, Socials, Wallet, Beans, Ranking, Leaderboard, Fox.attack]
-    .forEach(cmd => [cmd.name, ...cmd.alias]
+(() =>
+    [
+      ListCommands, BeatAss, Socials, Wallet, Beans, Ranking, Leaderboard,
+      Fox.attack, Fox.feed, Fox.dance,
+    ].forEach(cmd => [cmd.name, ...cmd.alias]
       .forEach(name => commandMap[name] = cmd))
 )()
 
