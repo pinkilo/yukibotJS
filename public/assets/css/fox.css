@@ -3,7 +3,7 @@ body {
   margin: 0;
   padding: 0;
   background-color: transparent;
-  color: whitesmoke;
+  color: black;
   height: 300px;
   width: 400px;
 }
@@ -14,18 +14,26 @@ body {
 
 /* TODO fix text wrap */
 #speech_bubble {
-  padding: 5px;
+  padding: 0.5rem 1rem;
   font-family: Arial, sans-serif;
   font-size: 1.5rem;
   text-wrap: normal;
-  position: absolute;
-  right: 50px;
-  top: 25%;
   max-width: 150px;
-  background-color: #333;
-  border: 2px solid forestgreen;
-  border-radius: 1rem;
+  color: rgba(255, 255, 255, 0.9);
+  background-color: #66162d;
+  border: 3px solid #66162d;
+  border-radius: 1rem 1rem 1rem 0rem;
   transform: translatey(0px);
+  text-transform: lowercase;
+  box-shadow: -2px 8px 15px 1px rgba(0, 0, 0, 0.28);
+  -webkit-box-shadow: -2px 8px 15px 1px rgba(0, 0, 0, 0.28);
+}
+
+.outer {
+  width: 150px;
+  position: absolute;
+  right: 35px;
+  top: 155px;
   -webkit-animation: float 3s ease-in-out infinite;
   animation: float 3s ease-in-out infinite;
 }
@@ -36,7 +44,7 @@ body {
   }
 
   50% {
-    transform: translatey(-20px);
+    transform: translatey(-5px);
   }
 
   100% {
@@ -50,7 +58,7 @@ body {
   }
 
   50% {
-    transform: translatey(-20px);
+    transform: translatey(-5px);
   }
 
   100% {
