@@ -20,7 +20,7 @@ body {
   text-wrap: normal;
   position: absolute;
   right: 50px;
-  top: 25%;
+  top: 45%;
   max-width: 150px;
   background-color: #333;
   border: 2px solid forestgreen;
@@ -28,6 +28,7 @@ body {
   transform: translatey(0px);
   -webkit-animation: float 3s ease-in-out infinite;
   animation: float 3s ease-in-out infinite;
+  text-transform: lowercase;
 }
 
 @-webkit-keyframes float {
