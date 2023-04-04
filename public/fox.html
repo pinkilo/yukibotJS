@@ -1,74 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Yuki Fox</title>
-    <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            background-color: transparent;
-            color: whitesmoke;
-            height: 300px;
-            width: 400px;
-        }
-
-        #fox_house {
-            position: relative;
-        }
-
-        /* TODO fix text wrap */
-        #speech_bubble {
-            padding: 5px;
-            font-family: Arial, sans-serif;
-            font-size: 1.5rem;
-            text-wrap: normal;
-            position: absolute;
-            right: 50px;
-            top: 25%;
-            max-width: 150px;
-            background-color: #333;
-            border: 2px solid forestgreen;
-            border-radius: 1rem;
-            transform: translatey(0px);
-            -webkit-animation: float 3s ease-in-out infinite;
-            animation: float 3s ease-in-out infinite;
-        }
-
-        @-webkit-keyframes float {
-            0% {
-                transform: translatey(0px);
-            }
-            50% {
-                transform: translatey(-20px);
-            }
-            100% {
-                transform: translatey(0px);
-            }
-        }
-
-        @keyframes float {
-            0% {
-                transform: translatey(0px);
-            }
-            50% {
-                transform: translatey(-20px);
-            }
-            100% {
-                transform: translatey(0px);
-            }
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="/assets/css/fox.css">
 </head>
-<body>
-<div id="fox_house">
-    <canvas id="fox_canvas" width="300" height="300"></canvas>
-    <span id="speech_bubble"></span>
-</div>
-<script src="assets/script/animation.js"></script>
-<script src="assets/script/websocket.js"></script>
 
-<!--
+<body>
+    <div id="fox_house">
+        <canvas id="fox_canvas" width="300" height="300"></canvas>
+        <span id="speech_bubble"></span>
+    </div>
+    <script src="assets/script/animation.js"></script>
+    <script src="assets/script/websocket.js"></script>
+
+    <!--
 <button onclick="greet('Numberless Liquidators')">TEST GREETING</button>
 <button onclick="attack()">TEST ATTACK</button>
 <button onclick="idle()">TEST IDLE</button>
@@ -76,4 +23,5 @@
 <button onclick="dance()">TEST DANCE</button>
 -->
 </body>
+
 </html>
