@@ -14,7 +14,7 @@ body {
 
 /* TODO fix text wrap */
 #speech_bubble {
-  padding: 5px;
+  padding: 0.4rem 0.8rem;
   font-family: Arial, sans-serif;
   font-size: 1.5rem;
   text-wrap: normal;
@@ -24,7 +24,7 @@ body {
   max-width: 150px;
   background-color: #333;
   border: 2px solid forestgreen;
-  border-radius: 1rem;
+  border-radius: 1rem 1rem 1rem 0rem;
   transform: translatey(0px);
   -webkit-animation: float 3s ease-in-out infinite;
   animation: float 3s ease-in-out infinite;
@@ -36,7 +36,7 @@ body {
   }
 
   50% {
-    transform: translatey(-20px);
+    transform: translatey(-5px);
   }
 
   100% {
@@ -50,7 +50,7 @@ body {
   }
 
   50% {
-    transform: translatey(-20px);
+    transform: translatey(-5px);
   }
 
   100% {
