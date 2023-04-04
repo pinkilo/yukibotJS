@@ -5,6 +5,7 @@ import { MoneySystem, processMessage, setSocket } from "./yuki"
 import env from "./env"
 import { WebSocketServer } from "ws"
 import "./testing"
+import { AuthEvent, EventName, listen, MessageBatchEvent } from "./event"
 
 // Configure Logger
 logger.configure({
@@ -14,8 +15,8 @@ logger.configure({
 })
 
 async function main() {
-  yt.auth.onTokenUpdate(() => logger.debug("Tokens Updated"))
-  yt.auth.onTokenUpdate(() => yt.chat.trackChat())
+  listen<AuthEvent>(EventName.AUTH, async () => logger.info("Tokens Updated"))
+  listen<AuthEvent>(EventName.AUTH, async () => yt.chat.trackChat())
 
   await MoneySystem.loadBank()
   if (env.NODE_ENV !== "test") {
@@ -23,7 +24,7 @@ async function main() {
     //await yt.chat.sendMessage("Yuki is Here!")
   }
 
-  yt.chat.onChatUpdate((incoming) => {
+  listen<MessageBatchEvent>(EventName.MESSAGE_BATCH, async ({ incoming }) => {
     if (incoming.length > 0) logger.debug("Processing Message Batch")
     incoming.forEach(processMessage)
   })

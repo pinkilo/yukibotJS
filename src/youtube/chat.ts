@@ -1,15 +1,17 @@
 import { google } from "googleapis"
-import { ChatMessage, User } from "../types/google"
+import { Subscription, User } from "../types/google"
 import { auth } from "./auth"
 import logger from "winston"
 import yt from "./index"
+import { announce, EventName, MessageBatchEvent, SubscriberEvent } from "../event"
 
 const ytApi = google.youtube("v3")
 let liveChatId: string
 let nextPage: string
 const chatMessages = []
+const basePollingRate = 5000
+let lastSub: Subscription
 
-const chatListeners: Array<((incoming: ChatMessage[], all: ChatMessage[]) => any)> = []
 const chatters = new Map<string, User>()
 
 const getBroadcast = async () => {
@@ -19,10 +21,6 @@ const getBroadcast = async () => {
     broadcastStatus: "active",
   })
   return response.data.items[0]
-}
-
-const onChatUpdate = (cb: (i: ChatMessage[], a: ChatMessage[]) => any) => {
-  chatListeners.push(cb)
 }
 
 const getChatMessages = async () => {
@@ -40,8 +38,12 @@ const getChatMessages = async () => {
       chatters.set(user.channelId, user)
       chatters.set(user.displayName, user)
     })
-  chatListeners.forEach(cb => cb(newMessages, chatMessages))
-  setTimeout(getChatMessages, 5000) //response.data.pollingIntervalMillis
+  announce<MessageBatchEvent>({
+    name: EventName.MESSAGE_BATCH,
+    incoming: newMessages,
+    all: chatMessages,
+  })
+  setTimeout(getChatMessages, basePollingRate)
 }
 
 const findChat = async () => {
@@ -84,11 +86,25 @@ const getChannel = async (uid: string) => {
   return result.data.items[0].snippet
 }
 
+const getRecentSubscribers = async () => {
+  const response = await ytApi.subscriptions.list({
+    auth,
+    part: ["subscriberSnippet"],
+    myRecentSubscribers: true,
+  })
+  if (lastSub.snippet.channelId != response.data.items[0].snippet.channelId) {
+    announce<SubscriberEvent>({
+      name: EventName.SUBSCRIBER,
+      subscription: response.data.items[0],
+    })
+  }
+  setTimeout(() => getRecentSubscribers(), basePollingRate * 2)
+}
+
 export {
   ytApi as api,
   findChat,
   trackChat,
-  onChatUpdate,
   sendMessage,
   getChatters,
   getChatter,
