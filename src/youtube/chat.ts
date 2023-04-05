@@ -1,9 +1,10 @@
-import { google } from "googleapis"
+import { google, youtube_v3 } from "googleapis"
 import { Subscription, User } from "../types/google"
 import { auth } from "./auth"
 import logger from "winston"
 import yt from "./index"
 import { announce, EventName, MessageBatchEvent, SubscriberEvent } from "../event"
+import Schema$Channel = youtube_v3.Schema$Channel
 
 const ytApi = google.youtube("v3")
 let liveChatId: string
@@ -81,9 +82,9 @@ const getRandomChatter = (exclude: string[] = []): User => {
   return chatters[Math.floor(Math.random() * chatters.length)]
 }
 
-const getChannels = async (uid: string[]) => {
+const getChannels = async (uid: string[]): Promise<Schema$Channel[]> => {
   const result = await ytApi.channels.list({ id: uid, part: ["snippet"], auth })
-  return result.data.items.map(c => c.snippet)
+  return result.data.items
 }
 
 const getRecentSubscribers = async () => {

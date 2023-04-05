@@ -1,5 +1,4 @@
 const ts = require("@rollup/plugin-typescript")
-const watch = require("rollup-plugin-watch")
 const shebang = require("rollup-plugin-add-shebang")
 const copy = require("rollup-plugin-copy")
 
@@ -9,10 +8,11 @@ module.exports = {
     file: "build/yuki.js",
     format: "cjs",
   },
+  watch: {
+    include: ["src/**/*", "public/**/*"]
+  },
   plugins: [
     ts({outputToFilesystem: false}),
-    watch({dir: "src"}),
-    watch({dir: "public"}),
     copy({targets: [{src: "public", dest: "build"}]}),
     shebang({
       include: "yuki.js",

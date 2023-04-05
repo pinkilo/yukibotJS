@@ -5,9 +5,11 @@ import logger from "winston"
 import { MoneySystem as MS } from "../yuki"
 
 export const pages = Router()
-  .get("/",  (_, res) => res.sendFile(join(__dirname, "public/index.html")))
+  .get("/", (_, res) => res.sendFile(join(__dirname, "public/index.html")))
   .get("/fox", (_, res) => res.sendFile(join(__dirname, "public/fox.html")))
-  .get("/leaderboard", (_, res ) => res.sendFile(join(__dirname, "public/leaderboard.html")))
+  .get("/leaderboard", (_,
+    res,
+  ) => res.sendFile(join(__dirname, "public/leaderboard.html")))
 
 export const oath = Router()
   .get("/auth", (_, res) => res.redirect(yt.auth.getAuthUrl()))
@@ -22,7 +24,10 @@ export const oath = Router()
 
 export const api = Router()
   .get("/leaderboard", async (_, res) => {
-    const channels = await yt.chat.getChannels(MS.getLeaderboard().map(([uid]) => uid))
-    const hydrated = channels.map(({ title }, i) => [title, MS.getLeaderboard()[i][1]])
-    res.send(hydrated)
+    const lb = MS.getLeaderboard()
+    const channels = await yt.chat.getChannels(lb.map(([uid]) => uid))
+    const hydratedLB = lb.map(([id, val]) => {
+      return [channels.find(c => c.id === id)?.snippet.title || "unknown", val]
+    })
+    res.send(hydratedLB)
   })

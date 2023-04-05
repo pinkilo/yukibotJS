@@ -1,0 +1,64 @@
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    font-family: Arial, sans-serif;
+    font-weight: bolder;
+    background-color: rgba(0, 0, 0, 0.7);
+    overflow: hidden;
+    color: white;
+}
+
+ul {
+    padding: 0;
+    margin: 0;
+    list-style: decimal;
+    max-width: 50rem;
+}
+
+li {
+    margin-bottom: 0.5rem;
+    display: grid;
+    grid-template-columns: 4rem 3fr 1fr;
+    font-size: 1rem;
+}
+
+li:first-child {
+    font-size: 1.5rem;
+}
+
+li span:first-child {
+    text-align: end;
+    padding-right: 1rem;
+}
+
+li:nth-child(2n) {
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+li span:last-child {
+    text-align: end;
+}
+
+li span:last-child::after {
+    content: '';
+    display: inline-block;
+    height: 1.5rem;
+    width: 1.5rem;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-image: url("../images/rupee.png");
+}
+
+li:first-child span:last-child::after {
+    content: '';
+    display: inline-block;
+    height: 2rem;
+    width: 2rem;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-image: url("../images/rupee.png");
+}

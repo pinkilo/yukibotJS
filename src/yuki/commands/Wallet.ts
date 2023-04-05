@@ -30,9 +30,12 @@ export const Leaderboard = new Command("leaderboard", ["forbes"], 0, 0, 180,
     const sub = lb.slice(0, 5)
     // get channels (users)
     const channels = await yt.chat.getChannels(sub.map(([uid]) => uid))
+    const hydratedLB = sub.map(([id, val]) => {
+      return [channels.find(c => c.id === id)?.snippet.title || "unknown", val]
+    })
     // send messages
     for (let i = 0; i < sub.length; i++) {
-      await yt.chat.sendMessage(`#${ i + 1 }: ${ channels[i].title } | ${ sub[i][1] }`)
+      await yt.chat.sendMessage(`#${ i + 1 }: ${ hydratedLB[i][0] } | ${ hydratedLB[i][1] }`)
     }
   })
 

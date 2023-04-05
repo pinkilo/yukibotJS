@@ -11,7 +11,7 @@
     "compile": "tsc --build",
     "rollup/build": "rollup --config",
     "rollup/watch": "rollup --config --watch",
-    "watch": "nodemon yuki.js"
+    "watch": "nodemon yuki.js --config nodemon.config.json"
   },
   "dependencies": {
     "dotenv": "^16.0.3",
@@ -23,9 +23,6 @@
     "ws": "^8.13.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.21.3",
-    "@babel/preset-env": "^7.20.2",
-    "@babel/preset-typescript": "^7.21.0",
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-typescript": "^11.0.0",
     "@types/express": "^4.17.17",
@@ -34,7 +31,6 @@
     "@typescript-eslint/eslint-plugin": "^5.56.0",
     "@typescript-eslint/parser": "^5.56.0",
     "assert": "^2.0.0",
-    "babel-jest": "^29.5.0",
     "browserify-zlib": "^0.2.0",
     "buffer": "^5.5.0",
     "crypto-browserify": "^3.12.0",

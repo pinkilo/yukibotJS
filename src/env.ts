@@ -1,6 +1,7 @@
 import * as process from "process"
+import { config } from "dotenv"
 
-require("dotenv").config()
+config()
 
 export default {
   NODE_ENV: process.env.NODE_ENV,

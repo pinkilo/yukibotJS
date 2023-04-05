@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <title>Yuki Fox</title>
     <link rel="stylesheet" type="text/css" href="/assets/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/assets/css/leaderboard.css">
 </head>
 
 <body>
@@ -15,18 +16,27 @@
   getBoard()
 
   function draw(list) {
+    console.log("drawing leaderboard")
     ul.innerHTML = ""
-    list.forEach(([k, v]) => {
+    list.forEach(([k, v], i) => {
       const li = document.createElement("li")
-      li.innerText = `${k}:${v}`
+      const rank = document.createElement("span")
+      const name = document.createElement("span")
+      const wallet = document.createElement("span")
+      rank.innerText = `${i + 1}:`
+      name.innerText = k
+      wallet.innerText = v.toLocaleString()
+      li.append(rank, name, wallet)
       ul.append(li)
     })
   }
 
   async function getBoard() {
+    console.log("fetching leaderboard")
     const resp = await fetch("/api/leaderboard")
     /** @type {[name: string, wallet: number]}[]} */
     const list = await resp.json()
+    console.log(list)
     draw(list)
     setTimeout(() => getBoard(), 20 * 1000)
   }

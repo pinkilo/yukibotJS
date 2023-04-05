@@ -40,6 +40,7 @@ const transactionBatch = async (batch: [string, number][]) => {
   await saveBank()
 }
 
+/** @returns sorted list of wallets (larges -> smallest) */
 const getLeaderboard = (): Array<[string, number]> => Array.from(Object.entries(bank))
   .sort(([_, a], [__, b]) => b - a)
 
