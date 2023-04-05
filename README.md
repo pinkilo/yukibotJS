@@ -13,7 +13,6 @@ If a command doesn't seem to work it's probably on cooldown.
 | pickfight (beatass)  | pick a fight with a random viewer    | 10    | 15 for attacker victory, 20 for defender victory |
 | commands (cmds)      | get a link to these commands         | 0     | 0                                                |
 | rank (wealthgap)     | see how your wallet stacks up        | 0     | 0                                                |
-| leaderboard (forbes) | see who's the top 1%                 | 0     | 0                                                |
 | wallet (bank)        | see your stacks                      | 0     | 0                                                |
 | discord              | get a link to the NL discord         | 0     | 0                                                |
 | twitter              | get a link to Jono's twitter         | 0     | 0                                                |

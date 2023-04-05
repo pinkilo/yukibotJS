@@ -5,13 +5,13 @@ import { TokenBin } from "../processing"
 import { ChatMessage } from "../../types/google"
 import logger from "winston"
 import Socials from "./Socials"
-import { Wallet, Ranking, Leaderboard } from "./Wallet"
+import { Wallet, Ranking } from "./Wallet"
 import { Beans } from "./Memes"
 import Fox from "./Fox"
 
 const commandMap = new Map<string, Command>()
 const enabledCommands = Object.freeze([
-  ListCommands, BeatAss, Socials, Wallet, Beans, Ranking, Leaderboard,
+  ListCommands, BeatAss, Socials, Wallet, Beans, Ranking,
   Fox.attack, Fox.feed, Fox.dance,
 ]);
 
