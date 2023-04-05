@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Yuki Fox</title>
+    <link rel="stylesheet" type="text/css" href="/assets/css/style.css">
+</head>
+
+<body>
+<ul id="leaderboard"></ul>
+
+<script>
+  const ul = document.getElementById("leaderboard")
+  getBoard()
+
+  function draw(list) {
+    ul.innerHTML = ""
+    list.forEach(([k, v]) => {
+      const li = document.createElement("li")
+      li.innerText = `${k}:${v}`
+      ul.append(li)
+    })
+  }
+
+  async function getBoard() {
+    const resp = await fetch("/api/leaderboard")
+    /** @type {[name: string, wallet: number]}[]} */
+    const list = await resp.json()
+    draw(list)
+    setTimeout(() => getBoard(), 20 * 1000)
+  }
+</script>
+</body>
+
+</html>

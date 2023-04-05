@@ -1,13 +1,8 @@
-"(NOTE: not all commands start with ""!"" so be careful)",,,,,
+Commands can be used with ! or with >,,,,,
 Category,Prefix,Command Name,Command,,Rupee Cost
 Lists & Help,!,Command List,!commands,See this list of commands,0
-,!,Yuki the Fox,!fox / !yuki,See the list of Yuki Commands,0
-,!,Stream Info,!stats,get info about the stream,0
-,!,HQTime,!time,What time is it for HQR?,0
-,!,Uptime,!uptime,How long has the stream been live?,0
 Links,,Discord,!discord,Get a link to the NL Discord Server,0
-,,NL Youtube,!youtube,Get a link to the NL Youtube Channel,0
-,,AM:AE Youtube,!youtube2,Get a link to my personal Youtube Channel,0
+,,AM:AE Youtube,!youtube,Get a link to my personal Youtube Channel,0
 Self Info,,Follow Time,!follow,See how long you've been a follower,
 ,,Rank,!rank,See your Channel ranking,
 MiniGames,,Heist,!heist,,>=1

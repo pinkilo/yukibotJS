@@ -5,8 +5,9 @@ import logger from "winston"
 import { MoneySystem as MS } from "../yuki"
 
 export const pages = Router()
-  .get("/", async (_, res) => res.sendFile(join(__dirname, "public/index.html")))
-  .get("/fox", async (_, res) => res.sendFile(join(__dirname, "public/fox.html")))
+  .get("/",  (_, res) => res.sendFile(join(__dirname, "public/index.html")))
+  .get("/fox", (_, res) => res.sendFile(join(__dirname, "public/fox.html")))
+  .get("/leaderboard", (_, res ) => res.sendFile(join(__dirname, "public/leaderboard.html")))
 
 export const oath = Router()
   .get("/auth", (_, res) => res.redirect(yt.auth.getAuthUrl()))

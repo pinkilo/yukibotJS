@@ -1,8 +1,9 @@
 import Command from "./Command"
+import yt from "../../youtube"
 
 export default new Command(
   "commands", ["cmds"], 0, 0, 360,
   async () => {
-    // TODO Commands Command
+    await yt.chat.sendMessage("Find a list of commands here https://tinyurl.com/233fu72p")
   },
 )

@@ -14,7 +14,7 @@ export const Ranking = new Command("rank", ["wealthgap"], 0, 120, 0,
     const rank = lb.findIndex(([uid]) => uid === channelId)
     let msg = command == "rank"
       ? `#${ rank + 1 }: ${ displayName } | ${ wallet } ${ MS.name }`
-      : `${ lb.length - rank } citizen(s) are poorer than ${ displayName }`
+      : `${ lb.length - rank - 1 } citizen(s) are poorer than ${ displayName }`
     const failed = await yt.chat.sendMessage(msg)
     if (failed) logger.error("failed to send message")
   })

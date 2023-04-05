@@ -9,15 +9,15 @@ import { Wallet, Ranking, Leaderboard } from "./Wallet"
 import { Beans } from "./Memes"
 import Fox from "./Fox"
 
-const commandMap = new Map<string, Command>();
+const commandMap = new Map<string, Command>()
+const enabledCommands = Object.freeze([
+  ListCommands, BeatAss, Socials, Wallet, Beans, Ranking, Leaderboard,
+  Fox.attack, Fox.feed, Fox.dance,
+]);
 
-(() =>
-    [
-      ListCommands, BeatAss, Socials, Wallet, Beans, Ranking, Leaderboard,
-      Fox.attack, Fox.feed, Fox.dance,
-    ].forEach(cmd => [cmd.name, ...cmd.alias]
-      .forEach(name => commandMap[name] = cmd))
-)()
+// Load commands into the map
+(() => enabledCommands.forEach(cmd => [cmd.name, ...cmd.alias]
+  .forEach(name => commandMap[name] = cmd)))()
 
 const getCmd = (name: string): Command | undefined => commandMap[name]
 
@@ -31,4 +31,4 @@ const runCmd = async (name: string, msg: ChatMessage, tokens: TokenBin) => {
   }
 }
 
-export { Command, runCmd, getCmd }
+export { Command, runCmd, getCmd, enabledCommands }
