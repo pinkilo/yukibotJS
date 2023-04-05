@@ -2,7 +2,7 @@ import { Router } from "express"
 import { join } from "path"
 import yt from "../youtube"
 import logger from "winston"
-import { MoneySystem } from "../yuki"
+import { MoneySystem as MS } from "../yuki"
 
 export const pages = Router()
   .get("/", async (_, res) => res.sendFile(join(__dirname, "public/index.html")))
@@ -19,6 +19,9 @@ export const oath = Router()
     res.redirect("/")
   })
 
-
 export const api = Router()
-  .get("/leaderboard", (_, res) => res.send(MoneySystem.getLeaderboard()))
+  .get("/leaderboard", async (_, res) => {
+    const channels = await yt.chat.getChannels(MS.getLeaderboard().map(([uid]) => uid))
+    const hydrated = channels.map(({ title }, i) => [title, MS.getLeaderboard()[i][1]])
+    res.send(hydrated)
+  })

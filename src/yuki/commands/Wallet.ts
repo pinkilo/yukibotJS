@@ -20,16 +20,16 @@ export const Ranking = new Command("rank", ["wealthgap"], 0, 120, 0,
   })
 
 // TODO IF PARAM:ME send leaderboard centered on user
-export const Leaderboard = new Command("leaderboard", ["forbes"], 0, 0, 120,
+export const Leaderboard = new Command("leaderboard", ["forbes"], 0, 0, 180,
   async () => {
     const lb = MS.getLeaderboard()
     if (lb.length === 0) {
       await yt.chat.sendMessage("No wallets are active :(")
       return
     }
-    const sub = lb.slice(0, 10)
+    const sub = lb.slice(0, 5)
     // get channels (users)
-    const channels = await Promise.all(sub.map(([uid]) => yt.chat.getChannel(uid)))
+    const channels = await yt.chat.getChannels(sub.map(([uid]) => uid))
     // send messages
     for (let i = 0; i < sub.length; i++) {
       await yt.chat.sendMessage(`#${ i + 1 }: ${ channels[i].title } | ${ sub[i][1] }`)

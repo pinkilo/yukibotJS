@@ -31,7 +31,6 @@ const getChatMessages = async () => {
     pageToken: nextPage,
   })
   const newMessages = response.data.items
-  chatMessages.push(...newMessages)
   nextPage = response.data.nextPageToken
   newMessages.map(m => m.authorDetails)
     .forEach(user => {
@@ -43,6 +42,7 @@ const getChatMessages = async () => {
     incoming: newMessages,
     all: chatMessages,
   })
+  chatMessages.push(...newMessages)
   setTimeout(getChatMessages, basePollingRate)
 }
 
@@ -81,12 +81,13 @@ const getRandomChatter = (exclude: string[] = []): User => {
   return chatters[Math.floor(Math.random() * chatters.length)]
 }
 
-const getChannel = async (uid: string) => {
-  const result = await ytApi.channels.list({ id: [uid], part: ["snippet"], auth })
-  return result.data.items[0].snippet
+const getChannels = async (uid: string[]) => {
+  const result = await ytApi.channels.list({ id: uid, part: ["snippet"], auth })
+  return result.data.items.map(c => c.snippet)
 }
 
 const getRecentSubscribers = async () => {
+  logger.info("checking subscribers")
   const response = await ytApi.subscriptions.list({
     auth,
     part: ["subscriberSnippet"],
@@ -109,5 +110,5 @@ export {
   getChatters,
   getChatter,
   getRandomChatter,
-  getChannel,
+  getChannels,
 }
