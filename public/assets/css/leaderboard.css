@@ -15,15 +15,6 @@ ul {
   max-width: 50em;
 }
 
-@media screen and (min-width: 500px) {
-  li span:last-child {
-    text-align: end;
-  }
-  li:first-child {
-    transform: scale(1.1);
-  }
-}
-
 li {
   margin-bottom: 0.5em;
   display: grid;
@@ -68,4 +59,13 @@ li span:last-child::after {
   background-position: center;
   background-repeat: no-repeat;
   background-image: url("../images/rupee.png");
+}
+
+@media (min-width: 500px) {
+  li span:last-child {
+    text-align: end;
+  }
+  li:first-child {
+    transform: scale(1.1);
+  }
 }
