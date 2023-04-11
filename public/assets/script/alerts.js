@@ -31,7 +31,7 @@ async function getAlert() {
    *   redeemer: { name: string, id: string }
    * }}}
    */
-  const alert = await resp.json()
-  if (alert.alert) draw(alert.alert)
-  setTimeout(() => getAlert(), alert.alert.durationSec)
+  const packet = await resp.json()
+  if (packet.alert) draw(packet.alert)
+  setTimeout(() => getAlert(), packet.alert.durationSec)
 }
