@@ -3,6 +3,7 @@ import { join } from "path"
 import yt from "../youtube"
 import logger from "winston"
 import { MoneySystem as MS } from "../yuki"
+import { nextAlert } from "../yuki/Alerts"
 
 export const pages = Router()
   .get("/", (_, res) => res.sendFile(join(__dirname, "public/index.html")))
@@ -31,3 +32,4 @@ export const api = Router()
     })
     res.send(hydratedLB)
   })
+  .get("/alerts", (_, res) => res.send({ alert: nextAlert() }))
