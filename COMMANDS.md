@@ -1,4 +1,4 @@
-## Commands
+# Commands
 
 Commands can be used with the `>` or `!` prefix, like `>wallet` or `!wallet`.
 
@@ -17,38 +17,3 @@ If a command doesn't seem to work it's probably on cooldown.
 | discord             | get a link to the NL discord         | 0     | 0      |
 | twitter             | get a link to Jono's twitter         | 0     | 0      |
 | youtube             | get a link to the Aquatic Mastery YT | 0     | 0      |
-
-## Questions
-
-- How can viewers earn currency?
-    - Payout commands
-        - beatass
-        - raidboss
-        - ~~sending messages in chat~~
-            - ~~maybe don't give currency if no one else has typed between N messages?~~
-
-## Roadmap
-
-- Command rate-limiting
-    - global ~~& user~~
-- Fox
-    - ~~Remake Yuki the websocket animation and their commands~~
-    - add passive reactivity to superchats, donations, etc
-    - ~~https://goo.gl/a65QTX~~
-- following
-    - time user has been sub'ed to channel
-- Bank/Wallet
-    - ~~\>rank~~
-        - ~~shows user rank with respect to wallet/bank~~
-- \>hug {user?}
-    - hugs user or random user
-- \>lovemeter {user?}
-    - $userid is $randnum(100)% in love with $dummy $touser
-    - should have cost
-- Raidboss fighting
-- UI
-    - route that displays the money leaderboard
-        - /leaderboard
-    - refactor css
-    - potentially rebuild with svelte?
-    - fix speech bubble
