@@ -10,7 +10,7 @@ const ytApi = google.youtube("v3")
 let liveChatId: string
 let nextPage: string
 const chatMessages = []
-const basePollingRate = 5000
+const basePollingRate = 8 * 1000
 let lastSub: Subscription
 
 const chatters = new Map<string, User>()

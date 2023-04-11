@@ -1,5 +1,6 @@
 import Command from "./Command"
 import yt from "../../youtube"
+import { randFromRange } from "../../util"
 
 type BeanType = "bean" | "🫘" | "beans";
 
@@ -12,7 +13,7 @@ export const Beans = new Command(
         msg = "🫘"
         break
       case "beans":
-        msg = "🫘".repeat(Math.random() * 10)
+        msg = "🫘".repeat(randFromRange(1, 10))
         break
       case "🫘":
         msg = "bean!"

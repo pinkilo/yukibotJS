@@ -1,64 +1,71 @@
-html,
-body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    font-family: Arial, sans-serif;
-    font-weight: bolder;
-    background-color: rgba(0, 0, 0, 0.7);
-    overflow: hidden;
-    color: white;
+#leaderboard {
+  background-color: #000;
+  color: #fff;
+  padding: 2rem 0;
+  width: 80%;
+  margin: 0 auto;
+  font-size: 25px; /* use this line to change size leaderboard elements*/
+  font-family: monospace;
 }
 
 ul {
-    padding: 0;
-    margin: 0;
-    list-style: decimal;
-    max-width: 50rem;
+  padding: 0;
+  margin: 0;
+  list-style: decimal;
+  max-width: 50em;
 }
 
 li {
-    margin-bottom: 0.5rem;
-    display: grid;
-    grid-template-columns: 4rem 3fr 1fr;
-    font-size: 1rem;
+  margin-bottom: 0.5em;
+  display: grid;
+  grid-template-columns: 4rem 3fr 1fr;
+  font-size: 1em;
+  padding: 0.5rem;
+  transition: transform 0.1s ease-in-out;
+}
+
+li:hover {
+  transform: scale(1.025);
 }
 
 li:first-child {
-    font-size: 1.5rem;
+  transform: scale(1.2);
+}
+
+li:first-child:hover {
+  transform: scale(1.125);
 }
 
 li span:first-child {
-    text-align: end;
-    padding-right: 1rem;
+  text-align: end;
+  padding-right: 1rem;
 }
 
 li:nth-child(2n) {
-    background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 128, 0, 0.471);
+  border-radius: 5px;
 }
 
 li span:last-child {
-    text-align: end;
+  text-align: center;
 }
 
 li span:last-child::after {
-    content: '';
-    display: inline-block;
-    height: 1.5rem;
-    width: 1.5rem;
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-image: url("../images/rupee.png");
+  content: " ";
+  display: inline-block;
+  height: 0.75em;
+  width: 0.75em;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-image: url("../images/rupee.png");
 }
 
-li:first-child span:last-child::after {
-    content: '';
-    display: inline-block;
-    height: 2rem;
-    width: 2rem;
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-image: url("../images/rupee.png");
+@media (min-width: 500px) {
+  li span:last-child {
+    text-align: end;
+  }
+  li:first-child {
+    transform: scale(1.1);
+  }
 }
