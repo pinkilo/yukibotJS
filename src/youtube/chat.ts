@@ -1,25 +1,24 @@
-import { google, youtube_v3 } from "googleapis"
-import { Subscription, User } from "../types/google"
+import { google } from "googleapis"
+import { Subscription } from "../types/google"
 import { auth } from "./auth"
 import logger from "winston"
-import yt from "./index"
 import { announce, EventName, MessageBatchEvent, SubscriberEvent } from "../event"
-import Schema$Channel = youtube_v3.Schema$Channel
+import { userCache } from "../Cache"
+import { User } from "../models"
+import { randFromRange } from "../util"
 
 const ytApi = google.youtube("v3")
 let liveChatId: string
 let nextPage: string
 const chatMessages = []
-const basePollingRate = 8 * 1000
+const basePollingRate = 14.4 * 1000
 let lastSub: Subscription
-
-const chatters = new Map<string, User>()
 
 const getBroadcast = async () => {
   const response = await ytApi.liveBroadcasts.list({
     auth,
     part: ["snippet"],
-    broadcastStatus: "active",
+    broadcastStatus: "active"
   })
   return response.data.items[0]
 }
@@ -33,10 +32,11 @@ const getChatMessages = async () => {
   })
   const newMessages = response.data.items
   nextPage = response.data.nextPageToken
-  newMessages.map(m => m.authorDetails)
+  newMessages
+    .map(m => User.fromAuthor(m.authorDetails))
     .forEach(user => {
-      chatters.set(user.channelId, user)
-      chatters.set(user.displayName, user)
+      userCache.put(user.id, user)
+      userCache.put(user.name, user)
     })
   announce<MessageBatchEvent>({
     name: EventName.MESSAGE_BATCH,
@@ -75,16 +75,14 @@ const sendMessage = async (text: string) => {
   return response.status == 201
 }
 
-const getChatters = () => Array.from(chatters.values())
-const getChatter = (uidOrName: string) => chatters.get(uidOrName)
-const getRandomChatter = (exclude: string[] = []): User => {
-  const chatters = yt.chat.getChatters().filter(u => !exclude.includes(u.channelId))
-  return chatters[Math.floor(Math.random() * chatters.length)]
+const getRandomUser = (exclude: string[] = []): User => {
+  const users = userCache.values().filter(u => !exclude.includes(u.id))
+  return users[randFromRange(0, users.length)]
 }
 
-const getChannels = async (uid: string[]): Promise<Schema$Channel[]> => {
+const fetchUsers = async (uid: string[]): Promise<User[]> => {
   const result = await ytApi.channels.list({ id: uid, part: ["snippet"], auth })
-  return result.data.items
+  return result.data.items.map(c => User.fromChannel(c))
 }
 
 const getRecentSubscribers = async () => {
@@ -108,8 +106,6 @@ export {
   findChat,
   trackChat,
   sendMessage,
-  getChatters,
-  getChatter,
-  getRandomChatter,
-  getChannels,
+  getRandomUser,
+  fetchUsers,
 }

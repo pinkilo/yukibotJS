@@ -6,6 +6,12 @@ config()
 export default {
   NODE_ENV: process.env.NODE_ENV,
   PORT: process.env.PORT,
+  FILE: {
+    CACHE: {
+      USER: "./.cache/user.json",
+      BANK: "./.cache/bank.json",
+    },
+  },
   GOOGLE: {
     G_PROJECT_ID: process.env.G_PROJECT_ID,
     G_CLIENT_ID: process.env.G_CLIENT_ID,

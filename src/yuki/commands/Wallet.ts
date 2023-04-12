@@ -10,7 +10,7 @@ import logger from "winston"
 export const Ranking = new Command("rank", ["wealthgap"], 0, 120, 0,
   async ({ authorDetails: { channelId, displayName } }, { command }) => {
     const wallet = MS.getWallet(channelId)
-    const lb = MS.getLeaderboard()
+    const lb = await MS.getLeaderboard()
     const rank = lb.findIndex(([uid]) => uid === channelId)
     let msg = command == "rank"
       ? `#${ rank + 1 }: ${ displayName } | ${ wallet } ${ MS.name }`
@@ -19,23 +19,20 @@ export const Ranking = new Command("rank", ["wealthgap"], 0, 120, 0,
     if (failed) logger.error("failed to send message")
   })
 
+// TODO bind to OBS to show leaderboard
 // TODO IF PARAM:ME send leaderboard centered on user
 export const Leaderboard = new Command("leaderboard", ["forbes"], 0, 0, 180,
   async () => {
-    const lb = MS.getLeaderboard()
+    const lb = await MS.getLeaderboard(true)
     if (lb.length === 0) {
       await yt.chat.sendMessage("No wallets are active :(")
       return
     }
     const sub = lb.slice(0, 5)
     // get channels (users)
-    const channels = await yt.chat.getChannels(sub.map(([uid]) => uid))
-    const hydratedLB = sub.map(([id, val]) => {
-      return [channels.find(c => c.id === id)?.snippet.title || "unknown", val]
-    })
     // send messages
     for (let i = 0; i < sub.length; i++) {
-      await yt.chat.sendMessage(`#${ i + 1 }: ${ hydratedLB[i][0] } | ${ hydratedLB[i][1] }`)
+      await yt.chat.sendMessage(`#${ i + 1 }: ${ sub[i][0] } | ${ sub[i][1] }`)
     }
   })
 
