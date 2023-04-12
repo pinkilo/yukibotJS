@@ -42,7 +42,7 @@ export default class Command {
   }
 
   private async invalid(msg: ChatMessage): Promise<boolean> {
-    return this.onCooldown(msg.authorDetails.channelId) &&
+    return this.onCooldown(msg.authorDetails.channelId) ||
       !this.canAfford(msg.authorDetails.channelId)
   }
 
