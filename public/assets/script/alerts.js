@@ -2,6 +2,7 @@ const alertBox = document.getElementById("alert_box")
 
 let running = false
 const pollingRate = 5 * 1000
+const baseDelay = 2 * 1000
 
 getAlert()
 
@@ -19,6 +20,10 @@ function draw(alert) {
   alertBox.innerText = alert.message
 }
 
+function clear() {
+  alertBox.innerText = ""
+}
+
 async function getAlert() {
   console.log("fetching alerts")
   const resp = await fetch("/api/alerts")
@@ -32,6 +37,15 @@ async function getAlert() {
    * }}}
    */
   const packet = await resp.json()
-  if (packet.alert) draw(packet.alert)
-  setTimeout(() => getAlert(), packet.alert.durationSec)
+  let delay
+  if (packet.alert) {
+    delay = packet.alert.durationSec + baseDelay
+    draw(packet.alert)
+  } else {
+    delay = pollingRate
+  }
+  setTimeout(() => {
+    clear()
+    getAlert()
+  }, delay)
 }

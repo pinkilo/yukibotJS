@@ -11,6 +11,7 @@ export const pages = Router()
   .get("/leaderboard", (_,
     res,
   ) => res.sendFile(join(__dirname, "public/leaderboard.html")))
+  .get("/alerts", (_, res) => res.sendFile(join(__dirname, "public/alerts.html")))
 
 export const oath = Router()
   .get("/auth", (_, res) => res.redirect(yt.auth.getAuthUrl()))
