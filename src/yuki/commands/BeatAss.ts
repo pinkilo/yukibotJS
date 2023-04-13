@@ -13,7 +13,13 @@ import { getRandomUser } from "../../youtube/chat"
 export default new Command(
   "beatass", ["pickfight"], 10, 180, 0,
   async ({ authorDetails: { displayName, channelId } }, _, _this) => {
-    const { id: tid, name } = getRandomUser([channelId])
+    const rUser = getRandomUser([channelId])
+    // TODO Temporary bandaid for randUser sometimes returning undefined
+    if (!rUser) {
+      logger.error("random user was undefined")
+      return undefined
+    }
+    const { id: tid, name } = rUser
     logger.debug("running beatass", { target: name, displayName })
     const succeeds = Math.random() > 0.55
     const successPayout = _this.cost * 2

@@ -60,7 +60,7 @@ export default class Command {
   }
 
   canAfford(uid: string): boolean {
-    return this.cost > 0 ? MS.getWallet(uid) >= this.cost : true
+    return this.cost > 0 ? MS.walletCache.get(uid) >= this.cost : true
   }
 
   onCooldown(uid: string): boolean {

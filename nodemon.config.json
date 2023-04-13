@@ -4,7 +4,7 @@
     "yuki.js"
   ],
   "env": {
-    "NODE_ENV": "test"
+    "NODE_ENV": "dev"
   },
   "ext": "js"
 }

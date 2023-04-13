@@ -8,17 +8,17 @@ import { User } from "../models"
 import { randFromRange } from "../util"
 
 const ytApi = google.youtube("v3")
-let liveChatId: string
-let nextPage: string
 const chatMessages = []
 const basePollingRate = 14.4 * 1000
 let lastSub: Subscription
+let liveChatId: string
+let nextPage: string
 
 const getBroadcast = async () => {
   const response = await ytApi.liveBroadcasts.list({
     auth,
     part: ["snippet"],
-    broadcastStatus: "active"
+    broadcastStatus: "active",
   })
   return response.data.items[0]
 }

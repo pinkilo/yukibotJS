@@ -2,21 +2,11 @@ import { file } from "./util"
 import { User } from "./models"
 import yt from "./youtube"
 
-class Cache<V> {
-  private readonly map: Record<string, V>
-  private readonly fetch: (key: string) => Promise<V>
+abstract class Cache<V> {
+  protected readonly map: Record<string, V>
 
-  constructor(
-    fetch: (key: string) => Promise<V>,
-    map: Record<string, V> = {},
-  ) {
-    this.fetch = fetch
+  protected constructor(map: Record<string, V> = {}) {
     this.map = map
-  }
-
-  async get(key: string): Promise<V> {
-    if (!this.map[key]) this.map[key] = await this.fetch(key)
-    return this.map[key]
   }
 
   put(key: string, value: V) {
@@ -49,4 +39,34 @@ class Cache<V> {
   }
 }
 
-export const userCache = new Cache<User>(async (k) => (await yt.chat.fetchUsers([k]))[0])
+export class SyncCache<V> extends Cache<V> {
+  private readonly fetch: (key: string) => V
+
+  constructor(fetch: (key: string) => V, map: Record<string, V> = {}) {
+    super(map)
+    this.fetch = fetch
+  }
+
+  get(key: string): V {
+    if (!this.map[key]) this.map[key] = this.fetch(key)
+    return this.map[key]
+  }
+
+}
+
+export class AsyncCache<V> extends Cache<V> {
+  private readonly fetch: (key: string) => Promise<V>
+
+  constructor(fetch: (key: string) => Promise<V>, map: Record<string, V> = {}) {
+    super(map)
+    this.fetch = fetch
+  }
+
+  async get(key: string): Promise<V> {
+    if (!this.map[key]) this.map[key] = await this.fetch(key)
+    return this.map[key]
+  }
+
+}
+
+export const userCache = new AsyncCache<User>(async (k) => (await yt.chat.fetchUsers([k]))[0])

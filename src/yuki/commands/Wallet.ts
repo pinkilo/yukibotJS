@@ -9,7 +9,7 @@ import logger from "winston"
  */
 export const Ranking = new Command("rank", ["wealthgap"], 0, 120, 0,
   async ({ authorDetails: { channelId, displayName } }, { command }) => {
-    const wallet = MS.getWallet(channelId)
+    const wallet = MS.walletCache.get(channelId)
     const lb = await MS.getLeaderboard()
     const rank = lb.findIndex(([uid]) => uid === channelId)
     let msg = command == "rank"
@@ -47,7 +47,7 @@ export const Wallet = new Command(
     switch (tokens.params[0]) {
       case undefined:
       default:
-        const wallet = MS.getWallet(authorDetails.channelId)
+        const wallet = MS.walletCache.get(authorDetails.channelId)
         msg = `${ authorDetails.displayName } has ${ wallet } ${ MS.name }s`
         break
     }
