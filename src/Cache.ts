@@ -1,14 +1,13 @@
 import { file } from "./util"
 import { User } from "./models"
 import yt from "./youtube"
-import logger from "winston"
 
 class Cache<V> {
   private readonly map: Record<string, V>
-  private readonly fetch: (key: string) => V
+  private readonly fetch: (key: string) => Promise<V>
 
   constructor(
-    fetch: (key: string) => V,
+    fetch: (key: string) => Promise<V>,
     map: Record<string, V> = {},
   ) {
     this.fetch = fetch
@@ -16,10 +15,7 @@ class Cache<V> {
   }
 
   async get(key: string): Promise<V> {
-    if (!this.map[key]) {
-      logger.debug(`Fetching cache value ${ key }`)
-      this.map[key] = await this.fetch(key)
-    }
+    if (!this.map[key]) this.map[key] = await this.fetch(key)
     return this.map[key]
   }
 
@@ -53,4 +49,4 @@ class Cache<V> {
   }
 }
 
-export const userCache = new Cache<User>((k) => yt.chat.fetchUsers([k])[0])
+export const userCache = new Cache<User>(async (k) => (await yt.chat.fetchUsers([k]))[0])
