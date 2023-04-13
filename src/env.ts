@@ -6,6 +6,16 @@ config()
 export default {
   NODE_ENV: process.env.NODE_ENV,
   PORT: process.env.PORT,
+  FILE: {
+    CACHE: {
+      USER: "./.cache/user.json",
+      BANK: "./.cache/bank.json",
+    },
+  },
+  SELF: {
+    ID: "UCC5woRixgHKy-3iOOVSKwZA",
+    NAME: "Numberless Liquidators",
+  },
   GOOGLE: {
     G_PROJECT_ID: process.env.G_PROJECT_ID,
     G_CLIENT_ID: process.env.G_CLIENT_ID,

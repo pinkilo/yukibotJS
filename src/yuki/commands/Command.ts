@@ -1,6 +1,7 @@
 import { TokenBin } from "../processing"
 import MS from "../MoneySystem"
 import { ChatMessage } from "../../types/google"
+import logger from "winston"
 
 type Payout = {
   uids: string[],
@@ -42,20 +43,24 @@ export default class Command {
   }
 
   private async invalid(msg: ChatMessage): Promise<boolean> {
-    return this.onCooldown(msg.authorDetails.channelId) &&
+    return this.onCooldown(msg.authorDetails.channelId) ||
       !this.canAfford(msg.authorDetails.channelId)
   }
 
   async execute(msg: ChatMessage, tokens: TokenBin): Promise<void> {
-    if (await this.invalid(msg)) return
+    if (await this.invalid(msg)) {
+      logger.debug(`Command ${ this.name } failed predicate`)
+      return
+    }
     if (this.cost > 0) await MS.transactionBatch([[msg.authorDetails.channelId, this.cost]])
     const result = await this.invoke(msg, tokens, this)
     if (this.payout && result) await this.payout(result)
-    this.addCooldown(msg.authorDetails.channelId)
+    if (this.ratelimit + this.globalRateLimit > 0)
+      this.addCooldown(msg.authorDetails.channelId)
   }
 
   canAfford(uid: string): boolean {
-    return this.cost > 0 ? MS.getWallet(uid) >= this.cost : true
+    return this.cost > 0 ? MS.walletCache.get(uid) >= this.cost : true
   }
 
   onCooldown(uid: string): boolean {

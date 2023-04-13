@@ -24,12 +24,5 @@ export const oath = Router()
   })
 
 export const api = Router()
-  .get("/leaderboard", async (_, res) => {
-    const lb = MS.getLeaderboard()
-    const channels = await yt.chat.getChannels(lb.map(([uid]) => uid))
-    const hydratedLB = lb.map(([id, val]) => {
-      return [channels.find(c => c.id === id)?.snippet.title || "unknown", val]
-    })
-    res.send(hydratedLB)
-  })
+  .get("/leaderboard", async (_, res) => res.send(await MS.getLeaderboard(true)))
   .get("/alerts", (_, res) => res.send({ alert: nextAlert() }))

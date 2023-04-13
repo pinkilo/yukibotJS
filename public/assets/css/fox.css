@@ -14,28 +14,28 @@ body {
 
 /* TODO fix text wrap */
 #speech_bubble {
-  padding: 0.5rem 1rem;
   font-family: Arial, sans-serif;
   font-size: 1.5rem;
-  text-wrap: normal;
-  max-width: 150px;
   color: rgba(255, 255, 255, 0.9);
-  background-color: #66162d;
-  border: 3px solid #66162d;
-  border-radius: 1rem 1rem 1rem 0rem;
-  transform: translatey(0px);
   text-transform: lowercase;
-  box-shadow: -2px 8px 15px 1px rgba(0, 0, 0, 0.28);
-  -webkit-box-shadow: -2px 8px 15px 1px rgba(0, 0, 0, 0.28);
+  text-align: center;
+  display: inline-block;
+  word-break: break-word;
 }
 
 .outer {
-  width: 150px;
+  max-width: 125px;
+  padding: 0.5rem 1rem;
   position: absolute;
   right: 35px;
   top: 155px;
+  background-color: #66162d;
+  border: 3px solid #66162d;
+  border-radius: 1rem 1rem 1rem 0rem;
   -webkit-animation: float 3s ease-in-out infinite;
   animation: float 3s ease-in-out infinite;
+  box-shadow: -2px 8px 15px 1px rgba(0, 0, 0, 0.28);
+  -webkit-box-shadow: -2px 8px 15px 1px rgba(0, 0, 0, 0.28);
 }
 
 @-webkit-keyframes float {
