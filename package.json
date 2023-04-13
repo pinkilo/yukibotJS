@@ -9,7 +9,7 @@
     "test": "jest",
     "format": "yarn prettier --write",
     "compile": "tsc --build",
-    "rollup/build": "rollup --config",
+    "build": "rollup --config",
     "rollup/watch": "rollup --config --watch",
     "watch": "nodemon yuki.js --config nodemon.config.json"
   },

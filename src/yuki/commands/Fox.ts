@@ -3,13 +3,13 @@ import { setAnimation } from "../fox"
 import { randFromRange } from "../../util"
 
 const attack = new Command(
-  "attack", [], 5, 120, 20,
+  "attack", [], 5, 2 * 60, 20,
   async (msg) => {
     setAnimation("attack", msg.authorDetails.displayName)
   })
 
 const feed = new Command(
-  "feed", [], 5, 180, 30,
+  "feed", [], 5, 3 * 60, 30,
   async ({ authorDetails: { channelId } }, _, _this) => {
     setAnimation("eat")
     return {
@@ -19,7 +19,7 @@ const feed = new Command(
   })
 
 const dance = new Command(
-  "dance", [], 5, 60, 20,
+  "dance", [], 5, 3 * 60, 20,
   async ({ authorDetails: { channelId } }, _, _this) => {
     setAnimation("dance")
     return {

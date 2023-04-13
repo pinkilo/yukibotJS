@@ -1,7 +1,7 @@
 import yt from "../../youtube"
 import Command from "./Command"
 import logger from "winston"
-import { getRandomChatter } from "../../youtube/chat"
+import { getRandomUser } from "../../youtube/chat"
 
 /**
  * Randomly selects another chat member to "fight"
@@ -13,15 +13,21 @@ import { getRandomChatter } from "../../youtube/chat"
 export default new Command(
   "beatass", ["pickfight"], 10, 180, 0,
   async ({ authorDetails: { displayName, channelId } }, _, _this) => {
-    const target = getRandomChatter([channelId])
-    logger.debug("running beatass", { target: target?.displayName, displayName })
+    const rUser = getRandomUser([channelId])
+    // TODO Temporary bandaid for randUser sometimes returning undefined
+    if (!rUser) {
+      logger.error("random user was undefined")
+      return undefined
+    }
+    const { id: tid, name } = rUser
+    logger.debug("running beatass", { target: name, displayName })
     const succeeds = Math.random() > 0.55
     const successPayout = _this.cost * 2
     const defensePayout = _this.cost
     const failed = await yt.chat.sendMessage(
       succeeds
-        ? `${ displayName } beat ${ target.displayName } 's ass (+${ successPayout })`
-        : `${ displayName } tried to beat ${ target.displayName } 's ass but failed and got 
+        ? `${ displayName } beat ${ name } 's ass (+${ successPayout })`
+        : `${ displayName } tried to beat ${ name } 's ass but failed and got 
           the shit smacked outta them (+${ defensePayout } to the defender)`,
     )
     if (failed) {
@@ -29,7 +35,7 @@ export default new Command(
       return undefined
     }
     return {
-      uids: [succeeds ? channelId : target.channelId],
+      uids: [succeeds ? channelId : tid],
       amount: succeeds ? successPayout : defensePayout,
     }
   },
