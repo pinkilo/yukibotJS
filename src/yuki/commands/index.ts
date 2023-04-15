@@ -8,7 +8,7 @@ import Socials from "./Socials"
 import { Wallet, Ranking } from "./Wallet"
 import { Beans } from "./Memes"
 import Fox from "./Fox"
-import { FitCheck } from "./Redemptions"
+import { FitCheck, Pushups } from "./Redemptions"
 
 const commandMap = new Map<string, Command>()
 const enabledCommands = Object.freeze([
@@ -22,6 +22,7 @@ const enabledCommands = Object.freeze([
   Fox.feed,
   Fox.dance,
   FitCheck,
+  Pushups
 ])
 
 // Load commands into the map

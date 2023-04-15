@@ -17,8 +17,8 @@ export default class Command {
   readonly ratelimit: number
   /** global ratelimit in seconds */
   readonly globalRateLimit: number
-  private cooldowns: Map<string, number> = new Map()
-  private readonly invoke: (
+  readonly cooldowns: Map<string, number> = new Map()
+  readonly invoke: (
     msg: ChatMessage,
     tokens: TokenBin,
     _this: Command
@@ -65,7 +65,7 @@ export default class Command {
   }
 
   canAfford(uid: string): boolean {
-    return this.cost > 0 ? MS.walletCache.get(uid) >= this.cost : true
+    return this.cost <= 0 || MS.walletCache.get(uid) >= this.cost
   }
 
   onCooldown(uid: string): boolean {
