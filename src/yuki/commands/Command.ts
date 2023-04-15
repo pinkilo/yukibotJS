@@ -45,6 +45,24 @@ export default class Command {
   constructor(
     name: string,
     alias: string[],
+    cost:(
+      msg: ChatMessage,
+      tokens: TokenBin,
+      _this: Command
+    ) => Promise<number>,
+    ratelimit: number,
+    globalRatelimit: number,
+    invoke: (
+      msg: ChatMessage,
+      tokens: TokenBin,
+      cost: number,
+      _this: Command
+    ) => Promise<Payout | void>
+  )
+
+  constructor(
+    name: string,
+    alias: string[],
     cost:
       | number
       | ((
