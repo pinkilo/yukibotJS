@@ -11,25 +11,24 @@ if (env.NODE_ENV === "test") {
 
   rl.on("line", (input) => {
     processMessage({
-      "kind": "youtube#liveChatMessage",
-      "id": "123",
-      "snippet": {
-        "type": "textMessageEvent",
-        "liveChatId": "ABC123",
-        "authorChannelId": "CHANNEL_ID",
-        "publishedAt": new Date().toString(),
-        "hasDisplayContent": false,
-        "displayMessage": input,
+      kind: "youtube#liveChatMessage",
+      id: "123",
+      snippet: {
+        type: "textMessageEvent",
+        liveChatId: "ABC123",
+        authorChannelId: "CHANNEL_ID",
+        publishedAt: new Date().toString(),
+        hasDisplayContent: false,
+        displayMessage: input,
       },
 
-      "authorDetails": {
-        "channelId": "CHANNEL_ID",
-        "channelUrl": "CHANNEL_URL",
-        "displayName": "CHANNEL_DISPLAY_NAME",
-        "profileImageUrl": "CHANNEL_IMAGE_URL",
-        "isChatModerator": false,
+      authorDetails: {
+        channelId: "CHANNEL_ID",
+        channelUrl: "CHANNEL_URL",
+        displayName: "CHANNEL_DISPLAY_NAME",
+        profileImageUrl: "CHANNEL_IMAGE_URL",
+        isChatModerator: false,
       },
-    }).then(() => {
-    })
+    }).then(() => {})
   })
 }

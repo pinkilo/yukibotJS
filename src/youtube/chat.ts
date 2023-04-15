@@ -2,7 +2,12 @@ import { google } from "googleapis"
 import { Subscription } from "../types/google"
 import { auth } from "./auth"
 import logger from "winston"
-import { announce, EventName, MessageBatchEvent, SubscriberEvent } from "../event"
+import {
+  announce,
+  EventName,
+  MessageBatchEvent,
+  SubscriberEvent,
+} from "../event"
 import { userCache } from "../Cache"
 import { User } from "../models"
 import { randFromRange } from "../util"
@@ -33,8 +38,8 @@ const getChatMessages = async () => {
   const newMessages = response.data.items
   nextPage = response.data.nextPageToken
   newMessages
-    .map(m => User.fromAuthor(m.authorDetails))
-    .forEach(user => {
+    .map((m) => User.fromAuthor(m.authorDetails))
+    .forEach((user) => {
       userCache.put(user.id, user)
       userCache.put(user.name, user)
     })
@@ -49,7 +54,7 @@ const getChatMessages = async () => {
 
 const findChat = async () => {
   liveChatId = (await getBroadcast()).snippet.liveChatId
-  logger.info(`Chat ID: ${ liveChatId }`)
+  logger.info(`Chat ID: ${liveChatId}`)
 }
 
 const trackChat = async () => {
@@ -76,13 +81,17 @@ const sendMessage = async (text: string) => {
 }
 
 const getRandomUser = (exclude: string[] = []): User => {
-  const users = userCache.values().filter(u => !exclude.includes(u.id))
+  const users = userCache.values().filter((u) => !exclude.includes(u.id))
   return users[randFromRange(0, users.length)]
 }
 
 const fetchUsers = async (uid: string[]): Promise<User[]> => {
-  const result = await ytApi.channels.list({ id: uid, part: ["snippet"], auth })
-  return result.data.items.map(c => User.fromChannel(c))
+  const result = await ytApi.channels.list({
+    id: uid,
+    part: ["snippet"],
+    auth,
+  })
+  return result.data.items?.map((c) => User.fromChannel(c)) || []
 }
 
 const getRecentSubscribers = async () => {

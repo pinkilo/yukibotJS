@@ -22,26 +22,26 @@ class TimedMessage extends Passive {
       },
       async () => {
         await yt.chat.sendMessage(message)
-      },
+      }
     )
   }
 }
 
 export const bankMessage = new TimedMessage(
   "Remember to use >bank to check your Rupee wallet!",
-  randFromRange(15, 30),
+  randFromRange(15, 30)
 )
 export const discordMessage = new TimedMessage(
   "Join the NL Discord to chat and get updates about the stream https://discord.gg/3dYzJXJStR",
-  randFromRange(15, 25),
+  randFromRange(15, 25)
 )
 
 export const aquaticMasteryMessage = new TimedMessage(
   "Like fish and aquariums? Like looking at my face? Well if you do, make sure to check out my personal YouTube channel, Aquatic Mastery! https://www.youtube.com/aquaticmaster",
-  randFromRange(15, 25),
+  randFromRange(15, 25)
 )
 
 export const commandsMessage = new TimedMessage(
   "Use >cmds or >commands to get a list of all of the bot commands!",
-  randFromRange(15, 20),
+  randFromRange(15, 20)
 )

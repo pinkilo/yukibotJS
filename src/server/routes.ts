@@ -7,9 +7,9 @@ import { MoneySystem as MS } from "../yuki"
 export const pages = Router()
   .get("/", (_, res) => res.sendFile(join(__dirname, "public/index.html")))
   .get("/fox", (_, res) => res.sendFile(join(__dirname, "public/fox.html")))
-  .get("/leaderboard", (_,
-    res,
-  ) => res.sendFile(join(__dirname, "public/leaderboard.html")))
+  .get("/leaderboard", (_, res) =>
+    res.sendFile(join(__dirname, "public/leaderboard.html"))
+  )
 
 export const oath = Router()
   .get("/auth", (_, res) => res.redirect(yt.auth.getAuthUrl()))
@@ -22,5 +22,6 @@ export const oath = Router()
     res.redirect("/")
   })
 
-export const api = Router()
-  .get("/leaderboard", async (_, res) => res.send(await MS.getLeaderboard(true)))
+export const api = Router().get("/leaderboard", async (_, res) =>
+  res.send(await MS.getLeaderboard(true))
+)

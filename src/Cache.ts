@@ -1,6 +1,7 @@
 import { file } from "./util"
 import { User } from "./models"
 import yt from "./youtube"
+import logger from "winston"
 
 abstract class Cache<V> {
   protected readonly map: Record<string, V>
@@ -51,7 +52,6 @@ export class SyncCache<V> extends Cache<V> {
     if (!this.map[key]) this.map[key] = this.fetch(key)
     return this.map[key]
   }
-
 }
 
 export class AsyncCache<V> extends Cache<V> {
@@ -63,10 +63,15 @@ export class AsyncCache<V> extends Cache<V> {
   }
 
   async get(key: string): Promise<V> {
-    if (!this.map[key]) this.map[key] = await this.fetch(key)
+    if (!this.map[key]) {
+      this.map[key] = await this.fetch(key)
+      if (!this.map[key])
+        logger.debug(`failed to fetch map value for key: "${key}"`)
+    }
     return this.map[key]
   }
-
 }
 
-export const userCache = new AsyncCache<User>(async (k) => (await yt.chat.fetchUsers([k]))[0])
+export const userCache = new AsyncCache<User>(
+  async (k) => (await yt.chat.fetchUsers([k]))[0]
+)

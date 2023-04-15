@@ -2,25 +2,29 @@ import { ChatMessage } from "../../types/google"
 import { TokenBin } from "../processing"
 
 export default class Passive {
-  readonly predicate: (msg: ChatMessage,
+  readonly predicate: (
+    msg: ChatMessage,
     tokens: TokenBin,
-    _this: Passive,
+    _this: Passive
   ) => Promise<boolean>
 
-  readonly invoke: (msg: ChatMessage,
+  readonly invoke: (
+    msg: ChatMessage,
     tokens: TokenBin,
-    _this: Passive,
+    _this: Passive
   ) => Promise<void>
 
   constructor(
-    predicate: (msg: ChatMessage,
+    predicate: (
+      msg: ChatMessage,
       tokens: TokenBin,
-      _this: Passive,
+      _this: Passive
     ) => Promise<boolean>,
-    invoke: (msg: ChatMessage,
+    invoke: (
+      msg: ChatMessage,
       tokens: TokenBin,
-      _this: Passive,
-    ) => Promise<void>,
+      _this: Passive
+    ) => Promise<void>
   ) {
     this.predicate = predicate
     this.invoke = invoke

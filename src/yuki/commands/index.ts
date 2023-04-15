@@ -11,23 +11,32 @@ import Fox from "./Fox"
 
 const commandMap = new Map<string, Command>()
 const enabledCommands = Object.freeze([
-  ListCommands, BeatAss, Socials, Wallet, Beans, Ranking,
-  Fox.attack, Fox.feed, Fox.dance,
-]);
+  ListCommands,
+  BeatAss,
+  Socials,
+  Wallet,
+  Beans,
+  Ranking,
+  Fox.attack,
+  Fox.feed,
+  Fox.dance,
+])
 
 // Load commands into the map
-(() => enabledCommands.forEach(cmd => [cmd.name, ...cmd.alias]
-  .forEach(name => commandMap[name] = cmd)))()
+;(() =>
+  enabledCommands.forEach((cmd) =>
+    [cmd.name, ...cmd.alias].forEach((name) => (commandMap[name] = cmd))
+  ))()
 
 const getCmd = (name: string): Command | undefined => commandMap[name]
 
 const runCmd = async (name: string, msg: ChatMessage, tokens: TokenBin) => {
   const cmd = getCmd(name)
   if (cmd) {
-    logger.info(`RUNNING: ${ name }`)
+    logger.info(`RUNNING: ${name}`)
     await cmd?.execute(msg, tokens)
   } else {
-    logger.debug(`no command found with name "${ name }"`)
+    logger.debug(`no command found with name "${name}"`)
   }
 }
 

@@ -15,26 +15,26 @@ ws.addEventListener("open", () => {
   enqueueAnim(() => speak("Connected!"))
 })
 
-ws.addEventListener("message", event => {
+ws.addEventListener("message", (event) => {
   console.log(event.data, animQueue)
   /** @type {{text: string, anim: "idle" | "greet" | "attack" | "dance" | "eat"}} */
   const packet = JSON.parse(event.data)
   switch (packet.anim) {
     case "idle":
       enqueueAnim(idle)
-      break;
+      break
     case "attack":
       enqueueAnim(attack)
-      break;
+      break
     case "dance":
       enqueueAnim(dance)
-      break;
+      break
     case "eat":
       enqueueAnim(eat)
-      break;
+      break
     case "greet":
       enqueueAnim(() => speak(packet.text))
-      break;
+      break
   }
 })
 
@@ -58,9 +58,8 @@ function display(anim) {
 function displaySpeech(text, duration) {
   speechBubble.hidden = false
   speechBubble.innerText = text
-  setTimeout(() => speechBubble.hidden = true, duration * 1000)
+  setTimeout(() => (speechBubble.hidden = true), duration * 1000)
 }
-
 
 /**
  *
@@ -104,6 +103,3 @@ function eat() {
   displaySpeech("YES FOOD", duration)
   nextAnim(duration)
 }
-
-
-

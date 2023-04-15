@@ -17,11 +17,14 @@ logger.configure({
 listen<AuthEvent>(EventName.AUTH, async () => logger.info("Tokens Updated"))
 
 // process incoming messages
-listen<MessageBatchEvent>(EventName.MESSAGE_BATCH, async ({ incoming, all }) => {
-  if (all.length === 0) return
-  if (incoming.length > 0) logger.debug("Processing Message Batch")
-  incoming.forEach(processMessage)
-})
+listen<MessageBatchEvent>(
+  EventName.MESSAGE_BATCH,
+  async ({ incoming, all }) => {
+    if (all.length === 0) return
+    if (incoming.length > 0) logger.debug("Processing Message Batch")
+    incoming.forEach(processMessage)
+  }
+)
 // save caches
 listen<MessageBatchEvent>(EventName.MESSAGE_BATCH, async ({ all }) => {
   if (all.length === 0) return
@@ -29,7 +32,7 @@ listen<MessageBatchEvent>(EventName.MESSAGE_BATCH, async ({ all }) => {
 })
 
 async function main() {
-  logger.info(`Running in ${ ENV.NODE_ENV }`)
+  logger.info(`Running in ${ENV.NODE_ENV}`)
   // load caches
   logger.info("loaded caches")
   await userCache.load(ENV.FILE.CACHE.USER)
@@ -43,8 +46,9 @@ async function main() {
     //await yt.chat.sendMessage("Yuki is Here!")
   }
 
-  const svr = server()
-    .listen(ENV.PORT, () => logger.info(`http://localhost:${ ENV.PORT }`))
+  const svr = server().listen(ENV.PORT, () =>
+    logger.info(`http://localhost:${ENV.PORT}`)
+  )
 
   setSocket(new WebSocketServer({ server: svr, path: "/fox" }))
 }

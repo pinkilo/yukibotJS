@@ -10,7 +10,7 @@ const tokenPath = "./.private/tokens.json"
 const auth = new google.auth.OAuth2(
   ENV.GOOGLE.G_CLIENT_ID,
   ENV.GOOGLE.G_CLIENT_SECRET,
-  ENV.GOOGLE.G_REDIRECT_URI,
+  ENV.GOOGLE.G_REDIRECT_URI
 )
 
 /** Sets auth credentials and writes tokens to file */
@@ -22,13 +22,15 @@ const setCredentials = async (tokens: Credentials) => {
   await file.write("./.private/tokens.json", JSON.stringify(tokens))
 }
 
-const getAuthUrl = () => auth.generateAuthUrl({
-  access_type: "offline", scope: [
-    "https://www.googleapis.com/auth/youtube.readonly",
-    "https://www.googleapis.com/auth/youtube",
-    "https://www.googleapis.com/auth/youtube.force-ssl",
-  ],
-})
+const getAuthUrl = () =>
+  auth.generateAuthUrl({
+    access_type: "offline",
+    scope: [
+      "https://www.googleapis.com/auth/youtube.readonly",
+      "https://www.googleapis.com/auth/youtube",
+      "https://www.googleapis.com/auth/youtube.force-ssl",
+    ],
+  })
 
 /** Get auth tokens with callback code */
 const getTokens = async (code: string): Promise<Credentials> => {

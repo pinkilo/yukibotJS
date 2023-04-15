@@ -10,9 +10,9 @@ export const file = {
 export const randFromRange = (
   iMin: number,
   eMax: number,
-  round: boolean = true,
+  round: boolean = true
 ): number => {
-  let val = iMin + (Math.random() * eMax)
+  let val = iMin + Math.random() * eMax
   if (round) val = Math.round(val)
   return val
 }

@@ -3,8 +3,8 @@ const ctx = canvas.getContext("2d")
 let ready = false
 
 const frameRate = 10
-let lastRenderTime;
-let currentAnimation;
+let lastRenderTime
+let currentAnimation
 /***/
 const animations = {
   idle: undefined,
@@ -31,18 +31,18 @@ async function main() {
 
 function engine(time) {
   // Await for window ready to render
-  window.requestAnimationFrame(engine);
+  window.requestAnimationFrame(engine)
 
   /** Seconds since last render */
-  const renderDelay = (time - lastRenderTime) / 1000;
+  const renderDelay = (time - lastRenderTime) / 1000
 
   // Ignore renders that are too fast
-  if (renderDelay < (1 / frameRate)) return;
+  if (renderDelay < 1 / frameRate) return
 
   // Update last render time to time param
-  lastRenderTime = time;
+  lastRenderTime = time
 
-  draw();
+  draw()
 }
 
 function draw() {
@@ -57,7 +57,7 @@ function draw() {
     frame.spriteSourceSize.x,
     frame.spriteSourceSize.y,
     frame.spriteSourceSize.w,
-    frame.spriteSourceSize.h,
+    frame.spriteSourceSize.h
   )
 }
 
@@ -67,10 +67,9 @@ async function loadAnimation(name) {
   const img = new Image()
   img.src = `assets/sprites/fox_orange_${name}.png`
   const anim = new Animation(img, atlas.frames)
-  img.addEventListener("load", () => anim.ready = true)
+  img.addEventListener("load", () => (anim.ready = true))
   return anim
 }
-
 
 class Animation {
   ready
