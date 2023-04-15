@@ -15,13 +15,13 @@ export default class Command {
   readonly ratelimit: number
   /** global ratelimit in seconds */
   readonly globalRateLimit: number
-  private cooldowns: Map<string, number> = new Map()
+  readonly cooldowns: Map<string, number> = new Map()
   readonly costFun: (
     msg: ChatMessage,
     tokens: TokenBin,
     _this: Command
   ) => Promise<number>
-  private readonly invoke: (
+  readonly invoke: (
     msg: ChatMessage,
     tokens: TokenBin,
     cost: number,
@@ -32,6 +32,24 @@ export default class Command {
     name: string,
     alias: string[],
     cost: number,
+    ratelimit: number,
+    globalRatelimit: number,
+    invoke: (
+      msg: ChatMessage,
+      tokens: TokenBin,
+      cost: number,
+      _this: Command
+    ) => Promise<Payout | void>
+  )
+
+  constructor(
+    name: string,
+    alias: string[],
+    cost:(
+      msg: ChatMessage,
+      tokens: TokenBin,
+      _this: Command
+    ) => Promise<number>,
     ratelimit: number,
     globalRatelimit: number,
     invoke: (
