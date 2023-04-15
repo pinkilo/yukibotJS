@@ -4,12 +4,11 @@ import { ChatMessage } from "../../types/google"
 import logger from "winston"
 
 type Payout = {
-  uids: string[],
+  uids: string[]
   amount: number | number[]
 }
 
 export default class Command {
-
   readonly name: string
   readonly alias?: string[]
   readonly cost: number
@@ -18,9 +17,10 @@ export default class Command {
   /** global ratelimit in seconds */
   readonly globalRateLimit: number
   private cooldowns: Map<string, number> = new Map()
-  private readonly invoke: (msg: ChatMessage,
+  private readonly invoke: (
+    msg: ChatMessage,
     tokens: TokenBin,
-    _this: Command,
+    _this: Command
   ) => Promise<Payout | void>
 
   constructor(
@@ -29,10 +29,11 @@ export default class Command {
     cost: number,
     ratelimit: number = 60,
     globalRatelimit: number = 60,
-    invoke: (msg: ChatMessage,
+    invoke: (
+      msg: ChatMessage,
       tokens: TokenBin,
-      _this: Command,
-    ) => Promise<Payout | void>,
+      _this: Command
+    ) => Promise<Payout | void>
   ) {
     this.name = name
     this.alias = alias
@@ -43,16 +44,19 @@ export default class Command {
   }
 
   private async invalid(msg: ChatMessage): Promise<boolean> {
-    return this.onCooldown(msg.authorDetails.channelId) ||
+    return (
+      this.onCooldown(msg.authorDetails.channelId) ||
       !this.canAfford(msg.authorDetails.channelId)
+    )
   }
 
   async execute(msg: ChatMessage, tokens: TokenBin): Promise<void> {
     if (await this.invalid(msg)) {
-      logger.debug(`Command ${ this.name } failed predicate`)
+      logger.debug(`Command ${this.name} failed predicate`)
       return
     }
-    if (this.cost > 0) await MS.transactionBatch([[msg.authorDetails.channelId, this.cost]])
+    if (this.cost > 0)
+      await MS.transactionBatch([[msg.authorDetails.channelId, this.cost]])
     const result = await this.invoke(msg, tokens, this)
     if (this.payout && result) await this.payout(result)
     if (this.ratelimit + this.globalRateLimit > 0)
@@ -64,26 +68,30 @@ export default class Command {
   }
 
   onCooldown(uid: string): boolean {
-    return this.globalRateLimit > 0 && this.getCooldownInSec("GLOBAL") > 0
-      || this.ratelimit > 0 && this.getCooldownInSec(uid) > 0
+    return (
+      (this.globalRateLimit > 0 && this.getCooldownInSec("GLOBAL") > 0) ||
+      (this.ratelimit > 0 && this.getCooldownInSec(uid) > 0)
+    )
   }
 
   addCooldown(uid: string) {
-    this.cooldowns[uid] = new Date().getTime() + (this.ratelimit * 1000)
+    this.cooldowns[uid] = new Date().getTime() + this.ratelimit * 1000
     if (this.globalRateLimit > 0) {
-      this.cooldowns["GLOBAL"] = new Date().getTime() + (this.globalRateLimit * 1000)
+      this.cooldowns["GLOBAL"] =
+        new Date().getTime() + this.globalRateLimit * 1000
     }
   }
 
   /** @returns {number} - The cooldown in seconds */
   getCooldownInSec(uid: string): number {
-    return this.cooldowns[uid] ? (this.cooldowns[uid] - new Date().getTime()) / 1000 : 0
+    return this.cooldowns[uid]
+      ? (this.cooldowns[uid] - new Date().getTime()) / 1000
+      : 0
   }
 
   async payout({ uids, amount }: Payout): Promise<void> {
-    const getAmount = (index: number) => Array.isArray(amount) ? amount[index] : amount
+    const getAmount = (index: number) =>
+      Array.isArray(amount) ? amount[index] : amount
     await MS.transactionBatch(uids.map((uid, i) => [uid, getAmount(i)]))
   }
-
 }
-

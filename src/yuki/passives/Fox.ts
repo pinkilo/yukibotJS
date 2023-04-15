@@ -10,11 +10,12 @@ const greeting = new Passive(
   },
   async (msg) => {
     const uid = msg.authorDetails.channelId
-    logger.debug(`Greeting "${ msg.authorDetails.channelId }"`)
+    logger.debug(`Greeting "${msg.authorDetails.channelId}"`)
     // TODO add more greetings
     setAnimation("greet", `Hello ${msg.authorDetails.displayName}!`)
     firstMessage[uid] = true
-  })
+  }
+)
 
 let cooldown = 0
 
@@ -26,6 +27,7 @@ const good = new Passive(
     logger.debug("running Fox.good")
     setAnimation("greet", "HI YES I IS GOOD!")
     cooldown = 5
-  })
+  }
+)
 
 export default { greeting, good }

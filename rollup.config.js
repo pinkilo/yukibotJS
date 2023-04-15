@@ -30,6 +30,8 @@ module.exports = {
     "ws",
     "winston",
     "util",
-    "env"
+    "env",
+    "process",
+    "readline"
   ],
 }

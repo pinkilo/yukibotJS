@@ -8,8 +8,13 @@ import {
 } from "./TimedMessage"
 
 const passives = [
-  ParticipationAwards, Fox.greeting, Fox.good,
-  aquaticMasteryMessage, discordMessage, commandsMessage, bankMessage,
+  ParticipationAwards,
+  Fox.greeting,
+  Fox.good,
+  aquaticMasteryMessage,
+  discordMessage,
+  commandsMessage,
+  bankMessage,
 ]
 
 export { ParticipationAwards, Fox, passives }

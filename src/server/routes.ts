@@ -8,10 +8,10 @@ import { nextAlert } from "../yuki/Alerts"
 export const pages = Router()
   .get("/", (_, res) => res.sendFile(join(__dirname, "public/index.html")))
   .get("/fox", (_, res) => res.sendFile(join(__dirname, "public/fox.html")))
-  .get("/leaderboard", (_,
-    res,
-  ) => res.sendFile(join(__dirname, "public/leaderboard.html")))
   .get("/alerts", (_, res) => res.sendFile(join(__dirname, "public/alerts.html")))
+  .get("/leaderboard", (_, res) =>
+    res.sendFile(join(__dirname, "public/leaderboard.html")),
+  )
 
 export const oath = Router()
   .get("/auth", (_, res) => res.redirect(yt.auth.getAuthUrl()))

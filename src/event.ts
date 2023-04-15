@@ -2,9 +2,12 @@ import { Credentials } from "google-auth-library"
 import { ChatMessage, Subscription } from "./types/google"
 
 export enum EventName {
-  AUTH, SUBSCRIBER,
-  MESSAGE_BATCH, WEBSOCKET_CONNECT,
-  BANK_LOAD, BANK_UPDATE
+  AUTH,
+  SUBSCRIBER,
+  MESSAGE_BATCH,
+  WEBSOCKET_CONNECT,
+  BANK_LOAD,
+  BANK_UPDATE,
 }
 
 type Event = { name: EventName }
@@ -25,7 +28,9 @@ export type MessageBatchEvent = Event & {
   all: ChatMessage[]
 }
 
-export type WebsocketConnectEvent = Event & { name: EventName.WEBSOCKET_CONNECT }
+export type WebsocketConnectEvent = Event & {
+  name: EventName.WEBSOCKET_CONNECT
+}
 
 export type BankLoadEvent = Event & { name: EventName.BANK_LOAD }
 
@@ -36,13 +41,13 @@ const eventListeners: Map<EventName, Function[]> = new Map()
 /** Adds an event listener for the given event type */
 export const listen = <E extends Event>(
   eventName: EventName,
-  listener: (event: E) => Promise<any>,
+  listener: (event: E) => Promise<any>
 ) => {
   if (!eventListeners[eventName]) eventListeners[eventName] = []
   eventListeners[eventName].push(listener)
 }
 
 export const announce = <E extends Event>(event: E) =>
-  eventListeners[event.name]?.forEach(f => f(event))
+  eventListeners[event.name]?.forEach((f) => f(event))
 
 export default Event

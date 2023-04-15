@@ -2,10 +2,14 @@ import Command from "./Command"
 import yt from "../../youtube"
 import { randFromRange } from "../../util"
 
-type BeanType = "bean" | "🫘" | "beans";
+type BeanType = "bean" | "🫘" | "beans"
 
 export const Beans = new Command(
-  "bean", ["🫘", "beans"], 0, 120, 0,
+  "bean",
+  ["🫘", "beans"],
+  0,
+  120,
+  0,
   async (_, { command }) => {
     let msg: string
     switch (command as BeanType) {
@@ -20,5 +24,5 @@ export const Beans = new Command(
         break
     }
     await yt.chat.sendMessage(msg)
-  },
+  }
 )

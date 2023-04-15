@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "test": "jest",
-    "format": "yarn prettier --write",
+    "format": "yarn prettier --config .prettierrc.yaml --write  public src",
     "compile": "tsc --build",
     "build": "rollup --config",
     "rollup/watch": "rollup --config --watch",

@@ -19,16 +19,12 @@ export default class User {
       ad.isChatModerator,
       ad.isChatOwner,
       ad.isChatSponsor,
-      ad.profileImageUrl,
+      ad.profileImageUrl
     )
   }
 
   static fromChannel(ch: Schema$Channel) {
-    return new User(
-      ch.id,
-      ch.snippet.title,
-      ch.snippet.customUrl,
-    )
+    return new User(ch.id, ch.snippet.title, ch.snippet.customUrl)
   }
 
   constructor(
@@ -38,7 +34,7 @@ export default class User {
     moderator: boolean = false,
     owner: boolean = false,
     sponsor: boolean = false,
-    profileUrl?: string,
+    profileUrl?: string
   ) {
     this.id = id
     this.name = name
@@ -63,5 +59,4 @@ export default class User {
     this.id = ch.id
     this.name = ch.snippet.title
   }
-
 }

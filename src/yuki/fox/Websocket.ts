@@ -7,7 +7,7 @@ let socket: WebSocket
 export const setAnimation = (anim: Animations, text?: string): boolean => {
   try {
     if (socket) {
-      logger.info(`set animation ${ anim }`)
+      logger.info(`set animation ${anim}`)
       socket.send(JSON.stringify({ anim, text }))
       return true
     } else {
@@ -26,4 +26,3 @@ export const setSocket = (server: WebSocketServer) => {
     socket = ws
   })
 }
-
