@@ -1,4 +1,8 @@
-const alertBox = document.getElementById("alert_box")
+const ui = {
+  alertbox: document.querySelector("#alert_box"),
+  alertTypeText: document.querySelector("#alert_box header span"),
+  userText: document.querySelector("#alert_box section h1"),
+}
 
 let running = false
 const pollingRate = 5 * 1000
@@ -9,19 +13,22 @@ getAlert()
 /**
  *
  * @param {{
- *   message: string,
+ *   description: string,
  *   image?: string,
  *   durationSec: number,
  *   redeemer: { name: string, id: string }
  * }} alert
  */
 function draw(alert) {
-  console.log("Drawing Alert")
-  alertBox.innerText = alert.message
+  console.log("Drawing Alert", alert)
+  ui.alertbox.style.display = "grid"
+  ui.alertTypeText.innerText = alert.description
+  ui.userText.innerText = alert.redeemer.name
 }
 
 function clear() {
-  alertBox.innerText = ""
+  ui.alertTypeText.innerText = ""
+  ui.alertbox.style.display = "none"
 }
 
 async function getAlert() {
@@ -30,7 +37,7 @@ async function getAlert() {
   /**
    *
    * @type {{alert: {
-   *   message: string,
+   *   description: string,
    *   image?: string,
    *   durationSec: number,
    *   redeemer: { name: string, id: string }
@@ -39,13 +46,13 @@ async function getAlert() {
   const packet = await resp.json()
   let delay
   if (packet.alert) {
-    delay = packet.alert.durationSec + baseDelay
+    delay = packet.alert.durationSec * 1000
     draw(packet.alert)
   } else {
     delay = pollingRate
   }
   setTimeout(() => {
     clear()
-    getAlert()
+    setTimeout(() => getAlert(), baseDelay)
   }, delay)
 }

@@ -12,9 +12,17 @@ import { FitCheck } from "./Redemptions"
 
 const commandMap = new Map<string, Command>()
 const enabledCommands = Object.freeze([
-  ListCommands, BeatAss, Socials, Wallet, Beans, Ranking,
-  Fox.attack, Fox.feed, Fox.dance, FitCheck
-]);
+  ListCommands,
+  BeatAss,
+  Socials,
+  Wallet,
+  Beans,
+  Ranking,
+  Fox.attack,
+  Fox.feed,
+  Fox.dance,
+  FitCheck,
+])
 
 // Load commands into the map
 ;(() =>

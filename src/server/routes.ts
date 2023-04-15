@@ -8,9 +8,11 @@ import { nextAlert } from "../yuki/Alerts"
 export const pages = Router()
   .get("/", (_, res) => res.sendFile(join(__dirname, "public/index.html")))
   .get("/fox", (_, res) => res.sendFile(join(__dirname, "public/fox.html")))
-  .get("/alerts", (_, res) => res.sendFile(join(__dirname, "public/alerts.html")))
+  .get("/alerts", (_, res) =>
+    res.sendFile(join(__dirname, "public/alerts.html"))
+  )
   .get("/leaderboard", (_, res) =>
-    res.sendFile(join(__dirname, "public/leaderboard.html")),
+    res.sendFile(join(__dirname, "public/leaderboard.html"))
   )
 
 export const oath = Router()
@@ -25,5 +27,7 @@ export const oath = Router()
   })
 
 export const api = Router()
-  .get("/leaderboard", async (_, res) => res.send(await MS.getLeaderboard(true)))
+  .get("/leaderboard", async (_, res) =>
+    res.send(await MS.getLeaderboard(true))
+  )
   .get("/alerts", (_, res) => res.send({ alert: nextAlert() }))

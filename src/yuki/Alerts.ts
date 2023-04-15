@@ -1,10 +1,10 @@
 // TODO persistent alert history
 
 export type Alert = {
-  message: string
+  description: string
   image?: string
-  durationSec: number,
-  redeemer: { name: string, id: string }
+  durationSec: number
+  redeemer: { name: string; id: string }
 }
 
 let alertQueue: Alert[] = []
@@ -12,7 +12,7 @@ let alertQueue: Alert[] = []
 export const addAlert = (alert: Alert) => alertQueue.push(alert)
 
 export const dumpAlerts = () => {
-  const tmp = alertQueue.map(a => a)
+  const tmp = alertQueue.map((a) => a)
   alertQueue = []
   return tmp
 }
