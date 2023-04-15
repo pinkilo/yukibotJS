@@ -2,6 +2,7 @@
 
 window.addEventListener("fox_ready", () => nextAnim())
 const speechBubble = document.getElementById("speech_bubble")
+const speechSpan = document.getElementById("speech_span")
 
 /** @type {Array<() => void>} */
 const animQueue = []
@@ -56,8 +57,8 @@ function display(anim) {
  * @param {number} duration duration in seconds
  */
 function displaySpeech(text, duration) {
+  speechSpan.innerText = text
   speechBubble.hidden = false
-  speechBubble.innerText = text
   setTimeout(() => (speechBubble.hidden = true), duration * 1000)
 }
 
