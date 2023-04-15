@@ -10,7 +10,6 @@
   <body>
     <!-- <a class="backlink">go home</a> -->
     <h1>Leaderboard</h1>
-    <p>where do you stand?</p>
     <ul id="leaderboard"></ul>
 
     <script>
@@ -20,7 +19,7 @@
       function draw(list) {
         console.log("drawing leaderboard")
         ul.innerHTML = ""
-        list.forEach(([k, v], i) => {
+        list.slice(0, 10).forEach(([k, v], i) => {
           const li = document.createElement("li")
           const rank = document.createElement("span")
           const name = document.createElement("span")

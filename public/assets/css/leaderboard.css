@@ -1,15 +1,19 @@
 html,
 body {
+  overflow-y: hidden;
   background-color: transparent;
 }
 
+h1 {
+  margin: 1rem;
+}
+
 #leaderboard {
-  background-color: #000;
   color: #fff;
   padding: 2rem 0;
   width: 80%;
   margin: 0 auto;
-  font-size: 25px; /* use this line to change size leaderboard elements*/
+  font-size: 30px; /* use this line to change size leaderboard elements*/
   font-family: monospace;
 }
 
@@ -46,8 +50,13 @@ li span:first-child {
   padding-right: 1rem;
 }
 
-li:nth-child(2n) {
-  background-color: rgba(0, 128, 0, 0.471);
+li:nth-child(odd) {
+  background-color: rgba(0, 0, 0, 0.9);
+  border-radius: 5px;
+}
+
+li:nth-child(even) {
+  background-color: rgba(0, 128, 0, 0.9);
   border-radius: 5px;
 }
 
