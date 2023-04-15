@@ -16,14 +16,13 @@ if (env.NODE_ENV === "test") {
       snippet: {
         type: "textMessageEvent",
         liveChatId: "ABC123",
-        authorChannelId: "CHANNEL_ID",
+        authorChannelId: "UCC5woRixgHKy-3iOOVSKwZA",
         publishedAt: new Date().toString(),
         hasDisplayContent: false,
         displayMessage: input,
       },
-
       authorDetails: {
-        channelId: "CHANNEL_ID",
+        channelId: "UCC5woRixgHKy-3iOOVSKwZA",
         channelUrl: "CHANNEL_URL",
         displayName: "CHANNEL_DISPLAY_NAME",
         profileImageUrl: "CHANNEL_IMAGE_URL",

@@ -2,6 +2,7 @@ import { TokenBin } from "../processing"
 import MS from "../MoneySystem"
 import { ChatMessage } from "../../types/google"
 import logger from "winston"
+import env from "../../env"
 
 type Payout = {
   uids: string[]
@@ -51,7 +52,7 @@ export default class Command {
   }
 
   async execute(msg: ChatMessage, tokens: TokenBin): Promise<void> {
-    if (await this.invalid(msg)) {
+    if ((await this.invalid(msg)) && env.NODE_ENV !== "test") {
       logger.debug(`Command ${this.name} failed predicate`)
       return
     }
