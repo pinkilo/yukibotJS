@@ -2,7 +2,6 @@ import { TokenBin } from "../processing"
 import MS from "../MoneySystem"
 import { ChatMessage } from "../../types/google"
 import logger from "winston"
-import env from "../../env"
 
 type Payout = {
   uids: string[]
@@ -12,15 +11,20 @@ type Payout = {
 export default class Command {
   readonly name: string
   readonly alias?: string[]
-  readonly cost: number
   /** personal ratelimit in seconds */
   readonly ratelimit: number
   /** global ratelimit in seconds */
   readonly globalRateLimit: number
   private cooldowns: Map<string, number> = new Map()
+  readonly costFun: (
+    msg: ChatMessage,
+    tokens: TokenBin,
+    _this: Command
+  ) => Promise<number>
   private readonly invoke: (
     msg: ChatMessage,
     tokens: TokenBin,
+    cost: number,
     _this: Command
   ) => Promise<Payout | void>
 
@@ -28,44 +32,65 @@ export default class Command {
     name: string,
     alias: string[],
     cost: number,
+    ratelimit: number,
+    globalRatelimit: number,
+    invoke: (
+      msg: ChatMessage,
+      tokens: TokenBin,
+      cost: number,
+      _this: Command
+    ) => Promise<Payout | void>
+  )
+
+  constructor(
+    name: string,
+    alias: string[],
+    cost:
+      | number
+      | ((
+          msg: ChatMessage,
+          tokens: TokenBin,
+          _this: Command
+        ) => Promise<number>),
     ratelimit: number = 60,
     globalRatelimit: number = 60,
     invoke: (
       msg: ChatMessage,
       tokens: TokenBin,
+      cost: number,
       _this: Command
     ) => Promise<Payout | void>
   ) {
     this.name = name
     this.alias = alias
-    this.cost = cost
+    this.costFun = cost instanceof Function ? cost : async () => cost
     this.globalRateLimit = globalRatelimit
     this.ratelimit = ratelimit
     this.invoke = invoke
   }
 
-  private async invalid(msg: ChatMessage): Promise<boolean> {
-    return (
-      this.onCooldown(msg.authorDetails.channelId) ||
-      !this.canAfford(msg.authorDetails.channelId)
-    )
-  }
-
   async execute(msg: ChatMessage, tokens: TokenBin): Promise<void> {
-    if ((await this.invalid(msg)) && env.NODE_ENV !== "test") {
-      logger.debug(`Command ${this.name} failed predicate`)
+    // check cooldown
+    if (this.onCooldown(msg.authorDetails.channelId)) {
+      logger.debug(
+        `${this.name} on cooldown for ${msg.authorDetails.displayName}`
+      )
       return
     }
-    if (this.cost > 0)
-      await MS.transactionBatch([[msg.authorDetails.channelId, this.cost]])
-    const result = await this.invoke(msg, tokens, this)
+    // generate cost
+    const cost = await this.costFun(msg, tokens, this)
+    // check affordability
+    if (cost > 0 && MS.walletCache.get(msg.authorDetails.channelId) < cost) {
+      logger.debug(
+        `${this.name} failed cost check for ${msg.authorDetails.displayName}`
+      )
+      return
+    }
+    await MS.transactionBatch([[msg.authorDetails.channelId, cost]])
+    const result = await this.invoke(msg, tokens, cost, this)
     if (this.payout && result) await this.payout(result)
     if (this.ratelimit + this.globalRateLimit > 0)
       this.addCooldown(msg.authorDetails.channelId)
-  }
-
-  canAfford(uid: string): boolean {
-    return this.cost > 0 ? MS.walletCache.get(uid) >= this.cost : true
   }
 
   onCooldown(uid: string): boolean {

@@ -12,11 +12,11 @@ const feed = new Command(
   5,
   3 * 60,
   30,
-  async ({ authorDetails: { channelId } }, _, _this) => {
+  async ({ authorDetails: { channelId } }, _, cost) => {
     setAnimation("eat")
     return {
       uids: [channelId],
-      amount: randFromRange(_this.cost * 1.1, _this.cost * 2),
+      amount: randFromRange(cost * 1.1, cost * 2),
     }
   }
 )
@@ -27,11 +27,11 @@ const dance = new Command(
   5,
   3 * 60,
   20,
-  async ({ authorDetails: { channelId } }, _, _this) => {
+  async ({ authorDetails: { channelId } }, _, cost) => {
     setAnimation("dance")
     return {
       uids: [channelId],
-      amount: randFromRange(_this.cost, _this.cost * 1.5),
+      amount: randFromRange(cost, cost * 1.5),
     }
   }
 )

@@ -16,7 +16,7 @@ export default new Command(
   10,
   60,
   0,
-  async ({ authorDetails: { displayName, channelId } }, _, _this) => {
+  async ({ authorDetails: { displayName, channelId } }, _,cost, _this) => {
     const rUser = getRandomUser([channelId])
     // TODO Temporary bandaid for randUser sometimes returning undefined
     if (!rUser) {
@@ -26,8 +26,8 @@ export default new Command(
     const { id: tid, name } = rUser
     logger.debug("running beatass", { target: name, displayName })
     const succeeds = Math.random() > 0.55
-    const successPayout = _this.cost * 2
-    const defensePayout = _this.cost
+    const successPayout = cost * 2
+    const defensePayout = cost
     const failed = await yt.chat.sendMessage(
       succeeds
         ? `${displayName} beat ${name} 's ass (+${successPayout})`
