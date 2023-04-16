@@ -1,11 +1,4 @@
-import { promisify } from "util"
-import fs from "fs"
-
-export const file = {
-  write: promisify(fs.writeFile),
-  read: promisify(fs.readFile),
-  exists: fs.existsSync,
-}
+import file from "./file"
 
 export const randFromRange = (
   iMin: number,
@@ -16,3 +9,5 @@ export const randFromRange = (
   if (round) val = Math.round(val)
   return val
 }
+
+export { file }

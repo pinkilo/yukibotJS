@@ -1,22 +1,15 @@
 import { Pushups } from "../../yuki/commands/Redemptions"
 import { chatMessage } from "../config"
 import { tokenize } from "../../yuki/processing"
-import MoneySystem from "../../yuki/MoneySystem"
 import youtube from "../../youtube"
 
+jest.mock("../../util/file")
 jest.mock("../../youtube")
-jest.mock("../../yuki/MoneySystem")
 
+const msg = chatMessage(`>${Pushups.name}`)
 describe("Command PUSHUPS", function () {
-  it("should modify bank", async ()  =>{
-    const msg = chatMessage(`>${Pushups.name}`)
-    await Pushups.invoke(msg, tokenize(msg.snippet.displayMessage), Pushups)
-    expect(MoneySystem.transactionBatch).toHaveBeenCalled()
-    expect(youtube.chat.sendMessage).toHaveBeenCalled()
-  })
-  it("should send message", async ()  =>{
-    const msg = chatMessage(`>${Pushups.name}`)
-    await Pushups.invoke(msg, tokenize(msg.snippet.displayMessage), Pushups)
-    expect(youtube.chat.sendMessage).toHaveBeenCalled()
+  it("should send message once", async () => {
+    await Pushups.execute(msg, tokenize(msg.snippet.displayMessage))
+    expect(youtube.chat.sendMessage).toBeCalledTimes(1)
   })
 })

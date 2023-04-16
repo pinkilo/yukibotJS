@@ -16,7 +16,7 @@ export default new Command(
   10,
   60,
   0,
-  async ({ authorDetails: { displayName, channelId } }, _,cost, _this) => {
+  async ({ authorDetails: { displayName, channelId } }, _, cost, _this) => {
     const rUser = getRandomUser([channelId])
     // TODO Temporary bandaid for randUser sometimes returning undefined
     if (!rUser) {
