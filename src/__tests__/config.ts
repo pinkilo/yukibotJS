@@ -18,5 +18,5 @@ export const chatMessage = (text: string): Schema$LiveChatMessage => ({
     displayName: "CHANNEL_DISPLAY_NAME",
     profileImageUrl: "CHANNEL_IMAGE_URL",
     isChatModerator: false,
-  }
+  },
 })

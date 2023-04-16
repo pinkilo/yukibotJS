@@ -31,8 +31,7 @@ const config: JestConfigWithTsJest = {
   // Indicates which provider should be used to instrument code for coverage
   coverageProvider: "v8",
 
-  // The regexp pattern or array of patterns that Jest uses to detect test files
-  // testRegex: [],
+  maxWorkers: "90%",
 
   // Indicates whether each individual test should be reported during the run
   verbose: true,

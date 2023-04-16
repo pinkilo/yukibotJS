@@ -22,7 +22,7 @@ const enabledCommands = Object.freeze([
   Fox.feed,
   Fox.dance,
   FitCheck,
-  Pushups
+  Pushups,
 ])
 
 // Load commands into the map

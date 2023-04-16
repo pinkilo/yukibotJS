@@ -45,7 +45,7 @@ export default class Command {
   constructor(
     name: string,
     alias: string[],
-    cost:(
+    cost: (
       msg: ChatMessage,
       tokens: TokenBin,
       _this: Command
@@ -106,7 +106,7 @@ export default class Command {
     }
     await MS.transactionBatch([[msg.authorDetails.channelId, cost]])
     const result = await this.invoke(msg, tokens, cost, this)
-    if (this.payout && result) await this.payout(result)
+    if (result instanceof Object) await this.payout(result)
     if (this.ratelimit + this.globalRateLimit > 0)
       this.addCooldown(msg.authorDetails.channelId)
   }
