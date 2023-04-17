@@ -2,7 +2,7 @@ import { Router } from "express"
 import { join } from "path"
 import yt from "../youtube"
 import logger from "winston"
-import { MoneySystem as MS } from "../yuki"
+import { alertHistory, MoneySystem as MS } from "../yuki"
 import { nextAlert } from "../yuki/Alerts"
 
 export const pages = Router()
@@ -31,3 +31,4 @@ export const api = Router()
     res.send(await MS.getLeaderboard(true))
   )
   .get("/alerts", (_, res) => res.send({ alert: nextAlert() }))
+  .get("/alerts/history", (_,res) => res.send(alertHistory))

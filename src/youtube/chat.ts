@@ -11,6 +11,7 @@ import {
 import { userCache } from "../Cache"
 import { User } from "../models"
 import { randFromRange } from "../util"
+import Env from "../env"
 
 const ytApi = google.youtube("v3")
 const chatMessages = []
@@ -64,6 +65,7 @@ const trackChat = async () => {
 }
 
 const sendMessage = async (text: string) => {
+  if (Env.NODE_ENV === "test") return true
   const response = await ytApi.liveChatMessages.insert({
     auth,
     part: ["snippet"],
