@@ -11,6 +11,7 @@ If a command doesn't seem to work it's probably on cooldown ~~or the bot crashed
 | feed                     | give Yuki dinner                     | 5     | random |
 | dance                    | dance with the fox                   | 5     | random |
 | pushups [number]         | make Jono do pushups                 | 100+  | 0      |
+| hydrate                  | make Jono do drink water             | 10    | 0      |
 | pickfight (beatass)      | pick a fight with a random viewer    | 10    | 10     |
 | commands (cmds)          | get a link to these commands         | 0     | 0      |
 | rank (wealthgap)         | see how your wallet stacks up        | 0     | 0      |

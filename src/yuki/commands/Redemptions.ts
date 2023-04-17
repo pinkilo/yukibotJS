@@ -21,6 +21,24 @@ export const FitCheck = new Command(
   }
 )
 
+export const Hydrate = new Command(
+  "hydrate",
+  ["drink", "water", "drinkwater"],
+  10,
+  60 * 5,
+  60 * 5,
+  async (msg, _, _this) => {
+    addAlert({
+      description: `Hydrate!`,
+      redeemer: {
+        name: msg.authorDetails.displayName,
+        id: msg.authorDetails.channelId,
+      },
+      durationSec: 10,
+    })
+  }
+)
+
 /**
  * @command pushups [int = 10]
  * @description redeem N number of pushups for baseCost + N * baseCost * 0.5
