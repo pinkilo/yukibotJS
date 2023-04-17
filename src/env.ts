@@ -11,7 +11,7 @@ export default {
       USER: "./.cache/user.json",
       BANK: "./.cache/bank.json",
     },
-    ALERTS: "./.cache/alert_history.json"
+    ALERTS: "./.cache/alert_history.json",
   },
   SELF: {
     ID: "UCC5woRixgHKy-3iOOVSKwZA",

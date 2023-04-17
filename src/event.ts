@@ -9,7 +9,7 @@ export enum EventName {
   WEBSOCKET_CONNECT,
   BANK_LOAD,
   BANK_UPDATE,
-  ALERT
+  ALERT,
 }
 
 type Event = { name: EventName }
@@ -38,7 +38,7 @@ export type BankLoadEvent = Event & { name: EventName.BANK_LOAD }
 
 export type BankUpdateEvent = Event & { name: EventName.BANK_UPDATE }
 
-export type AlertEvent = Event & { name: EventName.ALERT, alert: Alert }
+export type AlertEvent = Event & { name: EventName.ALERT; alert: Alert }
 
 const eventListeners: Map<EventName, Function[]> = new Map()
 

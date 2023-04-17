@@ -17,8 +17,8 @@ export const loadAlertHistory = async () => {
   alertHistory.push(...list)
 }
 
-listen<AlertEvent>(
-  EventName.ALERT, () => file.write(Env.FILE.ALERTS, JSON.stringify(alertHistory))
+listen<AlertEvent>(EventName.ALERT, () =>
+  file.write(Env.FILE.ALERTS, JSON.stringify(alertHistory))
 )
 
 let alertQueue: Alert[] = []
