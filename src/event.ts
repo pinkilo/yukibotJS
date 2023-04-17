@@ -1,5 +1,6 @@
 import { Credentials } from "google-auth-library"
 import { ChatMessage, Subscription } from "./types/google"
+import { Alert } from "./yuki"
 
 export enum EventName {
   AUTH,
@@ -8,6 +9,7 @@ export enum EventName {
   WEBSOCKET_CONNECT,
   BANK_LOAD,
   BANK_UPDATE,
+  ALERT
 }
 
 type Event = { name: EventName }
@@ -35,6 +37,8 @@ export type WebsocketConnectEvent = Event & {
 export type BankLoadEvent = Event & { name: EventName.BANK_LOAD }
 
 export type BankUpdateEvent = Event & { name: EventName.BANK_UPDATE }
+
+export type AlertEvent = Event & { name: EventName.ALERT, alert: Alert }
 
 const eventListeners: Map<EventName, Function[]> = new Map()
 
