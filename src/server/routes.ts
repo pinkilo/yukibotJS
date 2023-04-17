@@ -4,6 +4,7 @@ import yt from "../youtube"
 import logger from "winston"
 import { alertHistory, MoneySystem as MS } from "../yuki"
 import { nextAlert } from "../yuki/Alerts"
+import { packetier } from "packetier"
 
 export const pages = Router()
   .get("/", (_, res) => res.sendFile(join(__dirname, "public/index.html")))
@@ -28,7 +29,7 @@ export const oath = Router()
 
 export const api = Router()
   .get("/leaderboard", async (_, res) =>
-    res.send(await MS.getLeaderboard(true))
+    res.send(packetier(true, await MS.getLeaderboard(true)))
   )
-  .get("/alerts", (_, res) => res.send({ alert: nextAlert() }))
-  .get("/alerts/history", (_,res) => res.send(alertHistory))
+  .get("/alerts", (_, res) => res.send(packetier(true, nextAlert())))
+  .get("/alerts/history", (_,res) => res.send(packetier(true, alertHistory)))
