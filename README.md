@@ -1,43 +1,26 @@
+# Yuki the YouTube Fox
+
+Yuki is a YouTube livestream bot built from the ground up for unique interactivity
+both on screen and in the chat.
+
 ## Commands
+[see a list of commands](COMMANDS.md)
 
-Commands can be used with the `>` or `!` prefix, like `>wallet` or `!wallet`.
+## Currency System
 
-If a command doesn't seem to work it's probably on cooldown.
-
-| Command (alias)     | Description                          | Cost  | Payout |
-|---------------------|--------------------------------------|-------|--------|
-| bean (beans)        | beans                                | beans | beans  |
-| attack              | set Yuki the fox on attack mode      | 5     |        |
-| feed                | give Yuki dinner                     | 5     | random |
-| dance               | dance with the fox                   | 5     | random |
-| pickfight (beatass) | pick a fight with a random viewer    | 10    | 10     |
-| commands (cmds)     | get a link to these commands         | 0     | 0      |
-| rank (wealthgap)    | see how your wallet stacks up        | 0     | 0      |
-| wallet (bank)       | see your stacks                      | 0     | 0      |
-| discord             | get a link to the NL discord         | 0     | 0      |
-| twitter             | get a link to Jono's twitter         | 0     | 0      |
-| youtube             | get a link to the Aquatic Mastery YT | 0     | 0      |
-
-## Questions
-
-- How can viewers earn currency?
-    - Payout commands
-        - beatass
-        - raidboss
-        - ~~sending messages in chat~~
-            - ~~maybe don't give currency if no one else has typed between N messages?~~
+- Earn currency by sending messages in chat and using certain [commands](COMMANDS.md)
+- currency is persisted to file
 
 ## Roadmap
 
-- Command rate-limiting
-    - global ~~& user~~
+- ~~Command rate-limiting~~
+    - ~~global & user~~
 - Fox
     - ~~Remake Yuki the websocket animation and their commands~~
     - add passive reactivity to superchats, donations, etc
-    - ~~https://goo.gl/a65QTX~~
 - following
     - time user has been sub'ed to channel
-- Bank/Wallet
+- ~~Bank/Wallet~~
     - ~~\>rank~~
         - ~~shows user rank with respect to wallet/bank~~
 - \>hug {user?}
@@ -47,8 +30,7 @@ If a command doesn't seem to work it's probably on cooldown.
     - should have cost
 - Raidboss fighting
 - UI
-    - route that displays the money leaderboard
-        - /leaderboard
+    - ~~route that displays the money leaderboard~~
     - refactor css
     - potentially rebuild with svelte?
     - fix speech bubble
