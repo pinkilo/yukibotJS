@@ -6,6 +6,7 @@
   "author": "Pinkilo <hello@pinkilo.org>",
   "license": "MIT",
   "scripts": {
+    "clean": "rm -rf build node_modules coverage tsconfig.tsbuildinfo yarn.lock dist",
     "test": "jest",
     "format": "yarn prettier --config .prettierrc.yaml --write  public src",
     "compile": "tsc --build",
@@ -18,6 +19,7 @@
     "eslint": "^8.36.0",
     "express": "^4.18.2",
     "googleapis": "^110.0.0",
+    "packetier": "^3.0.0",
     "typescript": "^5.0.2",
     "winston": "^3.8.2",
     "ws": "^8.13.0"

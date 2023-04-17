@@ -36,7 +36,7 @@ async function getAlert() {
   const resp = await fetch("/api/alerts")
   /**
    *
-   * @type {{alert: {
+   * @type {{payload: {
    *   description: string,
    *   image?: string,
    *   durationSec: number,
@@ -45,9 +45,9 @@ async function getAlert() {
    */
   const packet = await resp.json()
   let delay
-  if (packet.alert) {
-    delay = packet.alert.durationSec * 1000
-    draw(packet.alert)
+  if (packet.payload) {
+    delay = packet.payload.durationSec * 1000
+    draw(packet.payload)
   } else {
     delay = pollingRate
   }

@@ -32,6 +32,7 @@ module.exports = {
     "util",
     "env",
     "process",
-    "readline"
+    "readline",
+    "packetier"
   ],
 }
