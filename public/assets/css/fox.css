@@ -31,7 +31,7 @@ body {
   top: 155px;
   background-color: #66162d;
   border: 3px solid #66162d;
-  border-radius: 1rem 1rem 1rem 0rem;
+  border-radius: 1rem 1rem 1rem 0;
   -webkit-animation: float 3s ease-in-out infinite;
   animation: float 3s ease-in-out infinite;
   box-shadow: -2px 8px 15px 1px rgba(0, 0, 0, 0.28);

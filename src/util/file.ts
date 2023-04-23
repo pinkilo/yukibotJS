@@ -5,4 +5,5 @@ export default {
   write: promisify(fs.writeFile),
   read: promisify(fs.readFile),
   exists: fs.existsSync,
+  list: promisify(fs.readdir),
 }
