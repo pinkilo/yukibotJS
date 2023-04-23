@@ -1,38 +1,53 @@
-import { file } from "../util"
+import { file, randFromRange } from "../util"
 import Env from "../env"
 import { AlertEvent, announce, EventName, listen } from "../event"
+import { join } from "path"
 
 export type Alert = {
   description: string
-  image?: string
   durationSec: number
   redeemer: { name: string; id: string }
+  sound?: string
 }
 
-export const alertHistory: Alert[] = []
-export const loadAlertHistory = async () => {
-  if (!file.exists(Env.FILE.ALERTS)) return
-  const raw = await file.read(Env.FILE.ALERTS)
-  const list = JSON.parse(raw + "")
-  alertHistory.push(...list)
+/////
+const randomSound = async () => {
+  const sounds = await file.list(
+    join(__dirname, "public/assets/audio/backstroke")
+  )
+  return join(
+    "assets/audio/backstroke",
+    sounds[randFromRange(0, sounds.length)]
+  )
 }
 
-listen<AlertEvent>(EventName.ALERT, () =>
-  file.write(Env.FILE.ALERTS, JSON.stringify(alertHistory))
+/////
+listen<AlertEvent>(EventName.ALERT, async () =>
+  file.write(Env.FILE.ALERTS, JSON.stringify(await getAlertHistory()))
 )
 
-let alertQueue: Alert[] = []
+let alertHistory: Alert[] = null
 
-export const addAlert = (alert: Alert) => {
-  alertQueue.push(alert)
-  alertHistory.push(alert)
-  announce({ name: EventName.ALERT, alert })
+export const getAlertHistory = async (): Promise<Alert[]> => {
+  const load = async (): Promise<Alert[]> =>
+    file.exists(Env.FILE.ALERTS)
+      ? JSON.parse((await file.read(Env.FILE.ALERTS)) + "")
+      : []
+  const set = (alerts: Alert[]) => {
+    alertHistory = alerts
+    return alerts
+  }
+  return alertHistory !== null ? alertHistory : set(await load())
 }
 
-export const dumpAlerts = () => {
-  const tmp = alertQueue.map((a) => a)
-  alertQueue = []
-  return tmp
+/////
+let alertQueue: Alert[] = []
+
+export const addAlert = async (alert: Alert) => {
+  alert.sound = await randomSound()
+  alertQueue.push(alert)
+  ;(await getAlertHistory()).push(alert)
+  announce({ name: EventName.ALERT, alert })
 }
 
 export const nextAlert = () => alertQueue.shift()

@@ -10,7 +10,7 @@ export const FitCheck = new Command(
   60 * 10,
   60 * 5,
   async (msg, _, _this) => {
-    addAlert({
+    await addAlert({
       description: `Fit Check Redemption`,
       redeemer: {
         name: msg.authorDetails.displayName,
@@ -28,7 +28,7 @@ export const Hydrate = new Command(
   60 * 5,
   60 * 5,
   async (msg, _, _this) => {
-    addAlert({
+    await addAlert({
       description: `Hydrate!`,
       redeemer: {
         name: msg.authorDetails.displayName,
@@ -58,7 +58,7 @@ export const Pushups = new Command(
   async ({ authorDetails: { channelId, displayName } }, tokens, cost) => {
     const base = 10
     const count = parseInt(tokens.params[0]) || base
-    addAlert({
+    await addAlert({
       description: `Pushups: ${count}`,
       redeemer: { name: displayName, id: channelId },
       durationSec: 10,

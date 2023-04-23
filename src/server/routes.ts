@@ -2,7 +2,7 @@ import { Router } from "express"
 import { join } from "path"
 import yt from "../youtube"
 import logger from "winston"
-import { alertHistory, MoneySystem as MS } from "../yuki"
+import { getAlertHistory, MoneySystem as MS } from "../yuki"
 import { nextAlert } from "../yuki/Alerts"
 import { packetier } from "packetier"
 
@@ -32,4 +32,6 @@ export const api = Router()
     res.send(packetier(true, await MS.getLeaderboard(true)))
   )
   .get("/alerts", (_, res) => res.send(packetier(true, nextAlert())))
-  .get("/alerts/history", (_, res) => res.send(packetier(true, alertHistory)))
+  .get("/alerts/history", async (_, res) =>
+    res.send(packetier(true, await getAlertHistory()))
+  )

@@ -6,7 +6,7 @@ export const randFromRange = (
   round: boolean = true
 ): number => {
   let val = iMin + Math.random() * eMax
-  if (round) val = Math.round(val)
+  if (round) val = Math.floor(val)
   return val
 }
 
