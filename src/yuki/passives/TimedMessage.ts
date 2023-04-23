@@ -1,7 +1,6 @@
 import Passive from "./Passive"
 import env from "../../env"
 import yt from "../../youtube"
-import { randFromRange } from "../../util"
 
 class TimedMessage extends Passive {
   private counter: number = 0
@@ -29,19 +28,19 @@ class TimedMessage extends Passive {
 
 export const bankMessage = new TimedMessage(
   "Remember to use >bank to check your Rupee wallet!",
-  randFromRange(15, 30)
+  25
 )
 export const discordMessage = new TimedMessage(
   "Join the NL Discord to chat and get updates about the stream https://discord.gg/3dYzJXJStR",
-  randFromRange(15, 25)
+  35
 )
 
 export const aquaticMasteryMessage = new TimedMessage(
   "Like fish and aquariums? Like looking at my face? Well if you do, make sure to check out my personal YouTube channel, Aquatic Mastery! https://www.youtube.com/aquaticmaster",
-  randFromRange(15, 25)
+  45
 )
 
 export const commandsMessage = new TimedMessage(
   "Use >cmds or >commands to get a list of all of the bot commands!",
-  randFromRange(15, 20)
+  15
 )
