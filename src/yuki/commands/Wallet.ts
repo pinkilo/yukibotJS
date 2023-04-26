@@ -2,6 +2,27 @@ import Command from "./Command"
 import yt from "../../youtube"
 import MS from "../MoneySystem"
 import logger from "winston"
+import { addAlert } from "../Alerts"
+
+export const Wallet = new Command(
+  "wallet",
+  ["bank"],
+  0,
+  120,
+  0,
+  async ({ authorDetails }, tokens) => {
+    let msg: string
+    switch (tokens.params[0]) {
+      case undefined:
+      default:
+        const wallet = MS.walletCache.get(authorDetails.channelId)
+        msg = `${ authorDetails.displayName } has ${ wallet } ${ MS.name }s`
+        break
+    }
+    const failed = await yt.chat.sendMessage(msg)
+    if (failed) logger.error("failed to send message")
+  },
+)
 
 /**
  * If RANK send ranking
@@ -19,56 +40,36 @@ export const Ranking = new Command(
     const rank = lb.findIndex(([uid]) => uid === channelId)
     let msg =
       command == "rank"
-        ? `#${rank + 1}: ${displayName} | ${wallet} ${MS.name}`
-        : `${lb.length - rank - 1} citizen(s) are poorer than ${displayName}`
+        ? `#${ rank + 1 }: ${ displayName } | ${ wallet } ${ MS.name }`
+        : `${ lb.length - rank - 1 } citizen(s) are poorer than ${ displayName }`
     const failed = await yt.chat.sendMessage(msg)
     if (failed) logger.error("failed to send message")
-  }
+  },
 )
 
-// TODO bind to OBS to show leaderboard
-// TODO IF PARAM:ME send leaderboard centered on user
+let leaderboardDisplayDuration: number = 0
+
+export const popLeaderboardDisplayTimer = (): number | null => {
+  const out = leaderboardDisplayDuration
+  leaderboardDisplayDuration = 0
+  return out
+}
+
+/** @command leaderboard [me] set leaderboardDisplay to true for N seconds */
 export const Leaderboard = new Command(
   "leaderboard",
   ["forbes"],
+  10,
   0,
-  0,
-  180,
-  async () => {
-    const lb = await MS.getLeaderboard(true)
-    if (lb.length === 0) {
-      await yt.chat.sendMessage("No wallets are active :(")
-      return
-    }
-    const sub = lb.slice(0, 5)
-    // get channels (users)
-    // send messages
-    for (let i = 0; i < sub.length; i++) {
-      await yt.chat.sendMessage(`#${i + 1}: ${sub[i][0]} | ${sub[i][1]}`)
-    }
-  }
+  60 * 3,
+  async ({ authorDetails: { channelId, displayName } }) => {
+    leaderboardDisplayDuration = 30
+    await addAlert({
+      description: "Leaderboard Display",
+      durationSec: 10,
+      redeemer: { id: channelId, name: displayName },
+    })
+  },
 )
 
-export const Wallet = new Command(
-  "wallet",
-  ["bank"],
-  0,
-  120,
-  0,
-  async ({ authorDetails }, tokens) => {
-    if (tokens.params.length > 0 && authorDetails.isChatModerator) {
-      // TODO add modification commands
-      return
-    }
-    let msg: string
-    switch (tokens.params[0]) {
-      case undefined:
-      default:
-        const wallet = MS.walletCache.get(authorDetails.channelId)
-        msg = `${authorDetails.displayName} has ${wallet} ${MS.name}s`
-        break
-    }
-    const failed = await yt.chat.sendMessage(msg)
-    if (failed) logger.error("failed to send message")
-  }
-)
+

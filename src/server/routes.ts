@@ -5,6 +5,7 @@ import logger from "winston"
 import { getAlertHistory, MoneySystem as MS } from "../yuki"
 import { nextAlert } from "../yuki/Alerts"
 import { packetier } from "packetier"
+import { popLeaderboardDisplayTimer } from "../yuki/commands/Wallet"
 
 export const pages = Router()
   .get("/", (_, res) => res.sendFile(join(__dirname, "public/index.html")))
@@ -31,6 +32,7 @@ export const api = Router()
   .get("/leaderboard", async (_, res) =>
     res.send(packetier(true, await MS.getLeaderboard(true)))
   )
+  .get("/leaderboard/duration", (_, res) => res.send(packetier(true, popLeaderboardDisplayTimer())))
   .get("/alerts", (_, res) => res.send(packetier(true, nextAlert())))
   .get("/alerts/history", async (_, res) =>
     res.send(packetier(true, await getAlertHistory()))

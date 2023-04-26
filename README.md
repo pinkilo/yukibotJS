@@ -11,6 +11,15 @@ both on screen and in the chat.
 - Earn currency by sending messages in chat and using certain [commands](COMMANDS.md)
 - currency is persisted to file
 
+
+## Contributing
+
+```ts
+/**
+ * @command _name_ <required> [optional]
+ */
+```
+
 ## Roadmap
 
 - ~~Command rate-limiting~~

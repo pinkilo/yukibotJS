@@ -1,5 +1,8 @@
 const ul = document.getElementById("leaderboard")
+const pollRate = 10 * 1000
+
 getBoard()
+  .catch(e => console.error(e))
 
 function draw(list) {
   console.log("drawing leaderboard")
@@ -18,11 +21,29 @@ function draw(list) {
 }
 
 async function getBoard() {
+  document.body.hidden = true
   console.log("fetching leaderboard")
   const resp = await fetch("/api/leaderboard")
   /** @type {{ payload: [name: string, wallet: number][] }} */
   const packet = await resp.json()
   console.log(packet)
-  draw(packet.payload)
-  setTimeout(() => getBoard(), 20 * 1000)
+  const duration = await getDisplayDuration()
+  if (duration > 0) {
+    document.body.hidden = false
+    draw(packet.payload)
+    setTimeout(() => getBoard(), duration * 1000)
+  }
+  else setTimeout(() => getBoard(), pollRate)
+}
+
+/**
+ *
+ * @returns {Promise<number>} duration in seconds
+ */
+async function getDisplayDuration() {
+  console.log("fetching display duration")
+  const resp = await fetch("/api/leaderboard/duration")
+  /** @type {{ payload: number }} */
+  const packet = await resp.json()
+  return packet.payload
 }
