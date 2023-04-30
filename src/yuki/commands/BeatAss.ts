@@ -18,11 +18,6 @@ export default new Command(
   0,
   async ({ authorDetails: { displayName, channelId } }, _, cost, _this) => {
     const rUser = getRandomUser([channelId])
-    // TODO Temporary bandaid for randUser sometimes returning undefined
-    if (!rUser) {
-      logger.error("random user was undefined")
-      return undefined
-    }
     const { id: tid, name } = rUser
     logger.debug("running beatass", { target: name, displayName })
     const succeeds = Math.random() > 0.55

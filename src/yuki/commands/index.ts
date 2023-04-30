@@ -5,7 +5,7 @@ import { TokenBin } from "../processing"
 import { ChatMessage } from "../../types/google"
 import logger from "winston"
 import Socials from "./Socials"
-import { Wallet, Ranking } from "./Wallet"
+import { Wallet, Ranking, Leaderboard } from "./Wallet"
 import { Beans } from "./Memes"
 import Fox from "./Fox"
 import { FitCheck, Hydrate, Pushups } from "./Redemptions"
@@ -24,6 +24,7 @@ const enabledCommands = Object.freeze([
   FitCheck,
   Pushups,
   Hydrate,
+  Leaderboard
 ])
 
 // Load commands into the map
