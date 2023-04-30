@@ -12,6 +12,7 @@ export default {
       BANK: "./.cache/bank.json",
     },
     ALERTS: "./.cache/alert_history.json",
+    SUBSCRIBER: "./.cache/lastsub.json",
   },
   SELF: {
     ID: "UCC5woRixgHKy-3iOOVSKwZA",

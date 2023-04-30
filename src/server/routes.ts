@@ -32,7 +32,9 @@ export const api = Router()
   .get("/leaderboard", async (_, res) =>
     res.send(packetier(true, await MS.getLeaderboard(true)))
   )
-  .get("/leaderboard/duration", (_, res) => res.send(packetier(true, popLeaderboardDisplayTimer())))
+  .get("/leaderboard/duration", (_, res) =>
+    res.send(packetier(true, popLeaderboardDisplayTimer()))
+  )
   .get("/alerts", (_, res) => res.send(packetier(true, nextAlert())))
   .get("/alerts/history", async (_, res) =>
     res.send(packetier(true, await getAlertHistory()))
