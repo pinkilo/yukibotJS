@@ -17,7 +17,8 @@ const transactionBatch = async (batch: [string, number][]) => {
 const getLeaderboard = async (
   hydrate: boolean = false
 ): Promise<[string, number][]> => {
-  const lb = walletCache.entries().sort(([_, a], [__, b]) => b - a)
+  const lbroot = walletCache.entries().sort(([_, a], [__, b]) => b - a)
+  const lb = lbroot.filter(([key]) => key !== ENV.SELF.ID)
   if (hydrate) {
     const users = await Promise.all(lb.map(([uid]) => userCache.get(uid)))
     return lb.map(([lbId, val]) => {
