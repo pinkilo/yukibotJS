@@ -39,6 +39,7 @@ const config: JestConfigWithTsJest = {
   moduleDirectories: ["node_modules", __dirname],
   injectGlobals: true,
   testEnvironment: "node",
+  setupFiles: ["<rootDir>/src/__tests__/setup/module_mocks.ts"]
 }
 
 export default config

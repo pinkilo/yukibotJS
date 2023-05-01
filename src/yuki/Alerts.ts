@@ -15,7 +15,7 @@ const randomSound = async () => {
   const sounds = await file.list(
     join(__dirname, "public/assets/audio/backstroke")
   )
-  return join(
+  return sounds?.length && join(
     "assets/audio/backstroke",
     sounds[randFromRange(0, sounds.length)]
   )

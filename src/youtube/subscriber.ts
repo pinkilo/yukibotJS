@@ -39,7 +39,7 @@ const updateLastSub = async (sub: Subscription) => {
   })
 }
 
-export const checkSubscriptions = async () => {
+export const checkSubscriptions = async (loop: boolean = true) => {
   logger.info("checking subscriptions")
   const recent = await getRecentSubscribers()
   logger.debug("recent subs", { recent: recent.length })
@@ -53,5 +53,5 @@ export const checkSubscriptions = async () => {
   for (const sub of updated) {
     await updateLastSub(sub)
   }
-  setTimeout(checkSubscriptions, basePollingRate * 3)
+  if (loop) setTimeout(checkSubscriptions, basePollingRate * 4)
 }

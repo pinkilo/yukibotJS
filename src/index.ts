@@ -19,7 +19,7 @@ import { checkSubscriptions } from "./youtube/subscriber"
 logger.configure({
   level: ENV.NODE_ENV === "test" ? "debug" : "info",
   transports: [new transports.Console()],
-  format: format.simple(),
+  format: format.cli(),
 })
 
 listen<AuthEvent>(EventName.AUTH, async () => logger.info("Tokens Updated"))

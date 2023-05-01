@@ -3,9 +3,9 @@
     "baseUrl": ".",
     "outDir": "./dist",
     "rootDir": "./src",
-    "noImplicitReturns": false,
-    "noImplicitAny": false,
-    "noUnusedLocals": false,
+    "noImplicitReturns": true,
+    "noImplicitAny": true,
+    "noUnusedLocals": true,
     "noUnusedParameters": true,
     "incremental": true,
     "target": "esnext"
