@@ -1,8 +1,8 @@
 // noinspection DuplicatedCode
 
 window.addEventListener("fox_ready", () => nextAnim())
-const speechBubble = document.getElementById("speech_bubble")
-const speechSpan = document.getElementById("speech_span")
+const speechBubble = document.getElementById("speech_span")
+const speechSpan = document.getElementById("speech_bubble")
 
 /** @type {Array<() => void>} */
 const animQueue = []

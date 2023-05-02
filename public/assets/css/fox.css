@@ -12,7 +12,6 @@ body {
   position: relative;
 }
 
-/* TODO fix text wrap */
 #speech_bubble {
   font-family: Arial, sans-serif;
   font-size: 1.5rem;
@@ -21,7 +20,7 @@ body {
   text-align: center;
   display: inline-block;
   word-break: break-word;
-  max-width: 125px;
+  max-width: 135px;
   position: absolute;
   bottom: 0;
   padding: 0.5rem 1rem;
@@ -40,7 +39,7 @@ body {
   top: 25px;
   position: absolute;
   right: 28px;
-  width: 155px;
+  width: 165px;
 }
 
 #speech_span {
