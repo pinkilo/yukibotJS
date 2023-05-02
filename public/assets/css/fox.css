@@ -12,8 +12,7 @@ body {
   position: relative;
 }
 
-/* TODO fix text wrap */
-#speech_span {
+#speech_bubble {
   font-family: Arial, sans-serif;
   font-size: 1.5rem;
   color: rgba(255, 255, 255, 0.9);
@@ -21,14 +20,10 @@ body {
   text-align: center;
   display: inline-block;
   word-break: break-word;
-}
-
-#speech_bubble {
-  max-width: 125px;
-  padding: 0.5rem 1rem;
+  max-width: 135px;
   position: absolute;
-  right: 35px;
-  top: 155px;
+  bottom: 0;
+  padding: 0.5rem 1rem;
   background-color: #66162d;
   border: 3px solid #66162d;
   border-radius: 1rem 1rem 1rem 0;
@@ -36,6 +31,21 @@ body {
   animation: float 3s ease-in-out infinite;
   box-shadow: -2px 8px 15px 1px rgba(0, 0, 0, 0.28);
   -webkit-box-shadow: -2px 8px 15px 1px rgba(0, 0, 0, 0.28);
+}
+
+#speech_bubble_container {
+  height: 200px;
+  overflow: visible;
+  top: 25px;
+  position: absolute;
+  right: 28px;
+  width: 165px;
+}
+
+#speech_span {
+  position: relative;
+  width: 100%;
+  height: 100%;
 }
 
 @-webkit-keyframes float {
