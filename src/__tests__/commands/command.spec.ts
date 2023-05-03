@@ -1,5 +1,5 @@
 import Command from "../../yuki/commands/Command"
-import { chatMessage } from "../config"
+import { chatMessage } from "../util"
 import { tokenize } from "../../yuki/processing"
 import MoneySystem from "../../yuki/MoneySystem"
 
@@ -48,15 +48,16 @@ describe("Command", () => {
     beforeEach(() => {
       command = new Command("test", [], 0, 100, 0, async () => {})
       addCooldownMock = jest.spyOn(command, "addCooldown")
+      checkCooldownMock = jest.spyOn(command, "onCooldown")
     })
     it("should add cooldown once", async () => {
       await command.execute(msg, tokenize(msg.snippet.displayMessage))
       expect(addCooldownMock).toBeCalledTimes(1)
     })
-    //it("should check cooldown once", async () => {
-    //  await command.execute(msg, tokenize(msg.snippet.displayMessage))
-    //  expect(checkCooldownMock).toBeCalledTimes(1)
-    //})
+    it("should check cooldown once", async () => {
+      await command.execute(msg, tokenize(msg.snippet.displayMessage))
+      expect(checkCooldownMock).toBeCalledTimes(1)
+    })
     it("should be on cooldown", async () => {
       await command.execute(msg, tokenize(msg.snippet.displayMessage))
       expect(command.onCooldown(msg.authorDetails.channelId)).toBe(true)

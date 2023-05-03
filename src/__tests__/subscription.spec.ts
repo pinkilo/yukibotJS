@@ -1,4 +1,4 @@
-import { listOf, subscriber } from "./config"
+import { listOf, subscriber } from "./util"
 import { checkSubscriptions, loadLastSub } from "../youtube/subscriber"
 import youtube from "../youtube/apiClient"
 import { announce } from "../event"
