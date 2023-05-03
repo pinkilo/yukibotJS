@@ -7,15 +7,20 @@ import * as Alerts from "../../yuki/Alerts"
 jest.mock("../../util/file")
 jest.mock("../../youtube")
 
-let addAlertMock = jest.spyOn(Alerts, "addAlert").mockImplementation(async () => {})
+let addAlertMock = jest
+  .spyOn(Alerts, "addAlert")
+  .mockImplementation(async () => {})
 let checkCooldownMock
-
 
 const msg = chatMessage(`>${Pushups.name}`)
 describe("Command PUSHUPS", () => {
   beforeEach(() => {
-    addAlertMock = jest.spyOn(Alerts, "addAlert").mockImplementation(async () => {})
-    checkCooldownMock = jest.spyOn(Pushups, "onCooldown").mockImplementation(() => false)
+    addAlertMock = jest
+      .spyOn(Alerts, "addAlert")
+      .mockImplementation(async () => {})
+    checkCooldownMock = jest
+      .spyOn(Pushups, "onCooldown")
+      .mockImplementation(() => false)
   })
   it("should send message once", async () => {
     await Pushups.execute(msg, tokenize(msg.snippet.displayMessage))

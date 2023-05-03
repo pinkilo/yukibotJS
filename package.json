@@ -20,7 +20,7 @@
     "yuki": "yuki.js"
   },
   "lint-staged": {
-    "*": "prettier --config .prettierrc.yaml --write  public src"
+    "*": "prettier --config .prettierrc.yaml --write public src --ignore-unknown"
   },
   "dependencies": {
     "dotenv": "^16.0.3",
