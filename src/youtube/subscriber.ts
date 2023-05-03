@@ -49,7 +49,8 @@ export const checkSubscriptions = async (loop: boolean = true) => {
     updated = recent
   }
   logger.debug("new subs", { newsubs: updated.length })
-  for (const subscription of updated.reverse()) { // announce oldest->newest
+  for (const subscription of updated.reverse()) {
+    // announce oldest->newest
     announce<SubscriberEvent>({ name: EventName.SUBSCRIBER, subscription })
   }
   // save most recent

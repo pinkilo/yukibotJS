@@ -24,5 +24,5 @@ jest.mock("../../util/file", () => {
 jest.mock("../../event", () => ({
   __esModule: true,
   ...jest.requireActual("../../event"),
-  announce: jest.fn().mockImplementation(event => event),
+  announce: jest.fn().mockImplementation((event) => event),
 }))

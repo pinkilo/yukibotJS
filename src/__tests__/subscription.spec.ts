@@ -4,12 +4,12 @@ import youtube from "../youtube/apiClient"
 import { announce } from "../event"
 import file from "../util/file"
 
-
 describe("Recent Subscription", () => {
   // 0 is "newest"
-  const subs = listOf(3, (i) => subscriber(`CHANNEL_${ i }`))
+  const subs = listOf(3, (i) => subscriber(`CHANNEL_${i}`))
 
-  let listSubscriptionsMock = jest.spyOn(youtube.subscriptions, "list")
+  let listSubscriptionsMock = jest
+    .spyOn(youtube.subscriptions, "list")
     .mockImplementation(() => ({ data: { items: subs } }))
 
   beforeEach(async () => {
