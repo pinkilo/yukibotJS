@@ -9,7 +9,10 @@ import logger from "winston"
 let lastSub: Subscription
 
 export const loadLastSub = async () => {
-  if (!file.exists(Env.FILE.SUBSCRIBER)) return
+  if (!file.exists(Env.FILE.SUBSCRIBER)) {
+    lastSub = undefined
+    return
+  }
   const raw = await file.read(Env.FILE.SUBSCRIBER)
   lastSub = JSON.parse(raw + "")
 }
@@ -33,10 +36,6 @@ const getRecentSubscribers = async (): Promise<Subscription[]> => {
 const updateLastSub = async (sub: Subscription) => {
   lastSub = sub
   await file.write(Env.FILE.SUBSCRIBER, JSON.stringify(sub))
-  announce<SubscriberEvent>({
-    name: EventName.SUBSCRIBER,
-    subscription: sub,
-  })
 }
 
 export const checkSubscriptions = async (loop: boolean = true) => {
@@ -50,8 +49,10 @@ export const checkSubscriptions = async (loop: boolean = true) => {
     updated = recent
   }
   logger.debug("new subs", { newsubs: updated.length })
-  for (const sub of updated) {
-    await updateLastSub(sub)
+  for (const subscription of updated.reverse()) { // announce oldest->newest
+    announce<SubscriberEvent>({ name: EventName.SUBSCRIBER, subscription })
   }
+  // save most recent
+  await updateLastSub(updated[0])
   if (loop) setTimeout(checkSubscriptions, basePollingRate * 4)
 }

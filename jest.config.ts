@@ -8,9 +8,6 @@ const config: JestConfigWithTsJest = {
   // Stop running tests after `n` failures
   // bail: 0,
 
-  // The directory where Jest should store its cached dependency information
-  // cacheDirectory: "/tmp/jest_rs",
-
   // Automatically clear mock calls, instances, contexts and results before every test
   clearMocks: true,
 
@@ -30,9 +27,6 @@ const config: JestConfigWithTsJest = {
 
   // Indicates which provider should be used to instrument code for coverage
   coverageProvider: "v8",
-
-  maxWorkers: "90%",
-
   // Indicates whether each individual test should be reported during the run
   verbose: true,
   testMatch: ["**/__tests__/**/*.spec.ts"],
