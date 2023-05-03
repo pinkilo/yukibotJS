@@ -58,4 +58,6 @@ const loadTokens = async () => {
   logger.info("No saved tokens")
 }
 
-export { auth, getTokens, getAuthUrl, setCredentials, loadTokens }
+export default auth
+
+export { getTokens, getAuthUrl, setCredentials, loadTokens }

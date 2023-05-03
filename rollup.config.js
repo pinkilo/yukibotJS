@@ -12,7 +12,7 @@ module.exports = {
     include: ["src/**/*", "public/**/*"]
   },
   plugins: [
-    ts({outputToFilesystem: false}),
+    ts({outputToFilesystem: false, tsconfig: "tsconfig.build.json"}),
     copy({targets: [{src: "public", dest: "build"}]}),
     shebang({
       include: "yuki.js",

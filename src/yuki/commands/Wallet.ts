@@ -16,12 +16,12 @@ export const Wallet = new Command(
       case undefined:
       default:
         const wallet = MS.walletCache.get(authorDetails.channelId)
-        msg = `${ authorDetails.displayName } has ${ wallet } ${ MS.name }s`
+        msg = `${authorDetails.displayName} has ${wallet} ${MS.name}s`
         break
     }
     const failed = await yt.chat.sendMessage(msg)
     if (failed) logger.error("failed to send message")
-  },
+  }
 )
 
 /**
@@ -40,11 +40,11 @@ export const Ranking = new Command(
     const rank = lb.findIndex(([uid]) => uid === channelId)
     let msg =
       command == "rank"
-        ? `#${ rank + 1 }: ${ displayName } | ${ wallet } ${ MS.name }`
-        : `${ lb.length - rank - 1 } citizen(s) are poorer than ${ displayName }`
+        ? `#${rank + 1}: ${displayName} | ${wallet} ${MS.name}`
+        : `${lb.length - rank - 1} citizen(s) are poorer than ${displayName}`
     const failed = await yt.chat.sendMessage(msg)
     if (failed) logger.error("failed to send message")
-  },
+  }
 )
 
 let leaderboardDisplayDuration: number = 0
@@ -69,7 +69,5 @@ export const Leaderboard = new Command(
       durationSec: 10,
       redeemer: { id: channelId, name: displayName },
     })
-  },
+  }
 )
-
-

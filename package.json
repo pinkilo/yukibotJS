@@ -9,7 +9,7 @@
     "clean": "rm -rf build node_modules coverage tsconfig.tsbuildinfo yarn.lock dist",
     "test": "jest",
     "format": "yarn prettier --config .prettierrc.yaml --write  public src",
-    "compile": "tsc --build",
+    "compile": "tsc --build --config tsconfig.build.json",
     "build": "rollup --config",
     "rollup/watch": "rollup --config --watch",
     "watch": "nodemon yuki.js --config nodemon.config.json"

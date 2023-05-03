@@ -1,8 +1,7 @@
 const ul = document.getElementById("leaderboard")
 const pollRate = 10 * 1000
 
-getBoard()
-  .catch(e => console.error(e))
+getBoard().catch((e) => console.error(e))
 
 function draw(list) {
   console.log("drawing leaderboard")
@@ -32,8 +31,7 @@ async function getBoard() {
     document.body.hidden = false
     draw(packet.payload)
     setTimeout(() => getBoard(), duration * 1000)
-  }
-  else setTimeout(() => getBoard(), pollRate)
+  } else setTimeout(() => getBoard(), pollRate)
 }
 
 /**

@@ -24,7 +24,7 @@ const enabledCommands = Object.freeze([
   FitCheck,
   Pushups,
   Hydrate,
-  Leaderboard
+  Leaderboard,
 ])
 
 // Load commands into the map
