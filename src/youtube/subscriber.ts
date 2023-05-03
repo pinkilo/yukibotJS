@@ -3,7 +3,7 @@ import ytApi, { basePollingRate } from "./apiClient"
 import auth from "./auth"
 import { file } from "../util"
 import Env from "../env"
-import { announce, EventName, SubscriberEvent } from "../event"
+import { announce, SubscriberEvent } from "../event"
 import logger from "winston"
 
 let lastSub: Subscription
@@ -49,9 +49,9 @@ export const checkSubscriptions = async (loop: boolean = true) => {
     updated = recent
   }
   logger.debug("new subs", { newsubs: updated.length })
+  // announce oldest->newest
   for (const subscription of updated.reverse()) {
-    // announce oldest->newest
-    announce<SubscriberEvent>({ name: EventName.SUBSCRIBER, subscription })
+    announce(new SubscriberEvent(subscription))
   }
   // save most recent
   await updateLastSub(updated[0])

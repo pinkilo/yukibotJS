@@ -1,7 +1,7 @@
 import logger from "winston"
 import auth from "./auth"
 import ytApi, { basePollingRate } from "./apiClient"
-import { announce, EventName, MessageBatchEvent } from "../event"
+import { announce, MessageBatchEvent } from "../event"
 import { userCache } from "../Cache"
 import { User } from "../models"
 import { randFromRange } from "../util"
@@ -35,11 +35,7 @@ const getChatMessages = async () => {
       userCache.put(user.id, user)
       userCache.put(user.name, user)
     })
-  announce<MessageBatchEvent>({
-    name: EventName.MESSAGE_BATCH,
-    incoming: newMessages,
-    all: chatMessages,
-  })
+  announce(new MessageBatchEvent(newMessages, chatMessages))
   chatMessages.push(...newMessages)
   setTimeout(getChatMessages, basePollingRate)
 }

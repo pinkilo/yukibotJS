@@ -47,7 +47,7 @@ export const addAlert = async (alert: Alert) => {
   alert.sound = await randomSound()
   alertQueue.push(alert)
   ;(await getAlertHistory()).push(alert)
-  announce({ name: EventName.ALERT, alert })
+  announce(new AlertEvent(alert))
 }
 
 export const nextAlert = () => alertQueue.shift()

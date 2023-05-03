@@ -14,31 +14,55 @@ export enum EventName {
 
 type Event = { name: EventName }
 
-export type AuthEvent = Event & {
-  name: EventName.AUTH
-  credentials: Credentials
+export class AuthEvent implements Event {
+  readonly name = EventName.AUTH
+  readonly credentials: Credentials
+
+  constructor(credentials: Credentials) {
+    this.credentials = credentials
+  }
 }
 
-export type SubscriberEvent = Event & {
-  name: EventName.SUBSCRIBER
-  subscription: Subscription
+export class SubscriberEvent implements Event {
+  readonly name = EventName.SUBSCRIBER
+  readonly subscription: Subscription
+
+  constructor(subscription: Subscription) {
+    this.subscription = subscription
+  }
 }
 
-export type MessageBatchEvent = Event & {
-  name: EventName.MESSAGE_BATCH
-  incoming: ChatMessage[]
-  all: ChatMessage[]
+export class MessageBatchEvent implements Event {
+  readonly name = EventName.MESSAGE_BATCH
+  readonly incoming: ChatMessage[]
+  readonly all: ChatMessage[]
+
+  constructor(incoming: ChatMessage[], all: ChatMessage[]) {
+    this.incoming = incoming
+    this.all = all
+  }
 }
 
-export type WebsocketConnectEvent = Event & {
-  name: EventName.WEBSOCKET_CONNECT
+export class WebsocketConnectEvent implements Event {
+  readonly name = EventName.WEBSOCKET_CONNECT
 }
 
-export type BankLoadEvent = Event & { name: EventName.BANK_LOAD }
+export class BankLoadEvent implements Event {
+  readonly name = EventName.BANK_LOAD
+}
 
-export type BankUpdateEvent = Event & { name: EventName.BANK_UPDATE }
+export class BankUpdateEvent implements Event {
+  readonly name = EventName.BANK_UPDATE
+}
 
-export type AlertEvent = Event & { name: EventName.ALERT; alert: Alert }
+export class AlertEvent implements Event {
+  readonly name = EventName.ALERT
+  readonly alert: Alert
+
+  constructor(alert: Alert) {
+    this.alert = alert
+  }
+}
 
 const eventListeners: Map<EventName, Function[]> = new Map()
 
@@ -51,7 +75,7 @@ export const listen = <E extends Event>(
   eventListeners[eventName].push(listener)
 }
 
-export const announce = <E extends Event>(event: E) =>
+export const announce = (event: Event) =>
   eventListeners[event.name]?.forEach((f) => f(event))
 
 export default Event
