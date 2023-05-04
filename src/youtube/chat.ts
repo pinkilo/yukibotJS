@@ -1,4 +1,5 @@
 import logger from "winston"
+import { youtube_v3 } from "googleapis"
 import auth from "./auth"
 import ytApi, { basePollingRate } from "./apiClient"
 import { announce, MessageBatchEvent } from "../event"
@@ -6,6 +7,7 @@ import { userCache } from "../Cache"
 import { User } from "../models"
 import { randFromRange } from "../util"
 import Env from "../env"
+import Schema$LiveChatMessage = youtube_v3.Schema$LiveChatMessage
 
 const chatMessages = []
 let liveChatId: string
@@ -83,6 +85,9 @@ const fetchUsers = async (uid: string[]): Promise<User[]> => {
   return result.data.items?.map((c) => User.fromChannel(c)) || []
 }
 
+const getChat = (index: number = 0): Schema$LiveChatMessage[] =>
+  chatMessages.slice(index)
+
 export {
   ytApi as api,
   findChat,
@@ -90,4 +95,5 @@ export {
   sendMessage,
   getRandomUser,
   fetchUsers,
+  getChat,
 }

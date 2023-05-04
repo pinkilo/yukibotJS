@@ -4,19 +4,97 @@
     <meta charset="UTF-8" />
     <title>Yuki Bot UI</title>
     <link rel="stylesheet" type="text/css" href="assets/css/style.css" />
+    <link rel="stylesheet" type="text/css" href="assets/css/dashboard.css" />
   </head>
 
   <body>
-    <h1>
-      Yuki <br />
-      Bot
-    </h1>
-    <p>welcome to yuki bot</p>
-    <div class="features">
-      <a href="/auth">Login</a>
-      <a href="/fox">Fox</a>
-      <a href="/leaderboard">Leaderboard</a>
-      <a href="/alerts">Alerts</a>
-    </div>
+    <header>
+      <h1>Yuki Bot</h1>
+      <p id="loading">welcome to yuki bot</p>
+      <div class="features">
+        <a href="/auth">Login</a>
+        <a href="/fox">Fox</a>
+        <a href="/leaderboard">Leaderboard</a>
+        <a href="/alerts">Alerts</a>
+      </div>
+    </header>
+    <main>
+      <section id="chat_history">
+        <h3>Chat History</h3>
+        <ul></ul>
+      </section>
+      <section id="alert_history">
+        <h3>Alert History</h3>
+        <ul>
+          <li>
+            <span class="alert_description">Hydrate!</span
+            ><span class="alert_redeemer" data-state="name">niito</span
+            ><span class="alert_soundpath"
+              >assets\audio\backstroke\ADayAfterTheFair.mp3</span
+            ><span class="alert_duration">10 sec</span
+            ><button class="alert_replay">replay</button>
+          </li>
+          <li>
+            <span class="alert_description">Hydrate!</span
+            ><span class="alert_redeemer" data-state="name">fiend</span
+            ><span class="alert_soundpath"
+              >assets\audio\backstroke\ThisIsWhatWhoFuck.mp3</span
+            ><span class="alert_duration">10 sec</span
+            ><button class="alert_replay">replay</button>
+          </li>
+          <li>
+            <span class="alert_description">Leaderboard Display</span
+            ><span class="alert_redeemer" data-state="name"
+              >CHANNEL_DISPLAY_NAME</span
+            ><span class="alert_soundpath"
+              >assets\audio\backstroke\DoNotWant.mp3</span
+            ><span class="alert_duration">10 sec</span
+            ><button class="alert_replay">replay</button>
+          </li>
+          <li>
+            <span class="alert_description">New Subscriber!</span
+            ><span class="alert_redeemer" data-state="name">Erica Chou</span
+            ><span class="alert_soundpath"
+              >assets\audio\backstroke\FriendYouAreCrazy.mp3</span
+            ><span class="alert_duration">10 sec</span
+            ><button class="alert_replay">replay</button>
+          </li>
+          <li>
+            <span class="alert_description">New Subscriber!</span
+            ><span class="alert_redeemer" data-state="name">Evan Liu</span
+            ><span class="alert_soundpath"
+              >assets\audio\backstroke\FriendYouAreCrazy.mp3</span
+            ><span class="alert_duration">10 sec</span
+            ><button class="alert_replay">replay</button>
+          </li>
+          <li>
+            <span class="alert_description">New Subscriber!</span
+            ><span class="alert_redeemer" data-state="name">Alitha</span
+            ><span class="alert_soundpath"
+              >assets\audio\backstroke\IFeelFarFromGood.mp3</span
+            ><span class="alert_duration">10 sec</span
+            ><button class="alert_replay">replay</button>
+          </li>
+          <li>
+            <span class="alert_description">New Subscriber!</span
+            ><span class="alert_redeemer" data-state="name">Mr Confused</span
+            ><span class="alert_soundpath"
+              >assets\audio\backstroke\SmellyBoy.mp3</span
+            ><span class="alert_duration">10 sec</span
+            ><button class="alert_replay">replay</button>
+          </li>
+          <li>
+            <span class="alert_description">New Subscriber!</span
+            ><span class="alert_redeemer" data-state="name">Kraft Jacob</span
+            ><span class="alert_soundpath"
+              >assets\audio\backstroke\SectionRatioGeneral.mp3</span
+            ><span class="alert_duration">10 sec</span
+            ><button class="alert_replay">replay</button>
+          </li>
+        </ul>
+      </section>
+    </main>
+
+    <script src="/assets/script/dashboard.js"></script>
   </body>
 </html>

@@ -43,6 +43,8 @@ export const getAlertHistory = async (): Promise<Alert[]> => {
 /////
 let alertQueue: Alert[] = []
 
+export const replayAlert = (alert: Alert) => alertQueue.push(alert)
+
 export const addAlert = async (alert: Alert) => {
   alert.sound = await randomSound()
   alertQueue.push(alert)
