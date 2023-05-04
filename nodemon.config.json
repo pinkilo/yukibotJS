@@ -1,11 +1,7 @@
 {
-  "watch": [
-    "build/",
-    "yuki.js"
-  ],
+  "watch": ["build/", "yuki.js"],
   "env": {
     "NODE_ENV": "test"
   },
   "ext": "js"
 }
-

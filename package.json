@@ -1,6 +1,6 @@
 {
   "name": "yuki-bot",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "yt bot",
   "repository": "https://github.com/pinkilo/yuki-bot.git",
   "author": "Pinkilo <hello@pinkilo.org>",
@@ -8,19 +8,17 @@
   "scripts": {
     "clean": "rm -rf build node_modules coverage tsconfig.tsbuildinfo yarn.lock dist",
     "prepare": "husky install",
-    "test": "jest",
-    "format": "yarn prettier --config .prettierrc.yaml --write  public src",
+    "prettier/format": "yarn prettier --config .prettierrc.yaml --write public src *.js *.ts",
+    "prettier/check": "prettier --config .prettierrc.yaml --check public src *.js *.ts",
     "compile": "tsc --build --config tsconfig.build.json",
-    "build": "rollup --config",
+    "rollup/build": "rollup --config",
     "rollup/watch": "rollup --config --watch",
-    "watch": "nodemon yuki.js --config nodemon.config.json"
+    "watch": "nodemon yuki.js --config nodemon.config.json",
+    "test": "jest"
   },
   "main": "./src/index.js",
   "bin": {
     "yuki": "yuki.js"
-  },
-  "lint-staged": {
-    "*": "prettier --config .prettierrc.yaml --check public src --ignore-unknown"
   },
   "dependencies": {
     "dotenv": "^16.0.3",
@@ -50,7 +48,6 @@
     "https-browserify": "^1.0.0",
     "husky": "^8.0.3",
     "jest": "^29.5.0",
-    "lint-staged": "^13.2.2",
     "nodemon": "^2.0.22",
     "os-browserify": "^0.3.0",
     "parcel": "^2.8.3",

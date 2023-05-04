@@ -21,9 +21,7 @@ const config: JestConfigWithTsJest = {
   coverageDirectory: "coverage",
 
   // An array of regexp pattern strings used to skip coverage collection
-  coveragePathIgnorePatterns: [
-    "/node_modules/",
-  ],
+  coveragePathIgnorePatterns: ["/node_modules/"],
 
   // Indicates which provider should be used to instrument code for coverage
   coverageProvider: "v8",
@@ -33,7 +31,7 @@ const config: JestConfigWithTsJest = {
   moduleDirectories: ["node_modules", __dirname],
   injectGlobals: true,
   testEnvironment: "node",
-  setupFiles: ["<rootDir>/src/__tests__/setup/module_mocks.ts"]
+  setupFiles: ["<rootDir>/src/__tests__/setup/module_mocks.ts"],
 }
 
 export default config
