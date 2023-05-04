@@ -2,10 +2,10 @@ import Command from "./Command"
 import yt from "../../youtube"
 import logger from "winston"
 
-type Socials = "discord" | "twitter" | "youtube" | "fish"
+type Socials = "discord" | "twitter" | "youtube" | "fish" | "twitch"
 export default new Command(
   "discord",
-  ["twitter", "youtube", "fish"],
+  ["twitter", "youtube", "fish", "twitch"],
   0,
   60,
   60,
@@ -25,6 +25,10 @@ export default new Command(
         outMsg = `Like fish and aquariums? Like looking at my face? Well if you 
          do, make sure to check out my other channel, Aquatic Mastery! 
          https://www.youtube.com/aquaticmaster`
+        break
+      case "twitch":
+        outMsg =
+          "Check out the stream on Twitch if you prefer! https://twitch.tv/nlyuki"
         break
     }
     const failed = await yt.chat.sendMessage(outMsg)

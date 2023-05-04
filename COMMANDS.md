@@ -20,3 +20,4 @@ If a command doesn't seem to work it's probably on cooldown ~~or the bot crashed
 | discord                  | get a link to the NL discord         | 0     | 0      |
 | twitter                  | get a link to Jono's twitter         | 0     | 0      |
 | youtube                  | get a link to the Aquatic Mastery YT | 0     | 0      |
+| twitch                   | get a link to the stream on Twitch   | 0     | 0      |
