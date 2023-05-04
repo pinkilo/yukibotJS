@@ -52,6 +52,18 @@ listen<SubscriberEvent>(EventName.SUBSCRIBER, async ({ subscription }) => {
   })
 })
 
+async function startChatTracking() {
+  const success = await yt.chat.trackChat()
+  if (success) {
+    listen<AuthEvent>(EventName.AUTH, () => yt.chat.trackChat())
+    await addAlert({
+      description: "Bot Connected",
+      redeemer: { name: "Yuki", id: "" },
+      durationSec: 3,
+    })
+  } else setTimeout(startChatTracking, 1000 * 60)
+}
+
 async function main() {
   logger.info(`Running in ${ENV.NODE_ENV}`)
   // load caches
@@ -60,18 +72,13 @@ async function main() {
   await MoneySystem.walletCache.load(ENV.FILE.CACHE.BANK)
   await yt.subscriber.loadLastSub()
   await yt.auth.loadTokens()
-  // start sub watcher
-  await checkSubscriptions()
 
-  // track chat
+  // things not to do in test mode
   if (ENV.NODE_ENV !== "test") {
-    listen<AuthEvent>(EventName.AUTH, () => yt.chat.trackChat())
-    await yt.chat.trackChat()
-    await addAlert({
-      description: "Bot Connected",
-      redeemer: { name: "Yuki", id: "" },
-      durationSec: 3,
-    })
+    // track chat
+    await startChatTracking()
+    // start sub watcher
+    await checkSubscriptions()
   }
 
   const svr = server().listen(ENV.PORT, () =>

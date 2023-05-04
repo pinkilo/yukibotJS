@@ -49,11 +49,13 @@ export const checkSubscriptions = async (loop: boolean = true) => {
     updated = recent
   }
   logger.debug("new subs", { newsubs: updated.length })
-  // announce oldest->newest
-  for (const subscription of updated.reverse()) {
-    announce(new SubscriberEvent(subscription))
+  if (updated.length > 0) {
+    // announce oldest->newest
+    for (const subscription of updated.reverse()) {
+      announce(new SubscriberEvent(subscription))
+    }
+    // save most recent
+    await updateLastSub(updated[0])
   }
-  // save most recent
-  await updateLastSub(updated[0])
   if (loop) setTimeout(checkSubscriptions, basePollingRate * 4)
 }

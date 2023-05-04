@@ -8,10 +8,12 @@ import { User } from "../models"
 import { randFromRange } from "../util"
 import Env from "../env"
 import Schema$LiveChatMessage = youtube_v3.Schema$LiveChatMessage
+import Schema$LiveBroadcast = youtube_v3.Schema$LiveBroadcast
 
 const chatMessages = []
 let liveChatId: string
 let nextPage: string
+let broadcast: Schema$LiveBroadcast
 
 const getBroadcast = async () => {
   const response = await ytApi.liveBroadcasts.list({
@@ -42,15 +44,21 @@ const getChatMessages = async () => {
   setTimeout(getChatMessages, basePollingRate)
 }
 
-const findChat = async () => {
-  liveChatId = (await getBroadcast()).snippet.liveChatId
-  logger.info(`Chat ID: ${liveChatId}`)
-}
-
+/**
+ * @returns {boolean} true if successful
+ */
 const trackChat = async () => {
   logger.info("attempting to track chat")
-  await findChat()
-  await getChatMessages()
+  broadcast = await getBroadcast()
+  if (broadcast) {
+    liveChatId = broadcast.snippet.liveChatId
+    logger.info(`Chat ID: ${liveChatId}`)
+    logger.info("starting chat polling")
+    await getChatMessages()
+  } else {
+    logger.error("failed to find active broadcast")
+  }
+  return broadcast !== undefined
 }
 
 const sendMessage = async (text: string) => {
@@ -90,7 +98,6 @@ const getChat = (index: number = 0): Schema$LiveChatMessage[] =>
 
 export {
   ytApi as api,
-  findChat,
   trackChat,
   sendMessage,
   getRandomUser,

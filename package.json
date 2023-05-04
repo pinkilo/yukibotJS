@@ -14,6 +14,7 @@
     "rollup/build": "rollup --config",
     "rollup/watch": "rollup --config --watch",
     "watch": "nodemon yuki.js --config nodemon.config.json",
+    "start": "node ./yuki.js",
     "test": "jest"
   },
   "main": "./src/index.js",
