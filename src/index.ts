@@ -74,7 +74,7 @@ async function main() {
   await yt.auth.loadTokens()
 
   // things not to do in test mode
-  if (ENV.NODE_ENV !== "test") {
+  if (ENV.TEST) {
     // track chat
     await startChatTracking()
     // start sub watcher

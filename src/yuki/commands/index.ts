@@ -38,7 +38,7 @@ const getCmd = (name: string): Command | undefined => commandMap[name]
 const runCmd = async (name: string, msg: ChatMessage, tokens: TokenBin) => {
   const cmd = getCmd(name)
   if (cmd) {
-    logger.info(`RUNNING: ${name}`)
+    logger.info(`EXECUTE: ${name}`)
     await cmd?.execute(msg, tokens)
   } else {
     logger.debug(`no command found with name "${name}"`)

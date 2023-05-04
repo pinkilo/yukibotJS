@@ -3,9 +3,12 @@ import { config } from "dotenv"
 
 config()
 
+const isTest = process.env.NODE_ENV === "test"
+
 export default {
   NODE_ENV: process.env.NODE_ENV,
-  PORT: process.env.PORT,
+  TEST: isTest,
+  PORT: parseInt(process.env.PORT) + (isTest ? 1 : 0),
   FILE: {
     CACHE: {
       USER: "./.cache/user.json",

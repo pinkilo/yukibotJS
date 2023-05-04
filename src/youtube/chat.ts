@@ -25,6 +25,7 @@ const getBroadcast = async () => {
 }
 
 const getChatMessages = async () => {
+  logger.info("updating chat")
   const response = await ytApi.liveChatMessages.list({
     auth,
     part: ["snippet", "authorDetails"],
