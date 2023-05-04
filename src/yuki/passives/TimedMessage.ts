@@ -12,7 +12,8 @@ class TimedMessage extends Passive {
   constructor(message: string, msgDelay: number) {
     super(
       async (msg) => {
-        if (msg.authorDetails.channelId !== env.SELF.ID) this.counter++
+        if (msg.authorDetails.channelId === env.SELF.ID) this.counter--
+        else this.counter++
         if (this.counter > msgDelay) {
           this.counter = 0
           return true
@@ -28,19 +29,19 @@ class TimedMessage extends Passive {
 
 export const bankMessage = new TimedMessage(
   "Remember to use >bank to check your Rupee wallet!",
-  25
+  35
 )
 export const discordMessage = new TimedMessage(
   "Join the NL Discord to chat and get updates about the stream https://discord.gg/3dYzJXJStR",
-  35
+  45
 )
 
 export const aquaticMasteryMessage = new TimedMessage(
   "Like fish and aquariums? Like looking at my face? Well if you do, make sure to check out my personal YouTube channel, Aquatic Mastery! https://www.youtube.com/aquaticmaster",
-  45
+  55
 )
 
 export const commandsMessage = new TimedMessage(
   "Use >cmds or >commands to get a list of all of the bot commands!",
-  15
+  25
 )
