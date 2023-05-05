@@ -1,5 +1,5 @@
 import Command from "./Command"
-import { addAlert } from "../Alerts"
+import { enqueueNewAlert } from "../alerts"
 import youtube from "../../youtube"
 import MoneySystem from "../MoneySystem"
 
@@ -9,16 +9,12 @@ export const FitCheck = new Command(
   100,
   60 * 10,
   60 * 5,
-  async (msg, _, _this) => {
-    await addAlert({
-      description: `Fit Check Redemption`,
-      redeemer: {
-        name: msg.authorDetails.displayName,
-        id: msg.authorDetails.channelId,
-      },
-      durationSec: 10,
-    })
-  }
+  async (msg, _, _this) =>
+    await enqueueNewAlert(
+      "Fit Check Redemption",
+      msg.authorDetails.displayName,
+      msg.authorDetails.channelId
+    )
 )
 
 export const Hydrate = new Command(
@@ -27,16 +23,12 @@ export const Hydrate = new Command(
   10,
   60 * 5,
   60 * 5,
-  async (msg, _, _this) => {
-    await addAlert({
-      description: `Hydrate!`,
-      redeemer: {
-        name: msg.authorDetails.displayName,
-        id: msg.authorDetails.channelId,
-      },
-      durationSec: 10,
-    })
-  }
+  async (msg, _, _this) =>
+    await enqueueNewAlert(
+      "Hydrate!",
+      msg.authorDetails.displayName,
+      msg.authorDetails.channelId
+    )
 )
 
 /**
@@ -58,11 +50,7 @@ export const Pushups = new Command(
   async ({ authorDetails: { channelId, displayName } }, tokens, cost) => {
     const base = 10
     const count = parseInt(tokens.params[0]) || base
-    await addAlert({
-      description: `Pushups: ${count}`,
-      redeemer: { name: displayName, id: channelId },
-      durationSec: 10,
-    })
+    await enqueueNewAlert(`Pushups: ${count}`, displayName, channelId)
     await youtube.chat.sendMessage(
       `${displayName} redeemed ${count} pushups for ${cost} ${MoneySystem.name}s`
     )

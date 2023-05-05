@@ -1,7 +1,7 @@
 import yt from "./youtube"
 import server from "./server"
 import logger, { format, transports } from "winston"
-import { MoneySystem, processMessage, setSocket } from "./yuki"
+import { enqueueNewAlert, MoneySystem, processMessage, setSocket } from "./yuki"
 import ENV from "./env"
 import { WebSocketServer } from "ws"
 import "./testing"
@@ -13,7 +13,6 @@ import {
   SubscriberEvent,
 } from "./event"
 import { userCache } from "./Cache"
-import { addAlert } from "./yuki/Alerts"
 import { checkSubscriptions } from "./youtube/subscriber"
 
 logger.configure({
@@ -42,25 +41,18 @@ listen<MessageBatchEvent>(EventName.MESSAGE_BATCH, async ({ all }) => {
 
 // alert new subscriptions
 listen<SubscriberEvent>(EventName.SUBSCRIBER, async ({ subscription }) => {
-  await addAlert({
-    description: "New Subscriber!",
-    redeemer: {
-      name: subscription.subscriberSnippet.title,
-      id: subscription.subscriberSnippet.channelId,
-    },
-    durationSec: 10,
-  })
+  await enqueueNewAlert(
+    "New Subscriber!",
+    subscription.subscriberSnippet.title,
+    subscription.subscriberSnippet.channelId
+  )
 })
 
 async function startChatTracking() {
   const success = await yt.chat.trackChat()
   if (success) {
     listen<AuthEvent>(EventName.AUTH, () => yt.chat.trackChat())
-    await addAlert({
-      description: "Bot Connected",
-      redeemer: { name: "Yuki", id: "" },
-      durationSec: 3,
-    })
+    await enqueueNewAlert("Bot Connected", "Yuki", ENV.SELF.ID, 4)
   } else setTimeout(startChatTracking, 1000 * 60)
 }
 

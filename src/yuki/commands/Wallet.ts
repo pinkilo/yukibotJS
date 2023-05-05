@@ -2,7 +2,7 @@ import Command from "./Command"
 import yt from "../../youtube"
 import MS from "../MoneySystem"
 import logger from "winston"
-import { addAlert } from "../Alerts"
+import { enqueueNewAlert } from "../alerts"
 
 export const Wallet = new Command(
   "wallet",
@@ -64,10 +64,6 @@ export const Leaderboard = new Command(
   60 * 3,
   async ({ authorDetails: { channelId, displayName } }) => {
     leaderboardDisplayDuration = 30
-    await addAlert({
-      description: "Leaderboard Display",
-      durationSec: 10,
-      redeemer: { id: channelId, name: displayName },
-    })
+    await enqueueNewAlert("Leaderboard Display", displayName, channelId)
   }
 )
