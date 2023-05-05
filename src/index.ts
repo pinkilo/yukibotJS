@@ -13,7 +13,6 @@ import {
   SubscriberEvent,
 } from "./event"
 import { userCache } from "./Cache"
-import { checkSubscriptions } from "./youtube/subscriber"
 
 logger.configure({
   level: ENV.NODE_ENV === "test" ? "debug" : "info",
@@ -62,7 +61,6 @@ async function main() {
   logger.info("loaded caches")
   await userCache.load(ENV.FILE.CACHE.USER)
   await MoneySystem.walletCache.load(ENV.FILE.CACHE.BANK)
-  await yt.subscriber.loadLastSub()
   await yt.auth.loadTokens()
 
   // things not to do in test mode
@@ -70,7 +68,7 @@ async function main() {
     // track chat
     await startChatTracking()
     // start sub watcher
-    await checkSubscriptions()
+    await yt.subscriptions.updateSubscriptionsLoop()
   }
 
   const svr = server().listen(ENV.PORT, () =>

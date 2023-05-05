@@ -1,5 +1,8 @@
 import { listOf, subscriber } from "./util"
-import { checkSubscriptions, loadLastSub } from "../youtube/subscriber"
+import {
+  updateSubscriptionsLoop,
+  getMostRecentSub,
+} from "../youtube/subscriptions"
 import youtube from "../youtube/apiClient"
 import { announce } from "../event"
 import file from "../util/file"
@@ -13,21 +16,21 @@ describe("Recent Subscription", () => {
     .mockImplementation(() => ({ data: { items: subs } }))
 
   beforeEach(async () => {
-    await loadLastSub()
+    await getMostRecentSub()
   })
 
   it("should request api info", async () => {
-    await checkSubscriptions(false)
+    await updateSubscriptionsLoop(false)
     expect(listSubscriptionsMock).toHaveBeenCalledTimes(1)
   })
 
   it("should announce each new subscription", async () => {
-    await checkSubscriptions(false)
+    await updateSubscriptionsLoop(false)
     expect(announce).toHaveBeenCalledTimes(subs.length)
   })
 
   it("should write newest subscription to file", async () => {
-    await checkSubscriptions(false)
+    await updateSubscriptionsLoop(false)
     expect(file.write).toHaveBeenCalledTimes(1)
     expect(file.write).toHaveReturnedWith(JSON.stringify(subs[0]))
   })
