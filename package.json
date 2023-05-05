@@ -1,6 +1,6 @@
 {
   "name": "yuki-bot",
-  "version": "1.0.0",
+  "version": "0.0.0-development",
   "description": "yt bot",
   "repository": "https://github.com/pinkilo/yuki-bot.git",
   "author": "Pinkilo <hello@pinkilo.org>",
@@ -15,11 +15,26 @@
     "rollup/watch": "rollup --config --watch",
     "watch": "nodemon yuki.js --config nodemon.config.json",
     "start": "node ./yuki.js",
-    "test": "jest"
+    "test": "jest",
+    "semantic-release": "semantic-release"
   },
   "main": "./src/index.js",
   "bin": {
     "yuki": "yuki.js"
+  },
+  "release": {
+    "branches": [
+      "main"
+    ],
+    "plugins": [
+      ["@semantic-release/commit-analyzer", {
+        "preset": "eslint",
+        "releaseRules": [{"tag":  "Refactor", "release":  "patch"}]
+      }],
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/changelog",
+      "@semantic-release/npm"
+    ]
   },
   "dependencies": {
     "dotenv": "^16.0.3",
@@ -34,6 +49,7 @@
   "devDependencies": {
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-typescript": "^11.0.0",
+    "@semantic-release/changelog": "^6.0.3",
     "@types/express": "^4.17.17",
     "@types/gapi": "^0.0.44",
     "@types/jest": "^29.5.0",
@@ -61,6 +77,7 @@
     "rollup-plugin-add-shebang": "^0.3.1",
     "rollup-plugin-copy": "^3.4.0",
     "rollup-plugin-watch": "^1.0.2",
+    "semantic-release": "^21.0.2",
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.1.0",
     "ts-jest": "^29.1.0",
