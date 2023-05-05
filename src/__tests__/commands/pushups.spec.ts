@@ -2,13 +2,13 @@ import { Pushups } from "../../yuki/commands/Redemptions"
 import { chatMessage } from "../util"
 import { tokenize } from "../../yuki/processing"
 import youtube from "../../youtube"
-import * as Alerts from "../../yuki/Alerts"
+import * as alerts from "../../yuki/alerts"
 
 jest.mock("../../util/file")
 jest.mock("../../youtube")
 
 let addAlertMock = jest
-  .spyOn(Alerts, "addAlert")
+  .spyOn(alerts, "enqueueNewAlert")
   .mockImplementation(async () => {})
 let checkCooldownMock
 
@@ -16,7 +16,7 @@ const msg = chatMessage(`>${Pushups.name}`)
 describe("Command PUSHUPS", () => {
   beforeEach(() => {
     addAlertMock = jest
-      .spyOn(Alerts, "addAlert")
+      .spyOn(alerts, "enqueueNewAlert")
       .mockImplementation(async () => {})
     checkCooldownMock = jest
       .spyOn(Pushups, "onCooldown")

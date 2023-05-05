@@ -34,5 +34,6 @@ module.exports = {
     "process",
     "readline",
     "packetier",
+    "nanoid",
   ],
 }

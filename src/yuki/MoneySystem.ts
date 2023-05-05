@@ -1,5 +1,6 @@
-import { SyncCache, userCache } from "../Cache"
+import { SyncCache } from "../Cache"
 import ENV from "../env"
+import youtube from "../youtube"
 
 const startingWallet = 100
 const name = "rupee"
@@ -20,7 +21,9 @@ const getLeaderboard = async (
   const lbroot = walletCache.entries().sort(([_, a], [__, b]) => b - a)
   const lb = lbroot.filter(([key]) => key !== ENV.SELF.ID)
   if (hydrate) {
-    const users = await Promise.all(lb.map(([uid]) => userCache.get(uid)))
+    const users = await Promise.all(
+      lb.map(([uid]) => youtube.users.userCache.get(uid))
+    )
     return lb.map(([lbId, val]) => {
       return [users.find((u) => u.id === lbId)?.name || "unknown", val]
     })

@@ -1,7 +1,6 @@
 import yt from "../../youtube"
 import Command from "./Command"
 import logger from "winston"
-import { getRandomUser } from "../../youtube/chat"
 
 /**
  * Randomly selects another chat member to "fight"
@@ -17,7 +16,7 @@ export default new Command(
   60,
   0,
   async ({ authorDetails: { displayName, channelId } }, _, cost, _this) => {
-    const rUser = getRandomUser([channelId])
+    const rUser = yt.users.getRandomUser([channelId])
     const { id: tid, name } = rUser
     logger.debug("running beatass", { target: name, displayName })
     const succeeds = Math.random() > 0.55

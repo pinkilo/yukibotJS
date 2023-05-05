@@ -1,6 +1,4 @@
 import { file } from "./util"
-import { User } from "./models"
-import yt from "./youtube"
 import logger from "winston"
 
 abstract class Cache<V> {
@@ -71,7 +69,3 @@ export class AsyncCache<V> extends Cache<V> {
     return this.map[key]
   }
 }
-
-export const userCache = new AsyncCache<User>(
-  async (k) => (await yt.chat.fetchUsers([k]))[0]
-)

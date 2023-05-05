@@ -8,10 +8,15 @@ import logger from "winston"
 
 let _lastSub: Subscription = null
 
+const _updateLastSub = async (sub: Subscription) => {
+  _lastSub = sub
+  await file.write(Env.FILE.SUBSCRIBER, JSON.stringify(sub))
+}
+
 /**
  * Subscribers in reverse chronological order (newest first)
  */
-const getRecentSubscribers = async (): Promise<Subscription[]> => {
+const _getRecentSubscribers = async (): Promise<Subscription[]> => {
   return (
     await ytApi.subscriptions.list({
       auth,
@@ -29,7 +34,7 @@ const getMostRecentSub = async (): Promise<Subscription> => {
   if (_lastSub === null && file.exists(Env.FILE.SUBSCRIBER)) {
     logger.debug("loading most recent sub from file")
     const raw = await file.read(Env.FILE.SUBSCRIBER)
-    _lastSub = JSON.parse(raw + "")
+    await _updateLastSub(JSON.parse(raw + ""))
   }
   return _lastSub
 }
@@ -37,7 +42,7 @@ const getMostRecentSub = async (): Promise<Subscription> => {
 const updateSubscriptionsLoop = async (loop: boolean = true) => {
   logger.info("checking subscriptions")
   const lastInMem = await getMostRecentSub()
-  const recent = await getRecentSubscribers()
+  const recent = await _getRecentSubscribers()
   logger.debug("recent subs", { recent: recent.length })
 
   let updated: Subscription[]
@@ -56,8 +61,7 @@ const updateSubscriptionsLoop = async (loop: boolean = true) => {
       .map((s) => new SubscriberEvent(s))
       .forEach(announce)
     // save most recent
-    _lastSub = updated[0]
-    await file.write(Env.FILE.SUBSCRIBER, JSON.stringify(updated[0]))
+    await _updateLastSub(updated[updated.length - 1])
   }
   if (loop) setTimeout(updateSubscriptionsLoop, basePollingRate * 4)
 }

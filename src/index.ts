@@ -12,7 +12,6 @@ import {
   MessageBatchEvent,
   SubscriberEvent,
 } from "./event"
-import { userCache } from "./Cache"
 
 logger.configure({
   level: ENV.NODE_ENV === "test" ? "debug" : "info",
@@ -35,7 +34,7 @@ listen<MessageBatchEvent>(
 // save caches
 listen<MessageBatchEvent>(EventName.MESSAGE_BATCH, async ({ all }) => {
   if (all.length === 0) return
-  await userCache.save(ENV.FILE.CACHE.USER)
+  await yt.users.userCache.save(ENV.FILE.CACHE.USER)
 })
 
 // alert new subscriptions
@@ -59,7 +58,7 @@ async function main() {
   logger.info(`Running in ${ENV.NODE_ENV}`)
   // load caches
   logger.info("loaded caches")
-  await userCache.load(ENV.FILE.CACHE.USER)
+  await yt.users.userCache.load(ENV.FILE.CACHE.USER)
   await MoneySystem.walletCache.load(ENV.FILE.CACHE.BANK)
   await yt.auth.loadTokens()
 
