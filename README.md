@@ -3,7 +3,7 @@
 Yuki is a YouTube livestream bot built from the ground up for unique interactivity
 both on screen and in the chat.
 
-[![Build CI](https://github.com/pinkilo/yuki-bot/actions/workflows/test-ci.yml/badge.svg)](https://github.com/pinkilo/yuki-bot/actions/workflows/test-ci.yml)
+[![Release CI](https://github.com/pinkilo/yukibotJS/actions/workflows/CD.yml/badge.svg)](https://github.com/pinkilo/yukibotJS/actions/workflows/CD.yml)
 
 ## Commands
 [see a list of commands](COMMANDS.md)
