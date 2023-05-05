@@ -19,7 +19,7 @@ listen<AuthEvent>(EventName.AUTH, async () => logger.info("Tokens Updated"))
 // save caches
 listen<MessageBatchEvent>(EventName.MESSAGE_BATCH, async ({ all }) => {
   if (all.length === 0) return
-  await userCache.save(ENV.FILE.CACHE.USER)
+  await yt.users.userCache.save(ENV.FILE.CACHE.USER)
 })
 
 async function startChatTracking() {
@@ -35,9 +35,8 @@ async function main() {
   logger.info(`Running in ${ENV.NODE_ENV}`)
   // load caches
   logger.info("loaded caches")
-  await userCache.load(ENV.FILE.CACHE.USER)
+  await yt.users.userCache.load(ENV.FILE.CACHE.USER)
   await MoneySystem.walletCache.load(ENV.FILE.CACHE.BANK)
-  await yt.subscriber.loadLastSub()
   await yt.auth.loadTokens()
 
   // things not to do in test mode
@@ -45,7 +44,7 @@ async function main() {
     // track chat
     await startChatTracking()
     // start sub watcher
-    await checkSubscriptions()
+    await yt.subscriptions.updateSubscriptionsLoop()
   }
 
   const svr = server().listen(ENV.PORT, () =>

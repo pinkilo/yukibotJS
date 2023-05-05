@@ -1,5 +1,6 @@
 import * as auth from "./auth"
 import * as chat from "./chat"
-import * as subscriber from "./subscriber"
+import * as subscriptions from "./subscriptions"
+import * as users from "./users"
 
-export default { auth, chat, subscriber }
+export default { auth, chat, subscriptions, users }
