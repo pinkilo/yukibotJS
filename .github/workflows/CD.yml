@@ -34,7 +34,7 @@ jobs:
           node-version: 18.x
           cache: yarn
       - run: yarn rollup/build
-      - run: yarn test --maxWorkers 1
+      - run: yarn test --verbose --maxWorkers=2
   release:
     runs-on: ubuntu-16.04
     needs: test
