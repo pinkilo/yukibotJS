@@ -1,7 +1,13 @@
 import { processMessage } from "./processing"
 import MoneySystem from "./MoneySystem"
 import { setSocket } from "./fox"
-import { enqueueNewAlert, Alert, replayAlert, getAlertHistory } from "./alerts"
+import {
+  enqueueNewAlert,
+  Alert,
+  replayAlert,
+  getAlertHistory,
+  nextAlert,
+} from "./alerts"
 
 export {
   processMessage,
@@ -11,4 +17,5 @@ export {
   Alert,
   replayAlert,
   enqueueNewAlert,
+  nextAlert,
 }

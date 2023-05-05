@@ -30,10 +30,10 @@ const enabledCommands = Object.freeze([
 // Load commands into the map
 ;(() =>
   enabledCommands.forEach((cmd) =>
-    [cmd.name, ...cmd.alias].forEach((name) => (commandMap[name] = cmd))
+    [cmd.name, ...cmd.alias].forEach((name) => commandMap.set(name, cmd))
   ))()
 
-const getCmd = (name: string): Command | undefined => commandMap[name]
+const getCmd = (name: string): Command | undefined => commandMap.get(name)
 
 const runCmd = async (name: string, msg: ChatMessage, tokens: TokenBin) => {
   const cmd = getCmd(name)

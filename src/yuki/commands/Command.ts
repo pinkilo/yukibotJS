@@ -119,17 +119,19 @@ export default class Command {
   }
 
   addCooldown(uid: string) {
-    this.cooldowns[uid] = new Date().getTime() + this.ratelimit * 1000
+    this.cooldowns.set(uid, new Date().getTime() + this.ratelimit * 1000)
     if (this.globalRateLimit > 0) {
-      this.cooldowns["GLOBAL"] =
+      this.cooldowns.set(
+        "GLOBAL",
         new Date().getTime() + this.globalRateLimit * 1000
+      )
     }
   }
 
   /** @returns {number} - The cooldown in seconds */
   getCooldownInSec(uid: string): number {
-    return this.cooldowns[uid]
-      ? (this.cooldowns[uid] - new Date().getTime()) / 1000
+    return this.cooldowns.has(uid)
+      ? (this.cooldowns.get(uid) - new Date().getTime()) / 1000
       : 0
   }
 

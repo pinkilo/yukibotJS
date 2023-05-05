@@ -9,7 +9,7 @@ import Env from "../env"
 import Schema$LiveChatMessage = youtube_v3.Schema$LiveChatMessage
 import Schema$LiveBroadcast = youtube_v3.Schema$LiveBroadcast
 
-const chatMessages = []
+const chatMessages: Schema$LiveChatMessage[] = []
 let liveChatId: string
 let nextPage: string
 let broadcast: Schema$LiveBroadcast

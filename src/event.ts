@@ -71,11 +71,11 @@ export const listen = <E extends Event>(
   eventName: EventName,
   listener: (event: E) => Promise<any>
 ) => {
-  if (!eventListeners[eventName]) eventListeners[eventName] = []
-  eventListeners[eventName].push(listener)
+  if (!eventListeners.has(eventName)) eventListeners.set(eventName, [])
+  eventListeners.get(eventName).push(listener)
 }
 
 export const announce = (event: Event) =>
-  eventListeners[event.name]?.forEach((f) => f(event))
+  eventListeners.get(event.name)?.forEach((f) => f(event))
 
 export default Event
