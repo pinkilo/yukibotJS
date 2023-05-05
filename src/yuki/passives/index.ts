@@ -1,20 +1,6 @@
 import ParticipationAwards from "./ParticipationAwards"
-import Fox from "./Fox"
-import {
-  aquaticMasteryMessage,
-  bankMessage,
-  commandsMessage,
-  discordMessage,
-} from "./TimedMessage"
+import Passive from "./Passive"
 
-const passives = [
-  ParticipationAwards,
-  Fox.greeting,
-  Fox.good,
-  aquaticMasteryMessage,
-  discordMessage,
-  commandsMessage,
-  bankMessage,
-]
+const passives: Passive[] = []
 
-export { ParticipationAwards, Fox, passives }
+export { ParticipationAwards, passives }
