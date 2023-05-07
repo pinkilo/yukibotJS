@@ -1,25 +1,34 @@
 import yukibot from "yukibot"
+import process from "process"
+import dotenv from "dotenv"
+
+dotenv.config()
 
 const { yuki } = yukibot
 
 async function main() {
-  const bot = await yuki((bldr) => {
-    bldr.logLevel = "info"
-    bldr.yukiConfig.name = "MyBot"
-    bldr.yukiConfig.prefix = /^>$/
-    bldr.tokenLoader = async () => ({
+  const bot = await yuki((y) => {
+    y.logLevel = "http" // info, debug, error
+    y.yukiConfig.name = "MyBot"
+    y.yukiConfig.prefix = /^>$/
+    y.googleConfig = {
+      clientId: process.env.G_CLIENT_ID,
+      clientSecret: process.env.G_CLIENT_SECRET,
+      redirectUri: process.env.G_REDIRECT_URI,
+    }
+    y.tokenLoader = async () => ({
       /*...*/
     })
-    bldr.command((cmd) => {
+    y.command((cmd) => {
       cmd.name = "greet"
       cmd.invoke = async () => {
-        await bldr.sendMessage("Hello There")
+        await y.sendMessage("Hello There")
       }
     })
   })
 
-  const { value: server } = await bot.start()
-  server.listen(3000, () => console.log(`http://localhost:${3000}`))
+  bot.express.listen(3000, () => console.log(`http://localhost:${3000}`))
+  bot.onAuthUpdate(() => bot.start())
 }
 
 main()

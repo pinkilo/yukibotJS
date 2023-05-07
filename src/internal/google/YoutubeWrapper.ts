@@ -24,6 +24,10 @@ export default class YoutubeWrapper {
     this.broadcasts = new BroadcastHandler(this.client, this.auth, this.logger)
   }
 
+  get tokensLoaded(): boolean {
+    return this.auth.credentials !== undefined
+  }
+
   setTokens(tokens: Credentials) {
     this.auth.setCredentials(tokens)
   }

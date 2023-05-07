@@ -33,6 +33,7 @@ export default class BroadcastHandler {
 
   /**
    * Fetches active broadcast and updates broadcast data in memory
+   *
    * TODO Find a way to handle multiple broadcasts?
    */
   async fetchBroadcast(): Promise<Result<Schema$LiveBroadcast>> {

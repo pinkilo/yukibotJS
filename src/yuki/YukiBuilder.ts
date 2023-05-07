@@ -2,6 +2,7 @@ import { createLogger, format, Logger, transports } from "winston"
 import { youtube_v3 } from "googleapis"
 import { Credentials } from "google-auth-library"
 import {
+  AuthEvent,
   BroadcastUpdateEvent,
   Eventbus,
   EventType,
@@ -12,10 +13,13 @@ import { Command, CommandBuilder } from "./commands"
 import Yuki, { GoogleConfig, YukiConfig } from "./Yuki"
 import { Passive } from "./passives"
 import { TokenBin, tokenize } from "./tokenization"
+import { Result } from "../internal/util"
 import Schema$LiveBroadcast = youtube_v3.Schema$LiveBroadcast
 import Schema$LiveChatMessage = youtube_v3.Schema$LiveChatMessage
-import { Result } from "../internal/util"
 
+/**
+ * @returns {Yuki} the constructed bot instance or undefined if building failed
+ */
 export const yuki = async (
   dsl: (builder: YukiBuilder) => Promise<unknown>
 ): Promise<Yuki> => {
@@ -58,6 +62,30 @@ export default class YukiBuilder {
     } else {
       this.logger.debug(`no command found with name "${name}"`)
     }
+  }
+
+  private prebuildCheck(): boolean {
+    if (this.youtube === undefined) {
+      this.logger.error(
+        "google config not set. make sure you've used `builder.googleConfig = {...}`"
+      )
+      return false
+    }
+    if (this.tokenLoader === undefined) {
+      this.logger.error(
+        "token loader not set. make sure you've used `builder.tokenLoader = () => ...`"
+      )
+      return false
+    }
+    if (
+      this.eventbus.size === 0 &&
+      this.passives.length === 0 &&
+      this.commands.size === 0
+    ) {
+      // don't fail, just warn
+      this.logger.alert("no commands, passives, or listeners were set")
+    }
+    return true
   }
 
   /** @see https://github.com/winstonjs/winston#logging */
@@ -126,6 +154,14 @@ export default class YukiBuilder {
     )
   }
 
+  /**
+   * Called when auth tokens are updated. usually useful when waiting
+   * on login to start the bot
+   */
+  onAuthUpdate(cb: () => Promise<unknown>) {
+    this.eventbus.listen<AuthEvent>(EventType.AUTH, cb)
+  }
+
   async sendMessage(
     messageText: string
   ): Promise<Result<Schema$LiveChatMessage>> {
@@ -133,6 +169,10 @@ export default class YukiBuilder {
   }
 
   build(): Yuki {
+    if (!this.prebuildCheck()) {
+      this.logger.error("failed to build yukibot")
+      return undefined
+    }
     // command listener
     if (Array.from(this.commands.keys()).length > 0) {
       this.onMessage(async (msg) => {

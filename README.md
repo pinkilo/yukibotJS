@@ -5,15 +5,6 @@ both on screen and in the chat.
 
 [![Release CI](https://github.com/pinkilo/yukibotJS/actions/workflows/CD.yml/badge.svg)](https://github.com/pinkilo/yukibotJS/actions/workflows/CD.yml)
 
-## Commands
-[see a list of commands](COMMANDS.md)
-
-## Currency System
-
-- Earn currency by sending messages in chat and using certain [commands](COMMANDS.md)
-- currency is persisted to file
-
-
 ## Contributing
 
 Commits should be written with 

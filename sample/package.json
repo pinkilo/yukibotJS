@@ -8,6 +8,7 @@
   },
   "type": "module",
   "dependencies": {
-    "yukibot": "file:../"
+    "dotenv": "^16.0.3",
+    "yukibot": "link:../"
   }
 }

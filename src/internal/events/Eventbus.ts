@@ -16,6 +16,10 @@ export default class Eventbus {
     this.listeners.get(event.type)?.forEach((listener) => listener(event))
   }
 
+  get size(): number {
+    return this.listeners.size
+  }
+
   clear() {
     this.listeners.clear()
   }

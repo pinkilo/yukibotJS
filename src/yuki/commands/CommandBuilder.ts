@@ -31,7 +31,7 @@ export default class CommandBuilder {
       this.name,
       this.alias || [],
       this.rateLimit?.individual || 0,
-      this.rateLimit.global || 0,
+      this.rateLimit?.global || 0,
       this.logger,
       this.invoke
     )

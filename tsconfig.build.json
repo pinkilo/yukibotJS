@@ -4,29 +4,22 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "declarationDir": "./dist",
-    "noImplicitReturns": true,
-    "noImplicitAny": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
     "incremental": true,
-    /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017', 'ES2018', 'ES2019' or 'ESNEXT'. */
-    "target": "esnext",
-    /* Specify module code generation: 'none', 'commonjs', 'amd', 'system', 'umd', 'es2015', or 'ESNext'. */
-    "module": "esnext",
-    /* Generates corresponding '.d.ts' file. */
     "declaration": true,
-    /* Generates corresponding '.map' file. */
     "sourceMap": false,
-    //"importHelpers": true /* Import emit helpers from 'tslib'. */,
     "lib": [
       "ES5",
       "ES6"
     ],
-    /* Strict Type-Checking Options */
-    // "strict": true /* Enable all strict type-checking options. */,
+    "target": "ES6",
+    "module": "commonJS",
     "resolveJsonModule": true,
     "moduleResolution": "node",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "noImplicitReturns": true,
+    "noImplicitAny": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
   },
   "include": [
     "src"
