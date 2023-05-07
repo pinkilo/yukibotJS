@@ -34,6 +34,10 @@
             {
               "tag": "Refactor",
               "release": "patch"
+            },
+            {
+              "tag": "tests",
+              "release": "patch"
             }
           ]
         }
