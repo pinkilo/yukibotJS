@@ -1,6 +1,5 @@
 import { youtube_v3 } from "googleapis"
 import Schema$LiveChatMessage = youtube_v3.Schema$LiveChatMessage
-import { factory } from "ts-jest/dist/transformers/hoist-jest"
 
 export const chatMessage = (text: string): Schema$LiveChatMessage => ({
   kind: "youtube#liveChatMessage",
@@ -22,7 +21,7 @@ export const chatMessage = (text: string): Schema$LiveChatMessage => ({
   },
 })
 
-export const subscriber = (id: string = "CHANNEL_ID") => ({
+export const subscriber = (id = "CHANNEL_ID") => ({
   kind: "youtube#subscription",
   etag: "E_TAG",
   id: "SUBSCRIPTION_ID",
