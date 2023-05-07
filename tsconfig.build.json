@@ -3,6 +3,7 @@
     "baseUrl": ".",
     "outDir": "./dist",
     "rootDir": "./src",
+    "declarationDir": "./dist",
     "noImplicitReturns": true,
     "noImplicitAny": true,
     "noUnusedLocals": true,
@@ -12,10 +13,10 @@
     "target": "esnext",
     /* Specify module code generation: 'none', 'commonjs', 'amd', 'system', 'umd', 'es2015', or 'ESNext'. */
     "module": "esnext",
-    "declaration": true
-    /* Generates corresponding '.d.ts' file. */,
-    "sourceMap": false
-    /* Generates corresponding '.map' file. */,
+    /* Generates corresponding '.d.ts' file. */
+    "declaration": true,
+    /* Generates corresponding '.map' file. */
+    "sourceMap": false,
     //"importHelpers": true /* Import emit helpers from 'tslib'. */,
     "lib": [
       "ES5",

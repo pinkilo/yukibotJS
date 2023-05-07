@@ -11,6 +11,8 @@ import {
 import { failure, Result, successOf } from "../internal/util"
 import { Credentials } from "google-auth-library"
 import { youtube_v3 } from "googleapis"
+import express, { Express } from "express"
+import { join } from "path"
 import Schema$LiveChatMessage = youtube_v3.Schema$LiveChatMessage
 
 export type GoogleConfig = {
@@ -58,15 +60,34 @@ export default class Yuki {
     }, this.logger)
   }
 
-  async start() {
+  async start(): Promise<Result<Express>> {
+    if (this.running) {
+      this.logger.error("bot is already running")
+      return failure()
+    }
     const { success, value: tokens } = await this.tokenLoader()
+    // don't run loops without tokens
     if (success) {
       this.youtube.setTokens(tokens)
+      this.running = true
+      await this.broadcastWatcher()
+      this.eventbus.listen(EventType.BROADCAST_UPDATE, () => this.chatWatcher())
     }
-
-    this.running = true
-    await this.broadcastWatcher()
-    this.eventbus.listen(EventType.BROADCAST_UPDATE, () => this.chatWatcher())
+    const expr = express()
+      .use("/assets", express.static(join(__dirname, "public/assets")))
+      .get("/", (_, res) => res.sendFile(join(__dirname, "public/index.html")))
+      .get("/auth", (_, res) => res.redirect(this.youtube.getAuthUrl()))
+      .get("/callback", async (req, res) => {
+        const { code } = req.query
+        this.logger.http("auth code received")
+        const { success, value: tokens } =
+          await this.youtube.fetchTokensWithCode(code as string)
+        if (success) {
+          await this.youtube.setTokens(tokens)
+        }
+        res.redirect("/")
+      })
+    return successOf(expr)
   }
 
   async stop() {

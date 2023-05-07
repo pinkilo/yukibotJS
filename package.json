@@ -1,17 +1,21 @@
 {
   "name": "yukibot",
-  "version": "0.0.0-development",
+  "version": "0.1.0-development",
   "description": "YouTube broadcast bot library",
   "repository": "https://github.com/pinkilo/yuki-bot.git",
   "author": "Pinkilo <hello@pinkilo.org>",
   "license": "MIT",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "files": [
+    "./dist",
+    "./public"
+  ],
   "scripts": {
     "clean": "rm -rf build node_modules coverage tsconfig.tsbuildinfo yarn.lock dist",
     "prepare": "husky install",
-    "prettier/format": "yarn prettier --config .prettierrc.yaml --write public src *.js *.ts",
-    "prettier/check": "prettier --config .prettierrc.yaml --check public src *.js *.ts",
+    "prettier/format": "yarn prettier --config .prettierrc.yaml --write public src sample *.js *.ts",
+    "prettier/check": "prettier --config .prettierrc.yaml --check public src sample *.js *.ts",
     "compile": "tsc -p tsconfig.build.json",
     "test": "jest",
     "prepublish": "yarn compile",
