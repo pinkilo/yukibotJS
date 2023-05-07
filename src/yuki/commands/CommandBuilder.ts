@@ -15,18 +15,32 @@ export default class CommandBuilder {
     /** global ratelimit in seconds */
     global?: number
   }
-
-  constructor(logger: Logger) {
-    this.logger = logger
-  }
-
   invoke: (
     msg: Schema$LiveChatMessage,
     tokens: TokenBin,
     _this: Command
   ) => Promise<unknown>
 
+  constructor(logger: Logger) {
+    this.logger = logger
+  }
+
+  private prebuildCheck(): boolean {
+    if (this.name === undefined) {
+      this.logger.error("no name set in command builder")
+      return false
+    }
+    return true
+  }
+
+  /**
+   * @returns a newly built Command or undefined if failed
+   */
   build(): Command {
+    if (!this.prebuildCheck()) {
+      this.logger.error("failed to build command")
+      return undefined
+    }
     return new Command(
       this.name,
       this.alias || [],
