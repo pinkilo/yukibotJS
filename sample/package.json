@@ -1,0 +1,12 @@
+{
+  "name": "yukibot-sample",
+  "version": "1.0.0",
+  "author": "pinkilo.org",
+  "license": "MIT",
+  "scripts": {
+    "start": "node ./src/index.js"
+  },
+  "dependencies": {
+    "yukibot": "file:../"
+  }
+}
