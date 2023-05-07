@@ -1,28 +1,27 @@
-import { youtube_v3 } from "googleapis"
-import Schema$LiveChatMessage = youtube_v3.Schema$LiveChatMessage
-import { TokenBin } from "../tokenization"
+import { ChatMessage } from "../../types/google"
+import { TokenBin } from "../processing"
 
 export default class Passive {
   readonly predicate: (
-    msg: Schema$LiveChatMessage,
+    msg: ChatMessage,
     tokens: TokenBin,
     _this: Passive
   ) => Promise<boolean>
 
   readonly invoke: (
-    msg: Schema$LiveChatMessage,
+    msg: ChatMessage,
     tokens: TokenBin,
     _this: Passive
   ) => Promise<void>
 
   constructor(
     predicate: (
-      msg: Schema$LiveChatMessage,
+      msg: ChatMessage,
       tokens: TokenBin,
       _this: Passive
     ) => Promise<boolean>,
     invoke: (
-      msg: Schema$LiveChatMessage,
+      msg: ChatMessage,
       tokens: TokenBin,
       _this: Passive
     ) => Promise<void>

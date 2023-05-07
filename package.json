@@ -1,36 +1,39 @@
 {
-  "name": "yuki-bot",
+  "name": "yukibot",
   "version": "0.0.0-development",
-  "description": "yt bot",
+  "description": "YouTube broadcast bot library",
   "repository": "https://github.com/pinkilo/yuki-bot.git",
   "author": "Pinkilo <hello@pinkilo.org>",
   "license": "MIT",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "clean": "rm -rf build node_modules coverage tsconfig.tsbuildinfo yarn.lock dist",
     "prepare": "husky install",
     "prettier/format": "yarn prettier --config .prettierrc.yaml --write public src *.js *.ts",
     "prettier/check": "prettier --config .prettierrc.yaml --check public src *.js *.ts",
-    "compile": "tsc --build --config tsconfig.build.json",
-    "rollup/build": "rollup --config",
-    "rollup/watch": "rollup --config --watch",
-    "watch": "nodemon yuki.js --config nodemon.config.json",
-    "start": "node ./yuki.js",
+    "compile": "tsc -p tsconfig.build.json",
     "test": "jest",
+    "prepublish": "yarn compile",
     "semantic-release": "semantic-release"
-  },
-  "main": "./src/index.js",
-  "bin": {
-    "yuki": "yuki.js"
   },
   "release": {
     "branches": [
       "main"
     ],
     "plugins": [
-      ["@semantic-release/commit-analyzer", {
-        "preset": "eslint",
-        "releaseRules": [{"tag":  "Refactor", "release":  "patch"}]
-      }],
+      [
+        "@semantic-release/commit-analyzer",
+        {
+          "preset": "eslint",
+          "releaseRules": [
+            {
+              "tag": "Refactor",
+              "release": "patch"
+            }
+          ]
+        }
+      ],
       "@semantic-release/release-notes-generator",
       "@semantic-release/changelog",
       "@semantic-release/npm"
@@ -38,35 +41,30 @@
   },
   "dependencies": {
     "dotenv": "^16.0.3",
-    "eslint": "^8.36.0",
     "express": "^4.18.2",
     "googleapis": "^110.0.0",
     "nanoid": "^3.3.6",
     "packetier": "^3.0.0",
     "typescript": "^5.0.2",
-    "winston": "^3.8.2",
-    "ws": "^8.13.0"
+    "winston": "^3.8.2"
   },
   "devDependencies": {
-    "@rollup/plugin-json": "^4.1.0",
-    "@rollup/plugin-typescript": "^11.0.0",
     "@semantic-release/changelog": "^6.0.3",
     "@types/express": "^4.17.17",
     "@types/gapi": "^0.0.44",
     "@types/jest": "^29.5.0",
     "@types/node": "^18.15.11",
-    "@types/ws": "^8.5.4",
     "@typescript-eslint/eslint-plugin": "^5.56.0",
     "@typescript-eslint/parser": "^5.56.0",
     "assert": "^2.0.0",
     "browserify-zlib": "^0.2.0",
     "buffer": "^5.5.0",
     "crypto-browserify": "^3.12.0",
+    "eslint": "^8.36.0",
     "events": "^3.1.0",
     "https-browserify": "^1.0.0",
     "husky": "^8.0.3",
     "jest": "^29.5.0",
-    "nodemon": "^2.0.22",
     "os-browserify": "^0.3.0",
     "parcel": "^2.8.3",
     "path-browserify": "^1.0.0",
@@ -74,10 +72,6 @@
     "process": "^0.11.10",
     "punycode": "^1.4.1",
     "querystring-es3": "^0.2.1",
-    "rollup": "^3.20.2",
-    "rollup-plugin-add-shebang": "^0.3.1",
-    "rollup-plugin-copy": "^3.4.0",
-    "rollup-plugin-watch": "^1.0.2",
     "semantic-release": "^21.0.2",
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.1.0",

@@ -1,112 +1,58 @@
-import { TokenBin } from "../processing"
-import MS from "../MoneySystem"
-import { ChatMessage } from "../../types/google"
-import logger from "winston"
-
-type Payout = {
-  uids: string[]
-  amount: number | number[]
-}
+import { Logger } from "winston"
+import { TokenBin } from "../tokenization"
+import { youtube_v3 } from "googleapis"
+import Schema$LiveChatMessage = youtube_v3.Schema$LiveChatMessage
 
 export default class Command {
+  private readonly logger: Logger
   readonly name: string
-  readonly alias?: string[]
+  readonly alias: string[]
   /** personal ratelimit in seconds */
   readonly ratelimit: number
   /** global ratelimit in seconds */
   readonly globalRateLimit: number
   readonly cooldowns: Map<string, number> = new Map()
-  readonly costFun: (
-    msg: ChatMessage,
-    tokens: TokenBin,
-    _this: Command
-  ) => Promise<number>
+
   readonly invoke: (
-    msg: ChatMessage,
+    msg: Schema$LiveChatMessage,
     tokens: TokenBin,
-    cost: number,
     _this: Command
-  ) => Promise<Payout | void>
+  ) => Promise<unknown>
 
   constructor(
     name: string,
     alias: string[],
-    cost: number,
     ratelimit: number,
     globalRatelimit: number,
+    logger: Logger,
     invoke: (
-      msg: ChatMessage,
-      tokens: TokenBin,
-      cost: number,
-      _this: Command
-    ) => Promise<Payout | void>
-  )
-
-  constructor(
-    name: string,
-    alias: string[],
-    cost: (
-      msg: ChatMessage,
+      msg: Schema$LiveChatMessage,
       tokens: TokenBin,
       _this: Command
-    ) => Promise<number>,
-    ratelimit: number,
-    globalRatelimit: number,
-    invoke: (
-      msg: ChatMessage,
-      tokens: TokenBin,
-      cost: number,
-      _this: Command
-    ) => Promise<Payout | void>
-  )
-
-  constructor(
-    name: string,
-    alias: string[],
-    cost:
-      | number
-      | ((
-          msg: ChatMessage,
-          tokens: TokenBin,
-          _this: Command
-        ) => Promise<number>),
-    ratelimit: number = 60,
-    globalRatelimit: number = 60,
-    invoke: (
-      msg: ChatMessage,
-      tokens: TokenBin,
-      cost: number,
-      _this: Command
-    ) => Promise<Payout | void>
+    ) => Promise<unknown>
   ) {
     this.name = name
     this.alias = alias
-    this.costFun = cost instanceof Function ? cost : async () => cost
     this.globalRateLimit = globalRatelimit
     this.ratelimit = ratelimit
     this.invoke = invoke
+    this.logger = logger
   }
 
-  async execute(msg: ChatMessage, tokens: TokenBin): Promise<void> {
+  async execute(msg: Schema$LiveChatMessage, tokens: TokenBin): Promise<void> {
     // check cooldown
     if (this.onCooldown(msg.authorDetails.channelId)) {
-      logger.debug(
+      this.logger.debug(
         `${this.name} on cooldown for ${msg.authorDetails.displayName}`
       )
       return
     }
-    // generate cost
-    const cost = await this.costFun(msg, tokens, this)
-    // check affordability
-    if (cost > 0 && MS.walletCache.get(msg.authorDetails.channelId) < cost) {
-      logger.debug(
-        `${this.name} failed cost check for ${msg.authorDetails.displayName}`
-      )
+    try {
+      await this.invoke(msg, tokens, this)
+    } catch (err) {
+      this.logger.error(`failed to invoke ${this.name}`, { err })
       return
     }
-    await MS.transactionBatch([[msg.authorDetails.channelId, cost]])
-    const result = await this.invoke(msg, tokens, cost, this)
-    if (result instanceof Object) await this.payout(result)
     if (this.ratelimit + this.globalRateLimit > 0)
       this.addCooldown(msg.authorDetails.channelId)
   }
@@ -133,11 +79,5 @@ export default class Command {
     return this.cooldowns.has(uid)
       ? (this.cooldowns.get(uid) - new Date().getTime()) / 1000
       : 0
-  }
-
-  async payout({ uids, amount }: Payout): Promise<void> {
-    const getAmount = (index: number) =>
-      Array.isArray(amount) ? amount[index] : amount
-    await MS.transactionBatch(uids.map((uid, i) => [uid, getAmount(i)]))
   }
 }
