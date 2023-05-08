@@ -17,8 +17,23 @@ async function main() {
       redirectUri: process.env.G_REDIRECT_URI,
     }
     y.tokenLoader = async () => ({
-      /*...*/
+      // provide a way to load tokens, e.g., from file or a database
     })
+
+    // Add a message listener which greets the first chatter then removes itself
+    y.onMessage(({ authorDetails: { displayName } }) => {
+      y.sendMessage(`Hello there, ${displayName}!`)
+    })
+
+    // add a message listener which removes itself if the message says "get out"
+    y.onMessage(
+      ({ snippet: { displayMessage } }) => {
+        return displayMessage.match(/^get\s+out$/)
+      },
+      (_, match) => match !== null
+    )
+
+    // add a command which responds to `>greet` with "Hello There"
     y.command((cmd) => {
       cmd.name = "greet"
       cmd.invoke = async () => {

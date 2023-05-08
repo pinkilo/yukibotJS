@@ -50,7 +50,7 @@ export default class Yuki {
       const { success, value } = await this.youtube.fetchTokensWithCode(code)
       if (success) {
         await this.youtube.setTokens(value)
-        this.eventbus.announce(new AuthEvent(value))
+        await this.eventbus.announce(new AuthEvent(value))
       }
       res.redirect("/")
     })
@@ -111,7 +111,7 @@ export default class Yuki {
           this.usercache.put(user.id, user)
           this.usercache.put(user.name, user)
         })
-      this.eventbus.announce(new MessageBatchEvent(value))
+      await this.eventbus.announce(new MessageBatchEvent(value))
     }
     setTimeout(() => this.chatWatcher(), this.config.chatPollRate)
   }
@@ -119,7 +119,7 @@ export default class Yuki {
   private async broadcastWatcher() {
     if (!this.running) return
     const { success, value } = await this.youtube.broadcasts.fetchBroadcast()
-    if (success) this.eventbus.announce(new BroadcastUpdateEvent(value))
+    if (success) await this.eventbus.announce(new BroadcastUpdateEvent(value))
     else this.logger.info("no active broadcast found")
     setTimeout(() => this.broadcastWatcher(), this.config.broadcastPollRage)
   }
