@@ -1,5 +1,5 @@
-import YukiBuilder from "../yuki/YukiBuilder"
-import Yuki, { GoogleConfig, YukiConfig } from "../yuki/Yuki"
+import YukiBuilder from "../../yuki/YukiBuilder"
+import Yuki, { GoogleConfig, YukiConfig } from "../../yuki/Yuki"
 
 const googleConfig: GoogleConfig = {
   clientId: "client_id",

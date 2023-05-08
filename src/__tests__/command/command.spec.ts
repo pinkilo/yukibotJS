@@ -1,6 +1,6 @@
-import Command from "../yuki/commands/Command"
-import { chatMessage } from "./util"
-import { tokenize } from "../yuki/tokenization"
+import { chatMessage } from "../util"
+import Command from "../../yuki/commands/Command"
+import { tokenize } from "../../yuki/tokenization"
 import * as winston from "winston"
 
 let command: Command
