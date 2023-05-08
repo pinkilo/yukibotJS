@@ -9,7 +9,7 @@ export default class CommandBuilder {
 
   name: string
   alias?: string[]
-  rateLimit?: {
+  readonly rateLimit: {
     /** personal ratelimit in seconds */
     individual?: number
     /** global ratelimit in seconds */
@@ -23,11 +23,26 @@ export default class CommandBuilder {
 
   constructor(logger: Logger) {
     this.logger = logger
+    this.rateLimit = {}
   }
 
   private prebuildCheck(): boolean {
-    if (this.name === undefined) {
+    if (typeof this.name !== "string") {
       this.logger.error("no name set in command builder")
+      return false
+    }
+    for (const al of [this.name, ...(this.alias || [])]) {
+      if (al.match(/^\w+$/) === null) {
+        this.logger.error(
+          `invalid name or alias set in command builder ${this.name}. Must match /^\\w+$/`
+        )
+        return false
+      }
+    }
+    if (typeof this.invoke !== "function") {
+      this.logger.error(
+        "command builder invoke function not set. use `builder.invoke = async () => ...`"
+      )
       return false
     }
     return true
@@ -44,8 +59,8 @@ export default class CommandBuilder {
     return new Command(
       this.name,
       this.alias || [],
-      this.rateLimit?.individual || 0,
-      this.rateLimit?.global || 0,
+      Math.max(0, this.rateLimit.individual || 0),
+      Math.max(0, this.rateLimit.global || 0),
       this.logger,
       this.invoke
     )
