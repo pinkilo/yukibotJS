@@ -136,21 +136,42 @@ export default class YukiBuilder {
     }
   }
 
-  onMessage(cb: (message: Schema$LiveChatMessage) => unknown) {
+  onMessage<T = unknown>(
+    listener: (message: Schema$LiveChatMessage) => T,
+    deathPredicate?: (
+      message: Schema$LiveChatMessage,
+      data?: T
+    ) => Promise<boolean>
+  ) {
     this.eventbus.listen<MessageBatchEvent>(
       EventType.MESSAGE_BATCH,
-      async ({ incoming }) => {
+      async ({ incoming }, self) => {
         for (const msg of incoming) {
-          await cb(msg)
+          const value = await listener(msg)
+          if (deathPredicate && (await deathPredicate(msg, value))) {
+            self.remove()
+            return
+          }
         }
       }
     )
   }
 
-  onBroadcastUpdate(cb: (broadcast: Schema$LiveBroadcast) => Promise<unknown>) {
+  onBroadcastUpdate<T = unknown>(
+    listener: (broadcast: Schema$LiveBroadcast) => T,
+    deathPredicate?: (
+      broadcast: Schema$LiveBroadcast,
+      data?: T
+    ) => Promise<boolean>
+  ) {
     this.eventbus.listen<BroadcastUpdateEvent>(
       EventType.BROADCAST_UPDATE,
-      (e) => cb(e.broadcast)
+      async (e, self) => {
+        const value = await listener(e.broadcast)
+        if (deathPredicate && (await deathPredicate(e.broadcast, value))) {
+          self.remove()
+        }
+      }
     )
   }
 
@@ -158,8 +179,14 @@ export default class YukiBuilder {
    * Called when auth tokens are updated. usually useful when waiting
    * on login to start the bot
    */
-  onAuthUpdate(cb: () => Promise<unknown>) {
-    this.eventbus.listen<AuthEvent>(EventType.AUTH, cb)
+  onAuthUpdate(
+    listener: () => unknown,
+    deathPredicate?: () => Promise<boolean>
+  ) {
+    this.eventbus.listen<AuthEvent>(EventType.AUTH, async (_, self) => {
+      await listener()
+      if (deathPredicate && (await deathPredicate())) self.remove()
+    })
   }
 
   async sendMessage(

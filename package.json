@@ -16,7 +16,8 @@
     "prepare": "husky install",
     "prettier/format": "yarn prettier --config .prettierrc.yaml --write src sample *.js *.ts",
     "prettier/check": "prettier --config .prettierrc.yaml --check src sample *.js *.ts",
-    "compile": "tsc -p tsconfig.build.json && cp -r src/views dist",
+    "compile": "tsc -p tsconfig.build.json",
+    "build": "yarn compile && cp -r src/views dist",
     "test": "jest",
     "prepublishOnly": "yarn compile",
     "semantic-release": "semantic-release"
