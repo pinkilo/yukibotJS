@@ -8,6 +8,7 @@ import {
   SubscriberEvent,
   EventType,
 } from "./events"
+import { randFromRange, successOf, Result, attempt, failure } from "./util"
 
 export {
   YoutubeWrapper,
@@ -19,4 +20,9 @@ export {
   AuthEvent,
   SubscriberEvent,
   EventType,
+  randFromRange,
+  successOf,
+  Result,
+  attempt,
+  failure,
 }

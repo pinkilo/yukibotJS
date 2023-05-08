@@ -1,8 +1,8 @@
-import CommandBuilder from "../yuki/commands/CommandBuilder"
-import { chatMessage } from "./util"
 import * as winston from "winston"
-import { Command } from "../yuki/commands"
-import { tokenize } from "../yuki/tokenization"
+import CommandBuilder from "../../yuki/commands/CommandBuilder"
+import { chatMessage } from "../util"
+import { Command } from "../../yuki/commands"
+import { tokenize } from "../../yuki/tokenization"
 
 let cmdBuilder: CommandBuilder
 
