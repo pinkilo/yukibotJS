@@ -3,8 +3,6 @@ import { chatMessage } from "./util"
 import { tokenize } from "../yuki/tokenization"
 import * as winston from "winston"
 
-jest.mock("winston")
-
 let command: Command
 let addCooldownMock
 let checkCooldownMock
