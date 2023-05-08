@@ -5,7 +5,18 @@ jest.mock("winston", () => ({
     info: jest.fn(),
     http: jest.fn(),
     debug: jest.fn(),
+    alert: jest.fn(),
   })),
+  transports: {
+    Console: jest.fn(),
+  },
+  format: {
+    combine: jest.fn(),
+    colorize: jest.fn(),
+    timestamp: jest.fn(),
+    printf: jest.fn(),
+    errors: jest.fn(),
+  },
 }))
 
 jest.mock("nanoid", () => ({

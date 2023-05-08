@@ -31,7 +31,6 @@ export type YukiConfig = {
 }
 
 export default class Yuki {
-  private readonly config: YukiConfig
   private readonly youtube: YoutubeWrapper
   private readonly usercache: AsyncCache<User>
   private readonly eventbus: Eventbus
@@ -39,6 +38,7 @@ export default class Yuki {
   private readonly logger: Logger
   private running = false
 
+  readonly config: YukiConfig
   readonly express: Express = express()
     .get("/", (_, res) =>
       res.render("index.njk", { botname: this.config.name })

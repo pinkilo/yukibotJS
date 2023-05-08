@@ -65,13 +65,13 @@ export default class YukiBuilder {
   }
 
   private prebuildCheck(): boolean {
-    if (this.youtube === undefined) {
+    if (!(this.youtube instanceof YoutubeWrapper)) {
       this.logger.error(
         "google config not set. make sure you've used `builder.googleConfig = {...}`"
       )
       return false
     }
-    if (this.tokenLoader === undefined) {
+    if (typeof this.tokenLoader !== "function") {
       this.logger.error(
         "token loader not set. make sure you've used `builder.tokenLoader = () => ...`"
       )
