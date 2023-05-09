@@ -91,12 +91,9 @@ export default class Yuki {
     }
 
     this.usercache = new AsyncCache<User>(async (k) => {
-      try {
-        const { success, value } = await this.youtube.fetchUsers([k])
-        if (success) return successOf(value[0])
-      } catch (err) {
-        this.logger.error("failed to fetch user", { err })
-      }
+      const { success, value } = await this.youtube.fetchUsers([k])
+      if (success) return successOf(value[0])
+      this.logger.error("failed to fetch user")
       return failure()
     }, this.logger)
   }
