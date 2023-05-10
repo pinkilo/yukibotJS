@@ -4,7 +4,12 @@
  */
 
 import Yuki, { GoogleConfig, YukiConfig } from "../../yuki/Yuki"
-import { Eventbus, YoutubeWrapper } from "../../internal"
+import {
+  BroadcastUpdateEvent,
+  Eventbus,
+  EventType,
+  YoutubeWrapper,
+} from "../../internal"
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import winston from "winston"
@@ -36,19 +41,19 @@ let yuki: Yuki
 let youtubeWrapper: YoutubeWrapper
 let logger: winston.Logger
 let tokenLoader: jest.Mock
-let evenbus: Eventbus
+let eventbus: Eventbus
 
 beforeEach(() => {
   tokenLoader = jest.fn()
   logger = winston.createLogger()
-  evenbus = new Eventbus()
+  eventbus = new Eventbus()
   youtubeWrapper = new YoutubeWrapper(
     googleConfig.clientId,
     googleConfig.clientSecret,
     googleConfig.redirectUri,
     logger
   )
-  yuki = new Yuki(yukiConfig, youtubeWrapper, tokenLoader, evenbus, logger)
+  yuki = new Yuki(yukiConfig, youtubeWrapper, tokenLoader, eventbus, logger)
 })
 
 describe("express app", () => {
@@ -75,14 +80,31 @@ describe("startup", () => {
     })
   })
   describe("startup success", () => {
-    it("should call token loader", async () => {
+    beforeEach(() => {
       tokenLoader.mockImplementation(async () => tokens)
+    })
+    it("should start with valid token loader", async () => {
+      expect(await yuki.start()).toBe(true)
+    })
+    it("should call token loader", async () => {
       await yuki.start()
       expect(tokenLoader).toHaveBeenCalledTimes(1)
     })
-    it("should start with valid token loader", async () => {
-      tokenLoader.mockImplementation(async () => tokens)
-      expect(await yuki.start()).toBe(true)
+    it("should fetch broadcast", async () => {
+      const spy = jest.spyOn(youtubeWrapper.broadcasts, "fetchBroadcast")
+      await yuki.start()
+      expect(spy).toHaveBeenCalled()
+    })
+    it("should should add broadcast listener for chat watcher", async () => {
+      const listenSpy = jest.spyOn(eventbus, "listen")
+      const fetchChatSpy = jest.spyOn(
+        youtubeWrapper.broadcasts,
+        "fetchChatMessages"
+      )
+      await yuki.start()
+      await eventbus.announce(new BroadcastUpdateEvent(undefined))
+      expect(listenSpy).toHaveBeenCalledTimes(1)
+      expect(fetchChatSpy).toHaveBeenCalledTimes(1)
     })
   })
 })
