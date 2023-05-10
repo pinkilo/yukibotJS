@@ -19,7 +19,6 @@ let broadcastHandler: BroadcastHandler
 beforeEach(() => {
   logger = winston.createLogger()
   auth = new OAuth2Client()
-
   ytClient = google.youtube("v3")
   broadcastHandler = new BroadcastHandler(ytClient, auth, logger)
 })
