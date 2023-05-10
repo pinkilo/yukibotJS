@@ -4,7 +4,7 @@ import { OAuth2Client } from "google-auth-library"
 // @ts-ignore
 import winston from "winston"
 import BroadcastHandler from "../../internal/google/BroadcastHandler"
-import { chatMessage, gaxiosResponse } from "../util"
+import { chatMessage, gaxiosResponse, listOf } from "../util"
 import Schema$LiveBroadcast = youtube_v3.Schema$LiveBroadcast
 import Schema$LiveBroadcastListResponse = youtube_v3.Schema$LiveBroadcastListResponse
 
@@ -122,7 +122,7 @@ describe("fetch broadcast", () => {
     expect(value.snippet).toHaveProperty("liveChatId")
     expect(value.snippet.liveChatId).toEqual(sampleChatId)
   })
-  it("should handle no broadcasts found", async () => {
+  it("should fail on no broadcasts found", async () => {
     broadcastListSpy = jest
       .spyOn(ytClient.liveBroadcasts, "list")
       .mockImplementation(() =>
@@ -133,13 +133,70 @@ describe("fetch broadcast", () => {
     expect(value).toBeUndefined()
     expect(logger.error).toHaveBeenCalledTimes(0)
   })
-  it("should handle failed request", async () => {
+  it("should handle on failed request", async () => {
     broadcastListSpy = jest
       .spyOn(ytClient.liveBroadcasts, "list")
       .mockImplementation(() => {
         throw new Error()
       })
     const { success, value } = await broadcastHandler.fetchBroadcast()
+    expect(success).toBe(false)
+    expect(value).toBeUndefined()
+    expect(logger.error).toHaveBeenCalledTimes(1)
+  })
+})
+describe("fetch messages", () => {
+  let fetchMessageParams
+  const nextPageToken = "next_page"
+  let fetchMessageSpy: jest.SpyInstance
+  const messages = listOf(5, (i) => chatMessage(sampleText + `_${i}`))
+  beforeEach(() => {
+    fetchMessageParams = {
+      auth: auth,
+      part: ["snippet", "authorDetails"],
+      liveChatId: undefined,
+      pageToken: undefined,
+    }
+    fetchMessageSpy = jest
+      .spyOn(ytClient.liveChatMessages, "list")
+      .mockImplementation(() =>
+        gaxiosResponse<Schema$LiveBroadcastListResponse>(
+          { items: messages, nextPageToken },
+          200
+        )
+      )
+  })
+  it("should fetch messages", async () => {
+    await broadcastHandler.fetchChatMessages()
+    expect(fetchMessageSpy).toHaveBeenCalledTimes(1)
+    expect(fetchMessageSpy).toHaveBeenCalledWith(fetchMessageParams)
+  })
+  it("should return messages", async () => {
+    const { success, value } = await broadcastHandler.fetchChatMessages()
+    expect(success).toBe(true)
+    expect(value).toBeDefined()
+    expect(value.length).toBe(messages.length)
+    for (let i = 0; i < messages.length; i++) {
+      expect(value[i]).toBe(messages[i])
+    }
+  })
+  it("should succeed on no messages", async () => {
+    fetchMessageSpy = jest
+      .spyOn(ytClient.liveChatMessages, "list")
+      .mockImplementation(() =>
+        gaxiosResponse({ items: [], nextPageToken }, 200)
+      )
+    const { success, value } = await broadcastHandler.fetchChatMessages()
+    expect(success).toBe(true)
+    expect(value).toEqual([])
+  })
+  it("should handle failed request", async () => {
+    fetchMessageSpy = jest
+      .spyOn(ytClient.liveChatMessages, "list")
+      .mockImplementation(() => {
+        throw new Error()
+      })
+    const { success, value } = await broadcastHandler.fetchChatMessages()
     expect(success).toBe(false)
     expect(value).toBeUndefined()
     expect(logger.error).toHaveBeenCalledTimes(1)

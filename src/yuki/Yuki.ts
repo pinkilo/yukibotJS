@@ -101,7 +101,7 @@ export default class Yuki {
   private async chatWatcher() {
     if (!this.running) return
     const { success, value } = await this.youtube.broadcasts.fetchChatMessages()
-    if (success) {
+    if (success && value.length > 0) {
       value
         .map((m) => User.fromAuthor(m.authorDetails))
         .forEach((user) => {
