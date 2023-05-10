@@ -1,0 +1,18 @@
+{
+  "extends": "../tsconfig.build.json",
+  "compilerOptions": {
+    "declaration": true,
+    "sourceMap": false,
+    "lib": [
+      "ES5",
+      "ES6"
+    ],
+    "target": "ES6",
+    "module": "commonJS",
+    "resolveJsonModule": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "noUnusedParameters": false,
+    "noUnusedLocals": false
+  }
+}

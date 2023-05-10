@@ -1,0 +1,17 @@
+{
+  "name": "sample-ts",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "ts-node -P tsconfig.json src/index.ts"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "typescript": "^5.0.4",
+    "yukibot": "link:../"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.1"
+  }
+}

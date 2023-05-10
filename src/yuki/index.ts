@@ -1,3 +1,4 @@
-import { yuki } from "./YukiBuilder"
+import YukiBuilder, { yuki } from "./YukiBuilder"
+import Yuki, { YukiConfig, GoogleConfig } from "./Yuki"
 
-export { yuki }
+export { yuki, Yuki, YukiBuilder, YukiConfig, GoogleConfig }
