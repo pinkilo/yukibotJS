@@ -19,7 +19,7 @@
     "compile": "tsc -p tsconfig.build.json",
     "build": "yarn compile && cp -r src/views dist",
     "test": "jest",
-    "prepublishOnly": "yarn compile",
+    "prepublishOnly": "yarn build",
     "semantic-release": "semantic-release"
   },
   "release": {
