@@ -7,13 +7,13 @@ import {
   Eventbus,
   EventType,
   MessageBatchEvent,
+  Result,
   YoutubeWrapper,
 } from "../internal"
 import { Command, CommandBuilder } from "./commands"
 import Yuki, { GoogleConfig, YukiConfig } from "./Yuki"
-import { Passive } from "./passives"
+import { MemoryPassive, Passive } from "./passives"
 import { TokenBin, tokenize } from "./tokenization"
-import { Result } from "../internal/util"
 import Schema$LiveBroadcast = youtube_v3.Schema$LiveBroadcast
 import Schema$LiveChatMessage = youtube_v3.Schema$LiveChatMessage
 
@@ -21,7 +21,7 @@ import Schema$LiveChatMessage = youtube_v3.Schema$LiveChatMessage
  * @returns {Yuki} the constructed bot instance or undefined if building failed
  */
 export const yuki = async (
-  dsl: (builder: YukiBuilder) => Promise<unknown>
+  dsl: (builder: YukiBuilder) => unknown
 ): Promise<Yuki> => {
   const builder = new YukiBuilder()
   await dsl(builder)
@@ -134,6 +134,37 @@ export default class YukiBuilder {
     for (const cname in [command.name, ...command.alias]) {
       this.commands.set(cname, command)
     }
+  }
+
+  passive(
+    predicate: (
+      msg: Schema$LiveChatMessage,
+      tokens: TokenBin,
+      self: Passive
+    ) => Promise<boolean>,
+    invoke: (
+      msg: Schema$LiveChatMessage,
+      tokens: TokenBin,
+      self: Passive
+    ) => Promise<void>
+  ) {
+    this.passives.push(new Passive(predicate, invoke))
+  }
+
+  memoryPassive<Memory>(
+    seed: Memory,
+    predicate: (
+      msg: Schema$LiveChatMessage,
+      tokens: TokenBin,
+      self: MemoryPassive<Memory>
+    ) => Promise<boolean>,
+    invoke: (
+      msg: Schema$LiveChatMessage,
+      tokens: TokenBin,
+      self: MemoryPassive<Memory>
+    ) => Promise<void>
+  ) {
+    this.passives.push(new MemoryPassive(seed, predicate, invoke))
   }
 
   onMessage<T = unknown>(

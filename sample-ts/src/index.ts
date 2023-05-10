@@ -1,12 +1,11 @@
-import { yuki } from "yukibot"
-import process from "process"
-import dotenv from "dotenv"
+import yuki, { YukiBuilder } from "yukibot"
+import { config } from "dotenv"
 
-dotenv.config()
+config()
 
 async function main() {
   const bot = await yuki((y) => {
-    y.logLevel = "http" // info, debug, error
+    y.logLevel = "http" // info, debug, error, etc
     y.yukiConfig.name = "MyBot"
     y.yukiConfig.prefix = /^>$/
     y.googleConfig = {
@@ -43,16 +42,16 @@ async function main() {
  *
  * @param {YukiBuilder} builder
  */
-async function extractedSetup(builder) {
+async function extractedSetup(builder: YukiBuilder) {
   // add a message listener which removes itself if the message says "get out"
   builder.onMessage(
     ({ snippet: { displayMessage } }) => {
       return displayMessage.match(/^get\s+out$/)
     },
-    (_, match) => match !== null
+    async (_, match) => match !== null
   )
 
-  // add a passive, which acts like a message listener with a predicate and memory
+  // add a passive, which acts like a message listener with a predicate
   builder.passive(
     async (msg, tokens, self) => {
       /* Predicate, if this returns TRUE then the execution logic will run */
@@ -62,6 +61,16 @@ async function extractedSetup(builder) {
       /* execution logic, only runs if the predicate returns true */
     }
   )
+
+  // add a memoryPassive which is a normal passive
+  // with a convenient property for storing data
+  builder.memoryPassive<number>(
+    0,
+    async () => true,
+    async (_,__, { memory }) => {
+      memory += 1
+      console.log(`Messages received: ${memory}`)
+    })
 }
 
 main()
