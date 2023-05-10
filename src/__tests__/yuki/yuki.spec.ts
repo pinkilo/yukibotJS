@@ -5,6 +5,8 @@
 
 import Yuki, { GoogleConfig, YukiConfig } from "../../yuki/Yuki"
 import { Eventbus, YoutubeWrapper } from "../../internal"
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import winston from "winston"
 import { Credentials } from "google-auth-library"
 
@@ -49,40 +51,38 @@ beforeEach(() => {
   yuki = new Yuki(yukiConfig, youtubeWrapper, tokenLoader, evenbus, logger)
 })
 
-describe("Yuki", () => {
-  describe("express app", () => {
-    // TODO
-  })
-  describe("startup", () => {
-    describe("startup failure", () => {
-      it("should fail if tokenLoader invalid", async () => {
-        tokenLoader.mockImplementation(async () => undefined)
-        const started = await yuki.start()
-        expect(started).toBe(false)
-      })
-      it("should fail if tokenLoader fails", async () => {
-        tokenLoader.mockImplementation(async () => {
-          throw new Error()
-        })
-        const started = await yuki.start()
-        expect(started).toBe(false)
-      })
-      it("should fail if already running", async () => {
-        tokenLoader.mockImplementation(async () => tokens)
-        expect(await yuki.start()).toBe(true)
-        expect(await yuki.start()).toBe(false)
-      })
+describe("express app", () => {
+  // TODO
+})
+describe("startup", () => {
+  describe("startup failure", () => {
+    it("should fail if tokenLoader invalid", async () => {
+      tokenLoader.mockImplementation(async () => undefined)
+      const started = await yuki.start()
+      expect(started).toBe(false)
     })
-    describe("startup success", () => {
-      it("should call token loader", async () => {
-        tokenLoader.mockImplementation(async () => tokens)
-        await yuki.start()
-        expect(tokenLoader).toHaveBeenCalledTimes(1)
+    it("should fail if tokenLoader fails", async () => {
+      tokenLoader.mockImplementation(async () => {
+        throw new Error()
       })
-      it("should start with valid token loader", async () => {
-        tokenLoader.mockImplementation(async () => tokens)
-        expect(await yuki.start()).toBe(true)
-      })
+      const started = await yuki.start()
+      expect(started).toBe(false)
+    })
+    it("should fail if already running", async () => {
+      tokenLoader.mockImplementation(async () => tokens)
+      expect(await yuki.start()).toBe(true)
+      expect(await yuki.start()).toBe(false)
+    })
+  })
+  describe("startup success", () => {
+    it("should call token loader", async () => {
+      tokenLoader.mockImplementation(async () => tokens)
+      await yuki.start()
+      expect(tokenLoader).toHaveBeenCalledTimes(1)
+    })
+    it("should start with valid token loader", async () => {
+      tokenLoader.mockImplementation(async () => tokens)
+      expect(await yuki.start()).toBe(true)
     })
   })
 })
