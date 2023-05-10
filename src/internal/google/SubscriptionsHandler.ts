@@ -35,7 +35,7 @@ export default class SubscriptionsHandler {
       )
       // add to front of history
       this.history.unshift(...newSubs)
-      newSubs.map((s) => s.id).forEach(this.subscriptionSet.add)
+      newSubs.map((s) => s.id).forEach((id) => this.subscriptionSet.add(id))
       return successOf(newSubs)
     } catch (err) {
       this.logger.error("failed to fetch recent subscriptions", { err })
