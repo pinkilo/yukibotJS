@@ -1,8 +1,3 @@
-/*
- * TODO find a way to mock youtube api functions
- * TODO test express app
- */
-
 import Yuki, { GoogleConfig, YukiConfig } from "../../yuki/Yuki"
 import {
   AuthEvent,
