@@ -19,3 +19,4 @@ Commits should be written with
 * `Upgrade` - for a dependency upgrade.
 * `Chore` - for refactoring, adding tests, etc. (anything that isn't user-facing).
 * `Refactor` - same as chore but for the context of non-breaking refactors
+* `Tests` - same as chore but for the context of adding or modifying tests
