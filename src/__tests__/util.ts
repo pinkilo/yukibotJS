@@ -1,4 +1,5 @@
 import { youtube_v3 } from "googleapis"
+import { GaxiosResponse } from "gaxios"
 import Schema$LiveChatMessage = youtube_v3.Schema$LiveChatMessage
 
 export const chatMessage = (text: string): Schema$LiveChatMessage => ({
@@ -43,11 +44,16 @@ export const subscriber = (id = "CHANNEL_ID") => ({
   },
 })
 
-export const listOf = <T extends any>(
-  size: number,
-  factory: (index: number) => T
-): T[] => {
+export const listOf = <T>(size: number, factory: (index: number) => T): T[] => {
   const list: T[] = []
   for (let i = 0; i < size; i++) list.push(factory(i))
   return list
 }
+
+export const gaxiosResponse = async <T>(
+  data: T,
+  status: number
+): Promise<Partial<GaxiosResponse>> => ({
+  data,
+  status,
+})

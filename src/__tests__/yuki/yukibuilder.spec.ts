@@ -18,30 +18,28 @@ beforeEach(() => {
   yukiBuilder = new YukiBuilder()
 })
 
-describe("Yuki Builder", () => {
-  describe("failure conditions", () => {
-    it("should fail if googleConfig is not set", () => {
-      yukiBuilder.tokenLoader = async () => undefined
-      expect(yukiBuilder.build()).toBeUndefined()
-    })
-    it("should fail if tokenLoader is not set", () => {
-      yukiBuilder.googleConfig = googleConfig
-      expect(yukiBuilder.build()).toBeUndefined()
-    })
+describe("failure conditions", () => {
+  it("should fail if googleConfig is not set", () => {
+    yukiBuilder.tokenLoader = async () => undefined
+    expect(yukiBuilder.build()).toBeUndefined()
   })
-  describe("success conditions", () => {
-    it("should succeed", () => {
-      yukiBuilder.googleConfig = googleConfig
-      yukiBuilder.tokenLoader = async () => undefined
-      expect(yukiBuilder.build()).toBeInstanceOf(Yuki)
-    })
+  it("should fail if tokenLoader is not set", () => {
+    yukiBuilder.googleConfig = googleConfig
+    expect(yukiBuilder.build()).toBeUndefined()
   })
-  describe("build confirmation", () => {
-    it("should retain config", () => {
-      yukiBuilder.googleConfig = googleConfig
-      yukiBuilder.tokenLoader = async () => undefined
-      yukiBuilder.yukiConfig = yukiConfig
-      expect(yukiBuilder.build().config).toEqual(yukiConfig)
-    })
+})
+describe("success conditions", () => {
+  it("should succeed", () => {
+    yukiBuilder.googleConfig = googleConfig
+    yukiBuilder.tokenLoader = async () => undefined
+    expect(yukiBuilder.build()).toBeInstanceOf(Yuki)
+  })
+})
+describe("build confirmation", () => {
+  it("should retain config", () => {
+    yukiBuilder.googleConfig = googleConfig
+    yukiBuilder.tokenLoader = async () => undefined
+    yukiBuilder.yukiConfig = yukiConfig
+    expect(yukiBuilder.build().config).toEqual(yukiConfig)
   })
 })
