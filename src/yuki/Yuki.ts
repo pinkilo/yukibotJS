@@ -6,10 +6,12 @@ import {
   BroadcastUpdateEvent,
   Eventbus,
   EventType,
+  failure,
   MessageBatchEvent,
+  Result,
+  successOf,
   YoutubeWrapper,
 } from "../internal"
-import { failure, Result, successOf } from "../internal/util"
 import { Credentials } from "google-auth-library"
 import { youtube_v3 } from "googleapis"
 import express, { Express } from "express"
@@ -40,9 +42,7 @@ export default class Yuki {
 
   readonly config: YukiConfig
   readonly express: Express = express()
-    .get("/", (_, res) =>
-      res.render("index.njk", { botname: this.config.name })
-    )
+    .get("/", (_, res) => res.render("index.njk", this.pageData))
     .get("/auth", (_, res) => res.redirect(this.youtube.getAuthUrl()))
     .get("/callback", async (req, res) => {
       const code = req.query.code as string
@@ -96,6 +96,14 @@ export default class Yuki {
       this.logger.error("failed to fetch user")
       return failure()
     }, this.logger)
+  }
+
+  private get pageData() {
+    return {
+      config: this.config,
+      listeners: this.eventbus.size,
+      userCacheSize: this.usercache.values().length / 2,
+    }
   }
 
   private async chatWatcher() {
