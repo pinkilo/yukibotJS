@@ -261,13 +261,14 @@ export default class YukiBuilder {
    * Called when auth tokens are updated. usually useful when waiting
    * on login to start the bot
    */
-  onAuthUpdate(
-    listener: () => unknown,
-    deathPredicate?: () => Promise<boolean>
+  onAuthUpdate<T = unknown>(
+    listener: (credentials: Credentials) => T,
+    deathPredicate?: (credentials: Credentials, value: T) => Promise<boolean>
   ) {
-    this.eventbus.listen<AuthEvent>(EventType.AUTH, async (_, self) => {
-      await listener()
-      if (deathPredicate && (await deathPredicate())) self.remove()
+    this.eventbus.listen<AuthEvent>(EventType.AUTH, async (e, self) => {
+      const value = await listener(e.credentials)
+      if (deathPredicate && (await deathPredicate(e.credentials, value)))
+        self.remove()
     })
   }
 
