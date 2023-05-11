@@ -9,7 +9,8 @@ const googleConfig: GoogleConfig = {
 const yukiConfig: YukiConfig = {
   name: "yuki",
   chatPollRate: 14.4 * 1000,
-  broadcastPollRage: 2 * 60 * 1000,
+  broadcastPollRate: 2 * 60 * 1000,
+  subscriptionPollRate: 60 * 1000,
   prefix: /^([>!]|y!)$/gi,
 }
 let yukiBuilder: YukiBuilder

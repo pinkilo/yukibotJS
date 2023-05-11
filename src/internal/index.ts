@@ -5,7 +5,7 @@ import {
   MessageBatchEvent,
   BroadcastUpdateEvent,
   AuthEvent,
-  SubscriberEvent,
+  SubscriptionEvent,
   EventType,
 } from "./events"
 import { randFromRange, successOf, Result, attempt, failure } from "./util"
@@ -18,7 +18,7 @@ export {
   MessageBatchEvent,
   BroadcastUpdateEvent,
   AuthEvent,
-  SubscriberEvent,
+  SubscriptionEvent,
   EventType,
   randFromRange,
   successOf,
