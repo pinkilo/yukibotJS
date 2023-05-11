@@ -63,12 +63,14 @@ export default class Yuki {
     youtube: YoutubeWrapper,
     tokenLoader: () => Promise<Credentials>,
     eventbus: Eventbus,
-    logger: Logger
+    logger: Logger,
+    usercache: AsyncCache<User>
   ) {
     this.eventbus = eventbus
     this.config = yukiConfig
     this.logger = logger
     this.youtube = youtube
+    this.usercache = usercache
 
     nunjucks.configure(join(__dirname, "../views"), {
       express: this.express,
@@ -92,13 +94,6 @@ export default class Yuki {
       }
       return failure()
     }
-
-    this.usercache = new AsyncCache<User>(async (k) => {
-      const { success, value } = await this.youtube.fetchUsers([k])
-      if (success) return successOf(value[0])
-      this.logger.error("failed to fetch user")
-      return failure()
-    }, this.logger)
   }
 
   private get pageData() {
@@ -153,6 +148,17 @@ export default class Yuki {
    */
   get recentSubscriptions(): Schema$Subscription[] {
     return this.youtube.subscriptions.history
+  }
+
+  get cachedUsers(): User[] {
+    return this.usercache.values()
+  }
+
+  /**
+   * Attempts to get a user from cache or else fetches user.
+   */
+  getUser(uid: string): Promise<User | undefined> {
+    return this.usercache.get(uid)
   }
 
   async start(): Promise<boolean> {

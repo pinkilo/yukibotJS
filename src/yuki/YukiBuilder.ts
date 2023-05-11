@@ -2,13 +2,16 @@ import { createLogger, format, Logger, transports } from "winston"
 import { youtube_v3 } from "googleapis"
 import { Credentials } from "google-auth-library"
 import {
+  AsyncCache,
   AuthEvent,
   BroadcastUpdateEvent,
   Eventbus,
   EventType,
+  failure,
   MessageBatchEvent,
   Result,
   SubscriptionEvent,
+  successOf,
   YoutubeWrapper,
 } from "../internal"
 import { Command, CommandBuilder } from "./commands"
@@ -18,6 +21,7 @@ import { TokenBin, tokenize } from "./tokenization"
 import Schema$LiveBroadcast = youtube_v3.Schema$LiveBroadcast
 import Schema$LiveChatMessage = youtube_v3.Schema$LiveChatMessage
 import Schema$Subscription = youtube_v3.Schema$Subscription
+import { User } from "../models"
 
 /**
  * @returns {Yuki} the constructed bot instance or undefined if building failed
@@ -37,6 +41,7 @@ export default class YukiBuilder {
   private readonly eventbus: Eventbus = new Eventbus()
   private readonly commands: Map<string, Command> = new Map()
   private readonly passives: Passive[] = []
+  private readonly usercache: AsyncCache<User>
   private youtube: YoutubeWrapper
   private logger: Logger
 
@@ -51,6 +56,12 @@ export default class YukiBuilder {
 
   constructor() {
     this.logLevel = "none"
+    new AsyncCache<User>(async (k) => {
+      const { success, value } = await this.youtube.fetchUsers([k])
+      if (success) return successOf(value[0])
+      this.logger.error("failed to fetch user")
+      return failure()
+    }, this.logger)
   }
 
   private async runCmd(
@@ -136,6 +147,17 @@ export default class YukiBuilder {
    */
   get recentSubscriptions(): Schema$Subscription[] {
     return this.youtube.subscriptions.history
+  }
+
+  get cachedUsers(): User[] {
+    return this.usercache.values()
+  }
+
+  /**
+   * Attempts to get a user from cache or else fetches user.
+   */
+  getUser(uid: string): Promise<User | undefined> {
+    return this.usercache.get(uid)
   }
 
   async command(dsl: (builder: CommandBuilder) => unknown) {
@@ -286,7 +308,8 @@ export default class YukiBuilder {
       this.youtube,
       this.tokenLoader,
       this.eventbus,
-      this.logger
+      this.logger,
+      this.usercache
     )
   }
 }
