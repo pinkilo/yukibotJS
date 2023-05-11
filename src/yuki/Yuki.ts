@@ -9,6 +9,7 @@ import {
   failure,
   MessageBatchEvent,
   Result,
+  SubscriptionEvent,
   successOf,
   YoutubeWrapper,
 } from "../internal"
@@ -18,6 +19,7 @@ import express, { Express } from "express"
 import nunjucks from "nunjucks"
 import { join } from "path"
 import Schema$LiveChatMessage = youtube_v3.Schema$LiveChatMessage
+import Schema$Subscription = youtube_v3.Schema$Subscription
 
 export type GoogleConfig = {
   clientId: string
@@ -28,7 +30,8 @@ export type GoogleConfig = {
 export type YukiConfig = {
   name: string
   chatPollRate: number
-  broadcastPollRage: number
+  broadcastPollRate: number
+  subscriptionPollRate: number
   prefix?: RegExp
 }
 
@@ -126,7 +129,30 @@ export default class Yuki {
     const { success, value } = await this.youtube.broadcasts.fetchBroadcast()
     if (success) await this.eventbus.announce(new BroadcastUpdateEvent(value))
     else this.logger.info("no active broadcast found")
-    setTimeout(() => this.broadcastWatcher(), this.config.broadcastPollRage)
+    setTimeout(() => this.broadcastWatcher(), this.config.broadcastPollRate)
+  }
+
+  private async subscriptionWatcher() {
+    if (!this.running) return
+    const { success, value } =
+      await this.youtube.subscriptions.fetchRecentSubscriptions()
+    if (success) {
+      for (const sub of value) {
+        await this.eventbus.announce(new SubscriptionEvent(sub))
+      }
+    }
+    setTimeout(
+      () => this.subscriptionWatcher(),
+      this.config.subscriptionPollRate
+    )
+  }
+
+  /**
+   * @returns a list of recent subscriptions in order of creation.
+   * `0` index being the most recent.
+   */
+  get recentSubscriptions(): Schema$Subscription[] {
+    return this.youtube.subscriptions.history
   }
 
   async start(): Promise<boolean> {
@@ -144,6 +170,7 @@ export default class Yuki {
     }
     this.running = true
     await this.broadcastWatcher()
+    await this.subscriptionWatcher()
     this.eventbus.listen(EventType.BROADCAST_UPDATE, () => this.chatWatcher())
     return true
   }

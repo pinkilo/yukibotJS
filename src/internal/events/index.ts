@@ -1,7 +1,7 @@
 import {
   EventType,
   AuthEvent,
-  SubscriberEvent,
+  SubscriptionEvent,
   MessageBatchEvent,
   BroadcastUpdateEvent,
 } from "./Event"
@@ -10,7 +10,7 @@ import Eventbus from "./Eventbus"
 export {
   EventType,
   AuthEvent,
-  SubscriberEvent,
+  SubscriptionEvent,
   MessageBatchEvent,
   Eventbus,
   BroadcastUpdateEvent,

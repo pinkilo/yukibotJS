@@ -4,6 +4,7 @@ import { Credentials, OAuth2Client } from "google-auth-library"
 import BroadcastHandler from "./BroadcastHandler"
 import { User } from "../../models"
 import { failure, Result, successOf } from "../util"
+import SubscriptionsHandler from "./SubscriptionsHandler"
 
 export default class YoutubeWrapper {
   private readonly client: youtube_v3.Youtube
@@ -11,6 +12,7 @@ export default class YoutubeWrapper {
   private readonly logger: Logger
 
   readonly broadcasts: BroadcastHandler
+  readonly subscriptions: SubscriptionsHandler
 
   constructor(
     clientId: string,
@@ -22,6 +24,11 @@ export default class YoutubeWrapper {
     this.auth = new google.auth.OAuth2(clientId, clientSecret, redirectUri)
     this.client = google.youtube("v3")
     this.broadcasts = new BroadcastHandler(this.client, this.auth, this.logger)
+    this.subscriptions = new SubscriptionsHandler(
+      this.client,
+      this.auth,
+      this.logger
+    )
   }
 
   get tokensLoaded(): boolean {

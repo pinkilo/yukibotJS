@@ -24,7 +24,7 @@ export class AuthEvent implements Event {
   }
 }
 
-export class SubscriberEvent implements Event {
+export class SubscriptionEvent implements Event {
   readonly type = EventType.SUBSCRIPTION
   readonly subscription: Schema$Subscription
 

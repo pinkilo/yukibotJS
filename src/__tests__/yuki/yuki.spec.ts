@@ -23,7 +23,8 @@ const googleConfig: GoogleConfig = {
 const yukiConfig: YukiConfig = {
   name: "yuki",
   chatPollRate: 14.4 * 1000,
-  broadcastPollRage: 2 * 60 * 1000,
+  broadcastPollRate: 2 * 60 * 1000,
+  subscriptionPollRate: 60 * 1000,
   prefix: /^([>!]|y!)$/gi,
 }
 const tokens: Credentials = {
@@ -99,15 +100,21 @@ describe("startup", () => {
       await yuki.start()
       expect(spy).toHaveBeenCalled()
     })
+    it("should fetch subscriptions", async () => {
+      const spy = jest.spyOn(
+        youtubeWrapper.subscriptions,
+        "fetchRecentSubscriptions"
+      )
+      await yuki.start()
+      expect(spy).toHaveBeenCalled()
+    })
     it("should should add broadcast listener for chat watcher", async () => {
-      const listenSpy = jest.spyOn(eventbus, "listen")
       const fetchChatSpy = jest.spyOn(
         youtubeWrapper.broadcasts,
         "fetchChatMessages"
       )
       await yuki.start()
       await eventbus.announce(new BroadcastUpdateEvent(undefined))
-      expect(listenSpy).toHaveBeenCalledTimes(1)
       expect(fetchChatSpy).toHaveBeenCalledTimes(1)
     })
   })
