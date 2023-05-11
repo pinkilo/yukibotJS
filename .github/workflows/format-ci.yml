@@ -30,4 +30,4 @@ jobs:
       - name: Git Auto Commit
         uses: stefanzweifel/git-auto-commit-action@v4.16.0
         with:
-          commit_message: automated formatting
+          commit_message: "style: automated formatting"
