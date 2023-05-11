@@ -1,5 +1,6 @@
 import Yuki, { GoogleConfig, YukiConfig } from "../../yuki/Yuki"
 import {
+  AsyncCache,
   AuthEvent,
   BroadcastUpdateEvent,
   Eventbus,
@@ -11,6 +12,7 @@ import {
 import winston from "winston"
 import { Credentials } from "google-auth-library"
 import * as supertest from "supertest"
+import { User } from "../../models"
 
 jest.mock("google-auth-library")
 jest.mock("googleapis")
@@ -40,6 +42,7 @@ let youtubeWrapper: YoutubeWrapper
 let logger: winston.Logger
 let tokenLoader: jest.Mock
 let eventbus: Eventbus
+let usercache: AsyncCache<User>
 
 beforeEach(() => {
   tokenLoader = jest.fn()
@@ -51,7 +54,16 @@ beforeEach(() => {
     googleConfig.redirectUri,
     logger
   )
-  yuki = new Yuki(yukiConfig, youtubeWrapper, tokenLoader, eventbus, logger)
+  usercache = new AsyncCache<User>(jest.fn(), logger)
+
+  yuki = new Yuki(
+    yukiConfig,
+    youtubeWrapper,
+    tokenLoader,
+    eventbus,
+    logger,
+    usercache
+  )
 })
 
 describe("startup", () => {
