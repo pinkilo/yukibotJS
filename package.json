@@ -26,7 +26,6 @@
     "express": "^4.18.2",
     "googleapis": "^110.0.0",
     "nunjucks": "^3.2.4",
-    "packetier": "^3.0.0",
     "typescript": "^5.0.2",
     "winston": "^3.8.2"
   },
