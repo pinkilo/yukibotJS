@@ -1,10 +1,27 @@
 {% extends "layout.njk" %}
 {% block content %}
 <header>
-  <h1>{{ botname }}</h1>
-  <p id="loading">welcome to {{ botname }}</p>
+  <h1>{{ config.name }}</h1>
+  <p id="loading">welcome to {{ config.name }}</p>
   <div class="features">
     <a href="/auth">Login</a>
   </div>
 </header>
+<main>
+  <h2>Running Config</h2>
+  <ul class="horizontal-list settings">
+    <li>
+      <span>Command Prefix</span>
+      <code>{{ config.prefix }}</code>
+    </li>
+    <li>
+      <span>Chat Polling Rate</span>
+      <code>{{ config.chatPollRate/1000 }} sec</code>
+    </li>
+    <li>
+      <span>Broadcast Polling Rate</span>
+      <code>{{ config.broadcastPollRage/1000 }} sec</code>
+    </li>
+  </ul>
+</main>
 {% endblock %}
