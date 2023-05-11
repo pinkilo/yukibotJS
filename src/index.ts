@@ -8,6 +8,7 @@ import {
   Command,
   CommandBuilder,
 } from "./yuki"
+import { User } from "./models"
 
 export default yuki
 export type {
@@ -18,5 +19,6 @@ export type {
   TokenBin,
   CommandBuilder,
   Command,
+  User,
 }
 export { yuki }
