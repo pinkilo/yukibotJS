@@ -18,7 +18,7 @@ async function main() {
       // provide a way to load tokens, e.g., from file or a database
     })
 
-    // Add a message listener which greets the first chatter then removes itself
+    // Add a message listener which greets a chatter
     y.onMessage(({ authorDetails: { displayName } }) => {
       y.sendMessage(`Hello there, ${displayName}!`)
     })

@@ -34,7 +34,7 @@ npm install @pinkilo/yukibot
 
 ```ts
 import yuki from "yukibot"
-import { config } from "dotenv" 
+import { config } from "dotenv"
 
 config() // load your googleAPI secrets
 
@@ -42,36 +42,42 @@ async function main() {
   // create a bot instance with the `yuki` dsl
   const bot = await yuki((y) => {
     y.logLevel = "http" // info, debug, error, none, etc
-    y.yukiConfig.name = "MyBot" // set how the bot refers to itself
-    y.yukiConfig.prefix = /^>$/ // set the command prefix e.g. `>myCommand`
+    // set how the bot refers to itself
+    y.yukiConfig.name = "MyBot"
+    // set the command prefix e.g. `>myCommand`
+    y.yukiConfig.prefix = /^>$/
     y.googleConfig = {
       clientId: process.env.G_CLIENT_ID,
       clientSecret: process.env.G_CLIENT_SECRET,
       redirectUri: process.env.G_REDIRECT_URI,
     }
     y.tokenLoader = async () => ({
-      // provide a way to load auth tokens, e.g., from file or a database
+      // provide a way to load auth tokens
+      // e.g., from file or a database
     })
 
-    // Add a message listener which greets the first chatter then removes itself
+    // Add a message listener which greets a chatter
     y.onMessage(({ authorDetails: { displayName } }) => {
-      y.sendMessage(`Hello there, ${displayName}!`)
+      y.sendMessage(`Hello there, ${ displayName }!`)
     })
 
     // build a command which responds to `>greet` with "Hello There"
     y.command((cmd) => {
       cmd.name = "greet"
-      cmd.rateLimit.individual = 10 // set the per-user cooldown to 10 seconds
+      // set the per-user cooldown to 10 seconds
+      cmd.rateLimit.individual = 10
       cmd.invoke = async () => {
         await y.sendMessage("Hello There")
       }
     })
   })
 
-  // use the bot's express app to login with OAuth
-  // the express app can be used however you like, as long as you don't overwrite
-  // `/`, `/auth` or `/callback`
-  bot.express.listen(3000, () => console.log(`http://localhost:${3000}`))
+  /*
+   use the bot's express app to login with OAuth
+   the express app can be used however you like, as long as you
+   don't overwrite `/`, `/auth` or `/callback`
+  */
+  bot.express.listen(3000, () => console.log(`http://localhost:${ 3000 }`))
   // Add a listener that restarts the bot on login
   bot.onAuthUpdate(() => bot.start())
 }
@@ -81,12 +87,13 @@ async function main() {
 
 ```ts
 /**
- * You can extract the setup to one or more functions to sort your code!
+ * You can extract the setup to one or morefunctions to sort your code!
  *
  * @param {YukiBuilder} builder
  */
 async function extractedSetup(builder: YukiBuilder) {
-  // add a message listener which removes itself if the message says "get out"
+  // add a message listener which removes itself
+  // if the message says "get out"
   builder.onMessage(
     ({ snippet: { displayMessage } }) => {
       return displayMessage.match(/^get\s+out$/)
@@ -94,7 +101,8 @@ async function extractedSetup(builder: YukiBuilder) {
     async (_, match) => match !== null
   )
 
-  // add a passive, which acts like a message listener with a predicate
+  // add a passive, which acts like a
+  // message listener with a predicate
   builder.passive(
     async (msg, tokens, self) => {
       /* if this returns TRUE then the execution logic will run */
