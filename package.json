@@ -1,6 +1,6 @@
 {
   "name": "@pinkilo/yukibot",
-  "version": "0.1.1",
+  "version": "1.0.0",
   "description": "YouTube broadcast bot library",
   "repository": "https://github.com/pinkilo/yukibotJS.git",
   "author": "Pinkilo <hello@pinkilo.org>",
