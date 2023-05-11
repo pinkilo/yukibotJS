@@ -9,15 +9,15 @@ export default abstract class Cache<V> {
     this.map[key] = value
   }
 
-  keys(): string[] {
+  get keys(): string[] {
     return Object.keys(this.map)
   }
 
-  values(): V[] {
+  get values(): V[] {
     return Object.values(this.map)
   }
 
-  entries(): [string, V][] {
+  get entries(): [string, V][] {
     return Object.entries(this.map)
   }
 }

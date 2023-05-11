@@ -56,7 +56,7 @@ export default class YukiBuilder {
 
   constructor() {
     this.logLevel = "none"
-    new AsyncCache<User>(async (k) => {
+    this.usercache = new AsyncCache<User>(async (k) => {
       const { success, value } = await this.youtube.fetchUsers([k])
       if (success) return successOf(value[0])
       this.logger.error("failed to fetch user")
@@ -150,7 +150,7 @@ export default class YukiBuilder {
   }
 
   get cachedUsers(): User[] {
-    return this.usercache.values()
+    return this.usercache.values
   }
 
   /**

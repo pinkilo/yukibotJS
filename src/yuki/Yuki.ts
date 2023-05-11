@@ -100,7 +100,7 @@ export default class Yuki {
     return {
       config: this.config,
       listeners: this.eventbus.size,
-      userCacheSize: this.usercache.values().length / 2,
+      userCacheSize: this.usercache.values.length / 2,
     }
   }
 
@@ -151,7 +151,7 @@ export default class Yuki {
   }
 
   get cachedUsers(): User[] {
-    return this.usercache.values()
+    return this.usercache.values
   }
 
   /**
