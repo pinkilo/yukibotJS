@@ -13,40 +13,14 @@
   ],
   "scripts": {
     "clean": "rm -rf node_modules coverage *.tsbuildinfo yarn.lock dist",
-    "prepare": "husky install",
-    "prettier/format": "yarn prettier --config .prettierrc.yaml --write src sample *.js *.ts",
-    "prettier/check": "prettier --config .prettierrc.yaml --check src sample *.js *.ts",
+    "prepare": "node prepare.js",
+    "prettier/format": "yarn prettier --config .prettierrc.yaml --write src sample *.yaml *.json",
+    "prettier/check": "prettier --config .prettierrc.yaml --check src sample *.yaml *.json",
     "compile": "tsc -p tsconfig.build.json",
     "build": "yarn compile && cp -r src/views dist",
     "test": "jest",
     "prepublishOnly": "yarn build",
     "semantic-release": "semantic-release"
-  },
-  "release": {
-    "branches": [
-      "main"
-    ],
-    "plugins": [
-      [
-        "@semantic-release/commit-analyzer",
-        {
-          "preset": "eslint",
-          "releaseRules": [
-            {
-              "tag": "Refactor",
-              "release": "patch"
-            },
-            {
-              "tag": "tests",
-              "release": "patch"
-            }
-          ]
-        }
-      ],
-      "@semantic-release/release-notes-generator",
-      "@semantic-release/changelog",
-      "@semantic-release/npm"
-    ]
   },
   "dependencies": {
     "express": "^4.18.2",
@@ -58,6 +32,8 @@
     "winston": "^3.8.2"
   },
   "devDependencies": {
+    "@commitlint/cli": "^17.6.3",
+    "@commitlint/config-conventional": "^17.6.3",
     "@semantic-release/changelog": "^6.0.3",
     "@types/express": "^4.17.17",
     "@types/gapi": "^0.0.44",
@@ -70,6 +46,7 @@
     "assert": "^2.0.0",
     "browserify-zlib": "^0.2.0",
     "buffer": "^5.5.0",
+    "conventional-changelog-conventionalcommits": "^5.0.0",
     "conventional-changelog-eslint": "^3.0.9",
     "crypto-browserify": "^3.12.0",
     "eslint": "^8.36.0",

@@ -122,16 +122,27 @@ async function extractedSetup(builder: YukiBuilder) {
 Contributing is highly encouraged. It's best to make an issue first to discuss
 what you want to add, but we won't stop you from making something cool!
 
-Commits should be written with (plus our own tags)
-[eslint standards](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-eslint).
+Commits should be focused on specific changes and messages written with
+[Conventional Commit](https://www.conventionalcommits.org/en/v1.0.0/#summary):
 
-* `Fix` - for a bug fix.
-* `Update` - either for a backwards-compatible enhancement or for a rule change that adds reported problems.
-* `New` - implemented a new feature.
-* `Breaking` - for a backwards-incompatible enhancement or feature.
-* `Docs` - changes to documentation only.
-* `Build` - changes to build process only.
-* `Upgrade` - for a dependency upgrade.
-* `Chore` - for refactoring, adding tests, etc. (anything that isn't user-facing).
-* `Refactor` - same as chore but for the context of non-breaking refactors
-* `Tests` - same as chore but for the context of adding or modifying tests
+```
+<type>[(optional scope)][!]: <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+Add a `!` after the type and scope (if it exists) to indicate a BREAKING change.
+
+Types:
+- `feat:` a new feature
+- `fix:` a bug fix
+- `perf:` a code change that improves performance
+- `refactor:` a code change that neither fixes a bug nor adds a feature 
+- `test:` adding or correcting  tests
+- `docs:` documentation only changes, e.g. jsDocs, README
+- `build:` - changes that affect the build or dependencies
+- `ci:` Changes to our CI configuration files and scripts
+- `style:` changes that do not affect the meaning of the code , e.g., formatting
+- `chore:` misc. changes which do not affect the codebase in a meaningful way
+            and do not fall under another type listed above
