@@ -1,5 +1,12 @@
-import { yuki, YukiBuilder, Yuki, YukiConfig, GoogleConfig } from "./yuki"
+import {
+  yuki,
+  YukiBuilder,
+  Yuki,
+  YukiConfig,
+  GoogleConfig,
+  TokenBin,
+} from "./yuki"
 
 export default yuki
-export type { YukiBuilder, Yuki, YukiConfig, GoogleConfig }
+export type { YukiBuilder, Yuki, YukiConfig, GoogleConfig, TokenBin }
 export { yuki }
