@@ -123,13 +123,16 @@ export default class YukiBuilder {
         format.colorize({ all: true }),
         format.timestamp(),
         format.printf(
-          (info) =>
-            `[${info.timestamp}] ${this.yukiConfig.name} ${info.level}: ${
-              info.message
-            } ${info.err || ""}`
+          ({ err, level, message, timestamp }) =>
+            `${timestamp} [yukibot] ${level}: ${message} ${err || ""}`
         )
       ),
     })
+  }
+
+  /** Override the internal logger with the given logger */
+  set loggerOverride(logger: Logger) {
+    this.logger = logger
   }
 
   set googleConfig({ clientId, clientSecret, redirectUri }: GoogleConfig) {
