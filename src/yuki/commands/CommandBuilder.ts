@@ -32,9 +32,10 @@ export default class CommandBuilder {
       return false
     }
     for (const al of [this.name, ...(this.alias || [])]) {
-      if (al.match(/^\w+$/) === null) {
+      if (al.match(/^\S+$/) === null) {
         this.logger.error(
-          `invalid name or alias set in command builder ${this.name}. Must match /^\\w+$/`
+          `invalid name or alias set in command builder name: "${this.name}".` +
+            `Alias: "${al}" cannot contain any whitespace.`
         )
         return false
       }

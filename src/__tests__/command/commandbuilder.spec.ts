@@ -30,18 +30,9 @@ describe("failure conditions", () => {
       cmdBuilder.name = "n ame"
       expect(cmdBuilder.build()).toBeUndefined()
     })
-    it("should not allow special character name", () => {
-      cmdBuilder.name = ".&"
-      expect(cmdBuilder.build()).toBeUndefined()
-    })
     it("should not allow malformed alias", () => {
       cmdBuilder.name = "command_name"
       cmdBuilder.alias = ["other name"]
-      expect(cmdBuilder.build()).toBeUndefined()
-    })
-    it("should not allow special character alias", () => {
-      cmdBuilder.name = "command_name"
-      cmdBuilder.alias = [".&"]
       expect(cmdBuilder.build()).toBeUndefined()
     })
   })
@@ -56,9 +47,17 @@ describe("success conditions", () => {
     cmdBuilder.name = "commandname"
     expect(cmdBuilder.build()).toBeInstanceOf(Command)
   })
+  it("should allow single emoji as name", () => {
+    cmdBuilder.name = "🫘"
+    expect(cmdBuilder.build()).toBeInstanceOf(Command)
+  })
+  it("should allow multiple emoji as name", () => {
+    cmdBuilder.name = "🫘🫘🫘"
+    expect(cmdBuilder.build()).toBeInstanceOf(Command)
+  })
   it("should allow valid alias", () => {
     cmdBuilder.name = "commandname"
-    cmdBuilder.alias = ["otherName"]
+    cmdBuilder.alias = ["otherName", "🫘", "🫘🫘🫘"]
     expect(cmdBuilder.build()).toBeInstanceOf(Command)
   })
   it("should allow missing ratelimits", () => {
