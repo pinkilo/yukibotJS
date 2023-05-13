@@ -1,5 +1,6 @@
 import YukiBuilder, { yuki } from "./YukiBuilder"
-import Yuki, { YukiConfig, GoogleConfig } from "./Yuki"
+import Yuki from "./Yuki"
+import { YukiConfig, GoogleConfig } from "./BaseYuki"
 import { TokenBin } from "./tokenization"
 import { Command, CommandBuilder } from "./commands"
 
