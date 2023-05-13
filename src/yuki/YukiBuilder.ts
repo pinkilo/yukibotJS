@@ -3,25 +3,24 @@ import { youtube_v3 } from "googleapis"
 import { Credentials } from "google-auth-library"
 import {
   AsyncCache,
-  AuthEvent,
   BroadcastUpdateEvent,
   Eventbus,
   EventType,
   failure,
   MessageBatchEvent,
-  Result,
   SubscriptionEvent,
   successOf,
   YoutubeWrapper,
 } from "../internal"
 import { Command, CommandBuilder } from "./commands"
-import Yuki, { GoogleConfig, YukiConfig } from "./Yuki"
+import Yuki from "./Yuki"
+import BaseYuki, { GoogleConfig, YukiConfig } from "./BaseYuki"
 import { MemoryPassive, Passive } from "./passives"
 import { TokenBin, tokenize } from "./tokenization"
+import { User } from "../models"
 import Schema$LiveBroadcast = youtube_v3.Schema$LiveBroadcast
 import Schema$LiveChatMessage = youtube_v3.Schema$LiveChatMessage
 import Schema$Subscription = youtube_v3.Schema$Subscription
-import { User } from "../models"
 
 /**
  * @returns {Yuki} the constructed bot instance or undefined if building failed
@@ -37,13 +36,9 @@ export const yuki = async (
 /**
  * TODO passives DSL
  */
-export default class YukiBuilder {
-  private readonly eventbus: Eventbus = new Eventbus()
+export default class YukiBuilder extends BaseYuki {
   private readonly commands: Map<string, Command> = new Map()
   private readonly passives: Passive[] = []
-  private readonly usercache: AsyncCache<User>
-  private youtube: YoutubeWrapper
-  private logger: Logger
 
   tokenLoader: () => Promise<Credentials>
   yukiConfig: YukiConfig = {
@@ -55,6 +50,8 @@ export default class YukiBuilder {
   }
 
   constructor() {
+    super()
+    this.eventbus = new Eventbus()
     this.logLevel = "none"
     this.usercache = new AsyncCache<User>(async (k) => {
       const { success, value } = await this.youtube.fetchUsers([k])
@@ -142,25 +139,6 @@ export default class YukiBuilder {
       redirectUri,
       this.logger
     )
-  }
-
-  /**
-   * @returns a list of recent subscriptions in order of creation.
-   * `0` index being the most recent.
-   */
-  get recentSubscriptions(): Schema$Subscription[] {
-    return this.youtube.subscriptions.history
-  }
-
-  get cachedUsers(): User[] {
-    return this.usercache.values
-  }
-
-  /**
-   * Attempts to get a user from cache or else fetches user.
-   */
-  getUser(uid: string): Promise<User | undefined> {
-    return this.usercache.get(uid)
   }
 
   async command(dsl: (builder: CommandBuilder) => unknown) {
@@ -258,27 +236,6 @@ export default class YukiBuilder {
         }
       }
     )
-  }
-
-  /**
-   * Called when auth tokens are updated. usually useful when waiting
-   * on login to start the bot
-   */
-  onAuthUpdate<T = unknown>(
-    listener: (credentials: Credentials) => T,
-    deathPredicate?: (credentials: Credentials, value: T) => Promise<boolean>
-  ) {
-    this.eventbus.listen<AuthEvent>(EventType.AUTH, async (e, self) => {
-      const value = await listener(e.credentials)
-      if (deathPredicate && (await deathPredicate(e.credentials, value)))
-        self.remove()
-    })
-  }
-
-  async sendMessage(
-    messageText: string
-  ): Promise<Result<Schema$LiveChatMessage>> {
-    return this.youtube.broadcasts.sendMessage(messageText)
   }
 
   build(): Yuki {

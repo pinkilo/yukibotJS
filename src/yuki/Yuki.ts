@@ -14,33 +14,13 @@ import {
   YoutubeWrapper,
 } from "../internal"
 import { Credentials } from "google-auth-library"
-import { youtube_v3 } from "googleapis"
 import express, { Express } from "express"
 import nunjucks from "nunjucks"
 import { join } from "path"
-import Schema$LiveChatMessage = youtube_v3.Schema$LiveChatMessage
-import Schema$Subscription = youtube_v3.Schema$Subscription
+import BaseYuki, { YukiConfig } from "./BaseYuki"
 
-export type GoogleConfig = {
-  clientId: string
-  clientSecret: string
-  redirectUri: string
-}
-
-export type YukiConfig = {
-  name: string
-  chatPollRate: number
-  broadcastPollRate: number
-  subscriptionPollRate: number
-  prefix?: RegExp
-}
-
-export default class Yuki {
-  private readonly youtube: YoutubeWrapper
-  private readonly usercache: AsyncCache<User>
-  private readonly eventbus: Eventbus
+export default class Yuki extends BaseYuki {
   private readonly tokenLoader: () => Promise<Result<Credentials>>
-  private readonly logger: Logger
   private running = false
 
   readonly config: YukiConfig
@@ -66,6 +46,7 @@ export default class Yuki {
     logger: Logger,
     usercache: AsyncCache<User>
   ) {
+    super()
     this.eventbus = eventbus
     this.config = yukiConfig
     this.logger = logger
@@ -141,25 +122,6 @@ export default class Yuki {
     )
   }
 
-  /**
-   * @returns a list of recent subscriptions in order of creation.
-   * `0` index being the most recent.
-   */
-  get recentSubscriptions(): Schema$Subscription[] {
-    return this.youtube.subscriptions.history
-  }
-
-  get cachedUsers(): User[] {
-    return this.usercache.values
-  }
-
-  /**
-   * Attempts to get a user from cache or else fetches user.
-   */
-  getUser(uid: string): Promise<User | undefined> {
-    return this.usercache.get(uid)
-  }
-
   async start(): Promise<boolean> {
     if (this.running) {
       this.logger.error("bot is already running")
@@ -184,19 +146,5 @@ export default class Yuki {
 
   async stop() {
     this.running = false
-  }
-
-  async sendMessage(
-    messageText: string
-  ): Promise<Result<Schema$LiveChatMessage>> {
-    return this.youtube.broadcasts.sendMessage(messageText)
-  }
-
-  /**
-   * Called when auth tokens are updated. usually useful when waiting
-   * on login to start the bot
-   */
-  onAuthUpdate(cb: () => Promise<unknown>) {
-    this.eventbus.listen<AuthEvent>(EventType.AUTH, cb)
   }
 }
