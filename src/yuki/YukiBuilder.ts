@@ -33,9 +33,6 @@ export const yuki = async (
   return builder.build()
 }
 
-/**
- * TODO passives DSL
- */
 export default class YukiBuilder extends BaseYuki {
   private readonly commands: Map<string, Command> = new Map()
   private readonly passives: Passive[] = []
