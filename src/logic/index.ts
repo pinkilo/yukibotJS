@@ -1,13 +1,19 @@
-import YukiBuilder, { yuki } from "./YukiBuilder"
-import Yuki from "./Yuki"
-import { YukiConfig, GoogleConfig } from "./BaseYuki"
+import {
+  yuki,
+  Yuki,
+  YukiBuilder,
+  YukiConfig,
+  GoogleConfig,
+  TestYuki,
+} from "./yuki"
 import { TokenBin } from "./tokenization"
 import { Command, CommandBuilder } from "./commands"
 
-export { yuki }
-export type {
+export {
+  yuki,
   Yuki,
   YukiBuilder,
+  TestYuki,
   YukiConfig,
   GoogleConfig,
   TokenBin,

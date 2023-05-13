@@ -1,4 +1,5 @@
-import { attempt, randFromRange } from "../internal/util"
+import { attempt, randFromRange } from "../internal"
+import { tokenize } from "../logic/tokenization"
 
 describe("Random Number From Range", () => {
   let randMock
@@ -43,5 +44,20 @@ describe("Attempt block", () => {
       throw new Error()
     }, "message")
     expect(consoleSpy).toHaveBeenCalledWith("message")
+  })
+})
+
+describe("Tokenization", () => {
+  const prefix = /^>/
+  it("should recognize command token as command", () => {
+    const cmdMsg = ">cmd"
+    const tokens = tokenize(cmdMsg, prefix)
+    expect(tokens.isCommand).toBe(true)
+    expect(tokens.command).toBe(cmdMsg.slice(1))
+  })
+  it("should not recognize non-command token as command", () => {
+    const tokens = tokenize("!cmd", prefix)
+    expect(tokens.isCommand).toBe(false)
+    expect(tokens.command).toBeNull()
   })
 })

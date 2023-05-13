@@ -6,8 +6,8 @@ import {
   EventType,
   Result,
   YoutubeWrapper,
-} from "../internal"
-import { User } from "../models"
+} from "../../internal"
+import { User } from "../../models"
 import { Logger } from "winston"
 import Schema$LiveChatMessage = youtube_v3.Schema$LiveChatMessage
 import Schema$Subscription = youtube_v3.Schema$Subscription
@@ -25,6 +25,7 @@ export type YukiConfig = {
   broadcastPollRate: number
   subscriptionPollRate: number
   prefix?: RegExp
+  test?: boolean
 }
 
 export default abstract class BaseYuki {

@@ -5,9 +5,10 @@ config()
 
 async function main() {
   const bot = await yuki((y) => {
-    y.logLevel = "http" // info, debug, error, etc
+    y.logLevel = "debug" // info, debug, error, etc
     y.yukiConfig.name = "MyBot"
-    y.yukiConfig.prefix = /^>$/
+    y.yukiConfig.prefix = /^>/
+    y.yukiConfig.test = true
     y.googleConfig = {
       clientId: process.env.G_CLIENT_ID,
       clientSecret: process.env.G_CLIENT_SECRET,
@@ -33,8 +34,9 @@ async function main() {
     extractedSetup(y)
   })
 
-  bot.express.listen(3000, () => console.log(`http://localhost:${3000}`))
-  bot.onAuthUpdate(() => bot.start())
+  //bot.express.listen(3000, () => console.log(`\nhttp://localhost:${3000}`))
+  //bot.onAuthUpdate(() => bot.start())
+  await bot.start()
 }
 
 /**

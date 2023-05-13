@@ -4,6 +4,7 @@ import { Credentials } from "google-auth-library"
 import {
   AsyncCache,
   BroadcastUpdateEvent,
+  createMessage,
   Eventbus,
   EventType,
   failure,
@@ -11,13 +12,14 @@ import {
   SubscriptionEvent,
   successOf,
   YoutubeWrapper,
-} from "../internal"
-import { Command, CommandBuilder } from "./commands"
+} from "../../internal"
+import { Command, CommandBuilder } from "../commands"
 import Yuki from "./Yuki"
 import BaseYuki, { GoogleConfig, YukiConfig } from "./BaseYuki"
-import { MemoryPassive, Passive } from "./passives"
-import { TokenBin, tokenize } from "./tokenization"
-import { User } from "../models"
+import { MemoryPassive, Passive } from "../passives"
+import { TokenBin, tokenize } from "../tokenization"
+import { User } from "../../models"
+import TestYuki from "./TestYuki"
 import Schema$LiveBroadcast = youtube_v3.Schema$LiveBroadcast
 import Schema$LiveChatMessage = youtube_v3.Schema$LiveChatMessage
 import Schema$Subscription = youtube_v3.Schema$Subscription
@@ -43,7 +45,7 @@ export default class YukiBuilder extends BaseYuki {
     chatPollRate: 14.4 * 1000,
     broadcastPollRate: 2 * 60 * 1000,
     subscriptionPollRate: 60 * 1000,
-    prefix: /^([>!]|y!)$/gi,
+    prefix: /^([>!]|y!)/gi,
   }
 
   constructor() {
@@ -93,6 +95,12 @@ export default class YukiBuilder extends BaseYuki {
       // don't fail, just warn
       this.logger.alert("no commands, passives, or listeners were set")
     }
+    if (this.yukiConfig.prefix.source.endsWith("$")) {
+      this.logger.warn(
+        "prefix ends with '$' which may result in commands not being recognized" +
+          ". Prefixes should resemble this regex /^!/"
+      )
+    }
     return true
   }
 
@@ -115,10 +123,13 @@ export default class YukiBuilder extends BaseYuki {
       format: format.combine(
         format.errors({ stack: true }),
         format.colorize({ all: true }),
-        format.timestamp(),
+        format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
+        format.metadata({
+          fillExcept: ["message", "level", "timestamp", "label", "err"],
+        }),
         format.printf(
-          ({ err, level, message, timestamp }) =>
-            `${timestamp} [yukibot] ${level}: ${message} ${err || ""}`
+          ({ err, level, message, timestamp: ts }) =>
+            `${ts} [yukibot] ${level}: ${message} ${err || ""}`
         )
       ),
     })
@@ -142,8 +153,9 @@ export default class YukiBuilder extends BaseYuki {
     const builder = new CommandBuilder(this.logger)
     await dsl(builder)
     const command = builder.build()
-    for (const cname in [command.name, ...command.alias]) {
+    for (const cname of [command.name, ...command.alias]) {
       this.commands.set(cname, command)
+      this.logger.debug(`registered command "${cname}"`)
     }
   }
 
@@ -235,6 +247,12 @@ export default class YukiBuilder extends BaseYuki {
     )
   }
 
+  override async sendMessage(messageText: string) {
+    return this.yukiConfig.test === true
+      ? successOf(createMessage(messageText))
+      : await super.sendMessage(messageText)
+  }
+
   build(): Yuki {
     if (!this.prebuildCheck()) {
       this.logger.error("failed to build yukibot")
@@ -247,8 +265,10 @@ export default class YukiBuilder extends BaseYuki {
           msg.snippet.displayMessage,
           this.yukiConfig.prefix
         )
-        this.logger.debug("tokenized", { tokens })
-        if (tokens.isCommand) await this.runCmd(tokens.command, msg, tokens)
+        this.logger.debug(`tokenized isCommand=${tokens.isCommand}`)
+        if (tokens.isCommand) {
+          await this.runCmd(tokens.command, msg, tokens)
+        }
         // run passives
         const predicates = await Promise.all(
           this.passives.map((p) => p.predicate(msg, tokens, p))
@@ -260,6 +280,14 @@ export default class YukiBuilder extends BaseYuki {
             .map((p) => p.invoke(msg, tokens, p))
         )
       })
+    }
+    if (this.yukiConfig.test === true) {
+      return new TestYuki(
+        this.yukiConfig,
+        this.eventbus,
+        this.logger,
+        this.usercache
+      )
     }
     return new Yuki(
       this.yukiConfig,

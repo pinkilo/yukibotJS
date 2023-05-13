@@ -8,7 +8,7 @@ async function main() {
   const bot = await yuki((y) => {
     y.logLevel = "http" // info, debug, error
     y.yukiConfig.name = "MyBot"
-    y.yukiConfig.prefix = /^>$/
+    y.yukiConfig.prefix = /^>/
     y.googleConfig = {
       clientId: process.env.G_CLIENT_ID,
       clientSecret: process.env.G_CLIENT_SECRET,

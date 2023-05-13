@@ -1,4 +1,4 @@
-import Yuki from "../../yuki/Yuki"
+import { GoogleConfig, Yuki, YukiConfig } from "../../logic"
 import {
   AsyncCache,
   AuthEvent,
@@ -13,7 +13,6 @@ import winston from "winston"
 import { Credentials } from "google-auth-library"
 import * as supertest from "supertest"
 import { User } from "../../models"
-import { GoogleConfig, YukiConfig } from "../../yuki/BaseYuki"
 
 jest.mock("google-auth-library")
 jest.mock("googleapis")

@@ -1,5 +1,5 @@
 import { Logger } from "winston"
-import { User } from "../models"
+import { User } from "../../models"
 import {
   AsyncCache,
   AuthEvent,
@@ -12,7 +12,7 @@ import {
   SubscriptionEvent,
   successOf,
   YoutubeWrapper,
-} from "../internal"
+} from "../../internal"
 import { Credentials } from "google-auth-library"
 import express, { Express } from "express"
 import nunjucks from "nunjucks"
@@ -20,8 +20,8 @@ import { join } from "path"
 import BaseYuki, { YukiConfig } from "./BaseYuki"
 
 export default class Yuki extends BaseYuki {
-  private readonly tokenLoader: () => Promise<Result<Credentials>>
-  private running = false
+  protected readonly tokenLoader: () => Promise<Result<Credentials>>
+  protected running = false
 
   readonly config: YukiConfig
   readonly express: Express = express()

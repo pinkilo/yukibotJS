@@ -1,4 +1,5 @@
 import {
+  Event,
   EventType,
   AuthEvent,
   SubscriptionEvent,
@@ -8,6 +9,7 @@ import {
 import Eventbus from "./Eventbus"
 
 export {
+  Event,
   EventType,
   AuthEvent,
   SubscriptionEvent,
