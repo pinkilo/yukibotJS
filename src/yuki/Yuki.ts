@@ -165,11 +165,13 @@ export default class Yuki {
     if (this.running) {
       this.logger.error("bot is already running")
       return false
-    }
-    if (!this.youtube.tokensLoaded) {
+    } else if (!this.youtube.tokensLoaded) {
+      this.logger.debug("auth tokens not loaded. attempting to use tokenLoader")
       const { success, value: tokens } = await this.tokenLoader()
-      if (success) this.youtube.setTokens(tokens)
-      else {
+      if (success) {
+        this.logger.debug("auth tokens loaded")
+        this.youtube.setTokens(tokens)
+      } else {
         this.logger.info("no auth token available from token loader")
         return false
       }
