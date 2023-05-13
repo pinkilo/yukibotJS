@@ -1,8 +1,8 @@
 import * as winston from "winston"
-import CommandBuilder from "../../yuki/commands/CommandBuilder"
+import CommandBuilder from "../../logic/commands/CommandBuilder"
 import { chatMessage } from "../util"
-import { Command } from "../../yuki/commands"
-import { tokenize } from "../../yuki/tokenization"
+import { Command } from "../../logic/commands"
+import { tokenize } from "../../logic/tokenization"
 
 let cmdBuilder: CommandBuilder
 
@@ -120,7 +120,7 @@ describe("build confirmation", () => {
     const cmd = cmdBuilder.build()
     const result = await cmd.invoke(
       msg,
-      tokenize(msg.snippet.displayMessage),
+      tokenize(msg.snippet.displayMessage, /^>/),
       cmd
     )
     expect(result).toBe(returnVal)

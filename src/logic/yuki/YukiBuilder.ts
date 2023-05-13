@@ -124,9 +124,6 @@ export default class YukiBuilder extends BaseYuki {
         format.errors({ stack: true }),
         format.colorize({ all: true }),
         format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
-        format.metadata({
-          fillExcept: ["message", "level", "timestamp", "label", "err"],
-        }),
         format.printf(
           ({ err, level, message, timestamp: ts }) =>
             `${ts} [yukibot] ${level}: ${message} ${err || ""}`
