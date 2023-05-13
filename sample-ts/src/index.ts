@@ -69,9 +69,8 @@ async function extractedSetup(builder: YukiBuilder) {
   builder.memoryPassive<number>(
     0,
     async () => true,
-    async (_,__, { memory }) => {
-      memory += 1
-      console.log(`Messages received: ${memory}`)
+    async (_,__, self) => {
+      console.log(`Messages received: ${++self.memory}`)
     })
 }
 
