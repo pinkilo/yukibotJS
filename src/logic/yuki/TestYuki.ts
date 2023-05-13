@@ -7,6 +7,7 @@ import {
   Eventbus,
   MessageBatchEvent,
   Result,
+  SubscriptionEvent,
   successOf,
 } from "../../internal"
 import { Logger } from "winston"
@@ -36,6 +37,24 @@ export default class TestYuki extends Yuki {
     return new MessageBatchEvent([createMessage(text)])
   }
 
+  private mockSubscription(): SubscriptionEvent {
+    return new SubscriptionEvent({
+      kind: "youtube#subscription",
+      etag: "ENTITY_TAG",
+      id: "SUBSCRIPTION_ID",
+      subscriberSnippet: {
+        title: "CHANNEL_TITLE",
+        description: "CHANNEL_DESCRIPTION",
+        channelId: "CHANNEL_ID",
+        thumbnails: {
+          default: { url: "" },
+          medium: { url: "" },
+          high: { url: "" },
+        },
+      },
+    })
+  }
+
   private async inputWatcher() {
     console.log(
       "Select an event to mock:\n1: message\n2: subscription\n0: exit"
@@ -50,7 +69,7 @@ export default class TestYuki extends Yuki {
         event = await this.mockMessage()
         break
       case 2:
-        // TODO
+        event = this.mockSubscription()
         break
       default:
         this.logger.error(`"${answer}" is not a valid choice`)
