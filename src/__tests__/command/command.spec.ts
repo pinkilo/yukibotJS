@@ -1,6 +1,6 @@
 import { chatMessage } from "../util"
-import Command from "../../yuki/commands/Command"
-import { tokenize } from "../../yuki/tokenization"
+import Command from "../../logic/commands/Command"
+import { tokenize } from "../../logic/tokenization"
 import * as winston from "winston"
 
 let command: Command
@@ -22,9 +22,10 @@ beforeEach(() => {
 })
 
 const msg = chatMessage(`>test`)
+const prefix = /^>/
 describe("command invoke", () => {
   it("should invoke command", async () => {
-    await command.execute(msg, tokenize(msg.snippet.displayMessage))
+    await command.execute(msg, tokenize(msg.snippet.displayMessage, prefix))
     expect(commandInvokeMock).toBeCalledTimes(1)
   })
 })
@@ -45,15 +46,15 @@ describe("cooldown", () => {
     checkCooldownMock = jest.spyOn(command, "onCooldown")
   })
   it("should add cooldown once", async () => {
-    await command.execute(msg, tokenize(msg.snippet.displayMessage))
+    await command.execute(msg, tokenize(msg.snippet.displayMessage, prefix))
     expect(addCooldownMock).toBeCalledTimes(1)
   })
   it("should check cooldown once", async () => {
-    await command.execute(msg, tokenize(msg.snippet.displayMessage))
+    await command.execute(msg, tokenize(msg.snippet.displayMessage, prefix))
     expect(checkCooldownMock).toBeCalledTimes(1)
   })
   it("should be on cooldown", async () => {
-    await command.execute(msg, tokenize(msg.snippet.displayMessage))
+    await command.execute(msg, tokenize(msg.snippet.displayMessage, prefix))
     expect(command.onCooldown(msg.authorDetails.channelId)).toBe(true)
   })
 })

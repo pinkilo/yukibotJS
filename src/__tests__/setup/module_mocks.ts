@@ -6,6 +6,7 @@ jest.mock("winston", () => ({
     http: jest.fn(),
     debug: jest.fn(),
     alert: jest.fn(),
+    warn: jest.fn(),
   })),
   transports: {
     Console: jest.fn(),
