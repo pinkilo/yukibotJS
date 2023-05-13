@@ -85,7 +85,6 @@ export default class Yuki {
           "expiry_date" in result &&
           "access_token" in result &&
           "token_type" in result &&
-          "id_token" in result &&
           "scope" in result
         )
           return successOf(result)
