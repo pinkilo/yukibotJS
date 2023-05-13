@@ -1,6 +1,7 @@
 import { SyncCache, AsyncCache } from "./cache"
 import { YoutubeWrapper } from "./google"
 import {
+  Event,
   Eventbus,
   MessageBatchEvent,
   BroadcastUpdateEvent,
@@ -8,9 +9,17 @@ import {
   SubscriptionEvent,
   EventType,
 } from "./events"
-import { randFromRange, successOf, Result, attempt, failure } from "./util"
+import {
+  randFromRange,
+  successOf,
+  Result,
+  attempt,
+  failure,
+  createMessage,
+} from "./util"
 
 export {
+  Event,
   YoutubeWrapper,
   SyncCache,
   AsyncCache,
@@ -25,4 +34,5 @@ export {
   Result,
   attempt,
   failure,
+  createMessage,
 }

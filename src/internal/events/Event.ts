@@ -11,7 +11,7 @@ export enum EventType {
   BROADCAST_UPDATE,
 }
 
-export default interface Event {
+export interface Event {
   type: EventType
 }
 

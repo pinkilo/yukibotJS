@@ -1,4 +1,4 @@
-import Event, { EventType } from "./Event"
+import { Event, EventType } from "./Event"
 import { attempt } from "../util"
 
 type ListenerFun<E extends Event> = (
