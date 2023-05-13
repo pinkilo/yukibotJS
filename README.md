@@ -34,9 +34,6 @@ npm install @pinkilo/yukibot
 
 ```ts
 import yuki from "yukibot"
-import { config } from "dotenv"
-
-config() // load your googleAPI secrets
 
 async function main() {
   // create a bot instance with the `yuki` dsl
@@ -45,7 +42,7 @@ async function main() {
     // set how the bot refers to itself
     y.yukiConfig.name = "MyBot"
     // set the command prefix e.g. `>myCommand`
-    y.yukiConfig.prefix = /^>$/
+    y.yukiConfig.prefix = /^>/
     y.googleConfig = {
       clientId: process.env.G_CLIENT_ID,
       clientSecret: process.env.G_CLIENT_SECRET,
@@ -123,6 +120,37 @@ async function extractedSetup(builder: YukiBuilder) {
       console.log(`Messages received: ${memory}`)
     })
 }
+```
+
+### Testing
+
+You can run your bot in "test" mode which will let you mock events through the 
+cli.
+
+```ts
+async function main() {
+  // create a bot instance with the `yuki` dsl
+  const bot = await yuki((y) => {
+    y.logLevel = "debug"
+    y.yukiConfig.name = "MyBot"
+    y.yukiConfig.prefix = /^>/
+    y.yukiConfig.test = true
+    
+    // ... see earlier examples for more dsl
+  })
+  
+  await bot.start()
+}
+```
+
+You will be prompted to mock an event (more to come):
+
+```
+Select an event to mock:
+1: message
+2: subscription
+0: exit
+choice:
 ```
 
 ## Contributing
