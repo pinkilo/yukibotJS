@@ -53,7 +53,7 @@ export default class Yuki extends BaseYuki {
     this.youtube = youtube
     this.usercache = usercache
 
-    nunjucks.configure(join(__dirname, "../views"), {
+    nunjucks.configure(join(__dirname, "../../views"), {
       express: this.express,
     })
 
