@@ -29,7 +29,7 @@ import Schema$Subscription = youtube_v3.Schema$Subscription
  */
 export const yuki = async (
   dsl: (builder: YukiBuilder) => unknown
-): Promise<Yuki> => {
+): Promise<Yuki | undefined> => {
   const builder = new YukiBuilder()
   await dsl(builder)
   return builder.build()
@@ -275,7 +275,7 @@ export default class YukiBuilder extends BaseYuki {
       : await super.sendMessage(messageText)
   }
 
-  build(): Yuki {
+  build(): Yuki | undefined {
     if (!this.prebuildCheck()) {
       this.logger.error("failed to build yukibot")
       return undefined
