@@ -60,20 +60,6 @@ export default class YukiBuilder extends BaseYuki {
     }, this.logger)
   }
 
-  private async runCmd(
-    name: string,
-    msg: Schema$LiveChatMessage,
-    tokens: TokenBin
-  ) {
-    const cmd = this.commands.get(name)
-    if (cmd !== undefined) {
-      this.logger.info(`executing "${name}"`)
-      await cmd?.execute(msg, tokens)
-    } else {
-      this.logger.debug(`no command found with name "${name}"`)
-    }
-  }
-
   private prebuildCheck(): boolean {
     if (!(this.youtube instanceof YoutubeWrapper)) {
       this.logger.error(
@@ -102,6 +88,45 @@ export default class YukiBuilder extends BaseYuki {
       )
     }
     return true
+  }
+
+  private addCommandListener() {
+    if (this.commands.size === 0) return
+    this.onMessage(async (msg) => {
+      const tkns = tokenize(msg.snippet.displayMessage, this.yukiConfig.prefix)
+      this.logger.debug(
+        `tokenized isCommand=${tkns.isCommand} ${
+          tkns.isCommand ? `command=${tkns.command}` : ""
+        }`
+      )
+      if (tkns.isCommand && this.commands.has(tkns.command)) {
+        const cmd = this.commands.get(tkns.command)
+        this.logger.info(`executing "${cmd.name}" with "${tkns.command}"`)
+        await cmd.execute(msg, tkns)
+      } else {
+        this.logger.debug(`no command found with name "${tkns.command}"`)
+      }
+    })
+  }
+
+  private addPassiveListener() {
+    if (this.passives.length === 0) return
+    this.onMessage(async (msg) => {
+      const tokens = tokenize(
+        msg.snippet.displayMessage,
+        this.yukiConfig.prefix
+      )
+      const predicates = await Promise.all(
+        this.passives.map((p) => p.predicate(msg, tokens, p))
+      )
+      const runCount = predicates.reduce((sum, cur) => sum + (cur ? 1 : 0), 0)
+      this.logger.info(`running ${runCount}/${this.passives.length} passives`)
+      await Promise.all(
+        this.passives
+          .filter((_, i) => predicates[i])
+          .map((p) => p.invoke(msg, tokens, p))
+      )
+    })
   }
 
   /** @see https://github.com/winstonjs/winston#logging */
@@ -255,29 +280,10 @@ export default class YukiBuilder extends BaseYuki {
       this.logger.error("failed to build yukibot")
       return undefined
     }
-    // command listener
-    if (Array.from(this.commands.keys()).length > 0) {
-      this.onMessage(async (msg) => {
-        const tokens = tokenize(
-          msg.snippet.displayMessage,
-          this.yukiConfig.prefix
-        )
-        this.logger.debug(`tokenized isCommand=${tokens.isCommand}`)
-        if (tokens.isCommand) {
-          await this.runCmd(tokens.command, msg, tokens)
-        }
-        // run passives
-        const predicates = await Promise.all(
-          this.passives.map((p) => p.predicate(msg, tokens, p))
-        )
-        this.logger.info(`running ${predicates.length} passives`)
-        await Promise.all(
-          this.passives
-            .filter((_, i) => predicates[i])
-            .map((p) => p.invoke(msg, tokens, p))
-        )
-      })
-    }
+
+    this.addCommandListener()
+    this.addPassiveListener()
+
     if (this.yukiConfig.test === true) {
       return new TestYuki(
         this.yukiConfig,
