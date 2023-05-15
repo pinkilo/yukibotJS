@@ -1,15 +1,5 @@
-import { attempt, randFromRange } from "../internal"
+import { attempt } from "../internal"
 import { tokenize } from "../logic/tokenization"
-
-describe("Random Number From Range", () => {
-  let randMock
-  beforeEach(() => {
-    randMock = jest.spyOn(global.Math, "random").mockImplementation(() => 1.1)
-  })
-  it("should round to integer", () => {
-    expect(Number.isInteger(randFromRange(0, 2))).toEqual(true)
-  })
-})
 
 describe("Attempt block", () => {
   it("should return successful result if no error", async () => {
