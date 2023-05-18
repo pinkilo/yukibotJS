@@ -14,8 +14,8 @@
   "scripts": {
     "clean": "rm -rf node_modules coverage *.tsbuildinfo yarn.lock dist",
     "prepare": "node prepare.js",
-    "prettier/format": "yarn prettier --config .prettierrc.yaml --write src sample *.yaml *.json",
-    "prettier/check": "prettier --config .prettierrc.yaml --check src sample *.yaml *.json",
+    "prettier/format": "prettier --config .prettierrc.yaml -w src samples *.yaml *.json",
+    "prettier/check": "prettier --config .prettierrc.yaml -c src samples *.yaml *.json",
     "compile": "tsc -p tsconfig.build.json",
     "build": "yarn compile && cp -r src/views dist",
     "test": "jest",

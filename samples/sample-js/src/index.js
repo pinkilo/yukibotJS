@@ -1,14 +1,13 @@
-import yuki, { YukiBuilder } from "yukibot"
-import { config } from "dotenv"
-
-config()
+import "dotenv/config"
+import process from "process"
+import { yuki } from "@pinkilo/yukibot"
 
 async function main() {
   const bot = await yuki((y) => {
-    y.logLevel = "debug" // info, debug, error, etc
+    y.logLevel = "http" // info, debug, error
     y.yukiConfig.name = "MyBot"
     y.yukiConfig.prefix = /^>/
-    y.yukiConfig.test = true
+    y.yukiConfig.test = process.env.NODE_ENV === "test"
     y.googleConfig = {
       clientId: process.env.G_CLIENT_ID,
       clientSecret: process.env.G_CLIENT_SECRET,
@@ -34,9 +33,8 @@ async function main() {
     extractedSetup(y)
   })
 
-  //bot.express.listen(3000, () => console.log(`\nhttp://localhost:${3000}`))
-  //bot.onAuthUpdate(() => bot.start())
-  await bot.start()
+  bot.express.listen(3000, () => console.log(`http://localhost:${3000}`))
+  bot.onAuthUpdate(() => bot.start())
 }
 
 /**
@@ -44,16 +42,16 @@ async function main() {
  *
  * @param {YukiBuilder} builder
  */
-async function extractedSetup(builder: YukiBuilder) {
+async function extractedSetup(builder) {
   // add a message listener which removes itself if the message says "get out"
   builder.onMessage(
     ({ snippet: { displayMessage } }) => {
       return displayMessage.match(/^get\s+out$/)
     },
-    async (_, match) => match !== null
+    (_, match) => match !== null
   )
 
-  // add a passive, which acts like a message listener with a predicate
+  // add a passive, which acts like a message listener with a predicate and memory
   builder.passive(
     async (msg, tokens, self) => {
       /* Predicate, if this returns TRUE then the execution logic will run */
@@ -63,15 +61,6 @@ async function extractedSetup(builder: YukiBuilder) {
       /* execution logic, only runs if the predicate returns true */
     }
   )
-
-  // add a memoryPassive which is a normal passive
-  // with a convenient property for storing data
-  builder.memoryPassive<number>(
-    0,
-    async () => true,
-    async (_,__, self) => {
-      console.log(`Messages received: ${++self.memory}`)
-    })
 }
 
 main()

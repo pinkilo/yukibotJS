@@ -2,5 +2,5 @@
   "watch": ["src/**", "sample-ts/src/**"],
   "ext": "ts,njk,css",
   "ignore": ["src/**/*.spec.ts"],
-  "exec": "yarn build && cd sample-ts && yarn start & cd .."
+  "exec": "yarn build && cd samples/sample-ts && yarn start & cd .."
 }
