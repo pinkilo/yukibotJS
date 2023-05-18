@@ -29,12 +29,11 @@ const yukiConfig: YukiConfig = {
   subscriptionPollRate: 60 * 1000,
   prefix: /^([>!]|y!)$/gi,
 }
-const tokens: Credentials = {
+let tokens: Credentials = {
   refresh_token: null,
   expiry_date: null,
   access_token: null,
   token_type: null,
-  id_token: null,
   scope: null,
 }
 let yuki: Yuki
@@ -45,6 +44,13 @@ let eventbus: Eventbus
 let usercache: AsyncCache<User>
 
 beforeEach(() => {
+  tokens = {
+    refresh_token: null,
+    expiry_date: null,
+    access_token: null,
+    token_type: null,
+    scope: null,
+  }
   tokenLoader = jest.fn()
   logger = winston.createLogger()
   eventbus = new Eventbus()
@@ -81,6 +87,13 @@ describe("startup", () => {
       expect(started).toBe(false)
     })
     it("should fail if already running", async () => {
+      tokens = {
+        refresh_token: "123",
+        access_token: "123",
+        expiry_date: 123,
+        scope: "123",
+        token_type: "123",
+      }
       tokenLoader.mockImplementation(async () => tokens)
       expect(await yuki.start()).toBe(true)
       expect(await yuki.start()).toBe(false)
@@ -98,6 +111,13 @@ describe("startup", () => {
   })
   describe("startup success", () => {
     beforeEach(() => {
+      tokens = {
+        refresh_token: "123",
+        access_token: "123",
+        expiry_date: 123,
+        scope: "123",
+        token_type: "123",
+      }
       tokenLoader.mockImplementation(async () => tokens)
     })
     it("should start with valid token loader", async () => {
