@@ -6,11 +6,7 @@ import {
   YukiConfig,
 } from "../../logic"
 
-const googleConfig: GoogleConfig = {
-  clientId: "client_id",
-  clientSecret: "client_secret",
-  redirectUri: "redirect_uri",
-}
+let googleConfig: GoogleConfig
 const yukiConfig: YukiConfig = {
   name: "yuki",
   chatPollRate: 14.4 * 1000,
@@ -21,13 +17,43 @@ const yukiConfig: YukiConfig = {
 let yukiBuilder: YukiBuilder
 
 beforeEach(() => {
+  googleConfig = {
+    clientId: "client_id",
+    clientSecret: "client_secret",
+    redirectUri: "redirect_uri",
+  }
   yukiBuilder = new YukiBuilder()
 })
 
 describe("failure conditions", () => {
-  it("should fail if googleConfig is not set", () => {
-    yukiBuilder.tokenLoader = async () => undefined
-    expect(yukiBuilder.build()).toBeUndefined()
+  describe("google config", () => {
+    beforeEach(() => {
+      yukiBuilder.tokenLoader = async () => undefined
+    })
+    it("should fail if googleConfig is not set", () => {
+      expect(yukiBuilder.build()).toBeUndefined()
+    })
+    it("should fail if clientId is undefined", () => {
+      yukiBuilder.googleConfig = {
+        ...googleConfig,
+        clientId: undefined,
+      }
+      expect(yukiBuilder.build()).toBeUndefined()
+    })
+    it("should fail if clientSecret is undefined", () => {
+      yukiBuilder.googleConfig = {
+        ...googleConfig,
+        clientSecret: undefined,
+      }
+      expect(yukiBuilder.build()).toBeUndefined()
+    })
+    it("should fail if redirectUri is undefined", () => {
+      yukiBuilder.googleConfig = {
+        ...googleConfig,
+        redirectUri: undefined,
+      }
+      expect(yukiBuilder.build()).toBeUndefined()
+    })
   })
   it("should fail if tokenLoader is not set", () => {
     yukiBuilder.googleConfig = googleConfig
