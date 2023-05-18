@@ -22,7 +22,11 @@ beforeEach(() => {
   auth = new OAuth2Client()
   ytClient = google.youtube("v3")
   subscriptionsHandler = new SubscriptionsHandler(ytClient, auth, logger)
-  subs = listOf<Schema$Subscription>(6, (i) => ({ id: `sub_${i}` }))
+  const now = Date.now()
+  subs = listOf<Schema$Subscription>(6, (i) => ({
+    id: `sub_${i}`,
+    snippet: { publishedAt: new Date(now + i * 1000).toISOString() },
+  }))
   listSpy = jest
     .spyOn(ytClient.subscriptions, "list")
     .mockName("fetchRecentSubscriptions")
@@ -74,8 +78,14 @@ describe("subscription history", () => {
 
     await subscriptionsHandler.fetchRecentSubscriptions()
     await subscriptionsHandler.fetchRecentSubscriptions()
-    for (let i = 0; i < subscriptionsHandler.history.length; i++) {
-      expect(subscriptionsHandler.history[i]).toBe(subs[i])
+    for (let i = 0; i < subscriptionsHandler.history.length - 1; i++) {
+      const timeOfA = new Date(
+        subscriptionsHandler.history[i].snippet.publishedAt
+      ).getTime()
+      const timeOfB = new Date(
+        subscriptionsHandler.history[i + 1].snippet.publishedAt
+      ).getTime()
+      expect(timeOfA).toBeGreaterThan(timeOfB)
     }
   })
   it("should not add subscriptions already in memory", async () => {
@@ -87,14 +97,14 @@ describe("subscription history", () => {
     )
     await subscriptionsHandler.fetchRecentSubscriptions()
     expect(subscriptionsHandler.history.length).toBe(3)
-    for (let i = 0; i < subscriptionsHandler.history.length; i++) {
-      expect(subscriptionsHandler.history[i]).toBe(subs[i])
+    for (let i = 0; i < 3; i++) {
+      expect(subscriptionsHandler.history).toContain(subs[i])
     }
 
     await subscriptionsHandler.fetchRecentSubscriptions()
     expect(subscriptionsHandler.history.length).toBe(3)
-    for (let i = 0; i < subscriptionsHandler.history.length; i++) {
-      expect(subscriptionsHandler.history[i]).toBe(subs[i])
+    for (let i = 0; i < 3; i++) {
+      expect(subscriptionsHandler.history).toContain(subs[i])
     }
   })
   it("should not modify history without new subscriptions", async () => {
