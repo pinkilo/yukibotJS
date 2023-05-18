@@ -110,7 +110,7 @@ export default class Yuki extends BaseYuki {
   private async subscriptionWatcher() {
     if (!this.running) return
     const { success, value } =
-      await this.youtube.subscriptions.fetchRecentSubscriptions()
+      await this.youtube.subscriptions.fetchRecentSubscriptions(50)
     if (success) {
       for (const sub of value) {
         await this.eventbus.announce(new SubscriptionEvent(sub))
@@ -139,6 +139,9 @@ export default class Yuki extends BaseYuki {
     }
     this.running = true
     await this.broadcastWatcher()
+    // fetch recent history, so that only
+    // subscriptions during runtime are announced
+    await this.youtube.subscriptions.fetchRecentSubscriptions(1)
     await this.subscriptionWatcher()
     this.eventbus.listen(EventType.BROADCAST_UPDATE, () => this.chatWatcher())
     return true
