@@ -9,8 +9,6 @@ export default class SubscriptionsHandler {
   private readonly auth: OAuth2Client
   private readonly logger: Logger
 
-  /** Set of recent subscription IDs */
-  private readonly subIDs: Set<string> = new Set()
   /** list of recent subscription history, 0 index is the MOST RECENT subscription */
   readonly history: Schema$Subscription[] = []
 
@@ -18,6 +16,22 @@ export default class SubscriptionsHandler {
     this.auth = auth
     this.client = client
     this.logger = logger
+  }
+
+  private get mostRecent(): Schema$Subscription {
+    return this.history[0]
+  }
+
+  private timeOf(sub: Schema$Subscription): number {
+    return new Date(sub.snippet.publishedAt).getTime()
+  }
+
+  /** @returns true if the given subscription is newer than the latest in history */
+  private isNew(sub: Schema$Subscription): boolean {
+    return (
+      this.history.length === 0 ||
+      this.timeOf(sub) > this.timeOf(this.mostRecent)
+    )
   }
 
   /**
@@ -37,17 +51,10 @@ export default class SubscriptionsHandler {
         // clamp value 1-50
         maxResults: Math.min(Math.max(Math.floor(maxResults || 1), 1), 50),
       })
-      /** subs not already in memory or happen before most recent sub */
-      let newSubs = response.data.items.filter((s) => !this.subIDs.has(s.id))
-      if (this.history.length > 0) {
-        const ToMR = new Date(this.history[0].snippet.publishedAt).getTime()
-        newSubs = newSubs.filter(
-          (s) => new Date(s.snippet.publishedAt).getTime() < ToMR
-        )
-      }
+      const newSubs = response.data.items.filter((s) => this.isNew(s))
       // add to front of history
       this.history.unshift(...newSubs)
-      newSubs.forEach(({ id }) => this.subIDs.add(id))
+      this.history.sort((a, b) => this.timeOf(b) - this.timeOf(a))
       return successOf(newSubs)
     } catch (err) {
       this.logger.error("failed to fetch recent subscriptions", { err })
