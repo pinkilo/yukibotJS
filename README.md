@@ -1,4 +1,4 @@
-# Yukibot: Youtube Live Bot Framework
+# Yukibot: YouTube Live Bot Framework
 
 [![CD](https://github.com/pinkilo/yukibotJS/actions/workflows/publish-ci.yml/badge.svg)](https://github.com/pinkilo/yukibotJS/actions/workflows/publish-ci.yml)
 
@@ -10,11 +10,12 @@ and allows extensibility for custom requirements.
 
 
 <!-- TOC -->
-* [Yukibot: Youtube Live Bot Framework](#yukibot-youtube-live-bot-framework)
+* [Yukibot: YouTube Live Bot Framework](#yukibot-youtube-live-bot-framework)
   * [Installing](#installing)
   * [Usage](#usage)
     * [Basic Usage](#basic-usage)
     * [More Features](#more-features)
+    * [Testing](#testing)
   * [Contributing](#contributing)
 <!-- TOC -->
 
