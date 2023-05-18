@@ -2,6 +2,7 @@ import { Logger } from "winston"
 import { User } from "../../models"
 import {
   AsyncCache,
+  attempt,
   AuthEvent,
   BroadcastUpdateEvent,
   Eventbus,
@@ -58,21 +59,35 @@ export default class Yuki extends BaseYuki {
     })
 
     this.tokenLoader = async () => {
-      try {
-        const result = await tokenLoader()
-        if (
-          result !== undefined &&
-          "refresh_token" in result &&
-          "expiry_date" in result &&
-          "access_token" in result &&
-          "token_type" in result &&
-          "scope" in result
-        )
-          return successOf(result)
-      } catch (err) {
-        this.logger.error("supplied token loader failed", { err })
+      const { success, value } = await attempt(
+        tokenLoader,
+        "supplied token loader failed"
+      )
+      if (!success) {
+        this.logger.error("supplied token loader failed")
+        return failure()
       }
-      return failure()
+      if (value === undefined || value === null) {
+        this.logger.error("supplied token loader returned undefined or null")
+        return failure()
+      }
+      if (!("expiry_date" in value) || typeof value.expiry_date !== "number") {
+        this.logger.error(`supplied token loader is missing "expiry_date"`)
+        return failure()
+      }
+      const keys = ["refresh_token", "access_token", "token_type", "scope"]
+      for (const k of keys) {
+        if (
+          !(k in value) ||
+          typeof value[k] !== "string" ||
+          (value[k] as string).length === 0
+        ) {
+          this.logger.error(`supplied token loader is missing "${k}"`)
+          return failure()
+        }
+      }
+
+      return successOf(value)
     }
   }
 
