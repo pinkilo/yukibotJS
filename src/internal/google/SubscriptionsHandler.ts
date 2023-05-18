@@ -10,7 +10,7 @@ export default class SubscriptionsHandler {
   private readonly logger: Logger
 
   /** Set of recent subscription IDs */
-  private readonly subscriptionSet: Set<string> = new Set()
+  private readonly subIDs: Set<string> = new Set()
   /** list of recent subscription history, 0 index is the MOST RECENT subscription */
   readonly history: Schema$Subscription[] = []
 
@@ -20,22 +20,34 @@ export default class SubscriptionsHandler {
     this.logger = logger
   }
 
-  /** updates recent subscription history and returns recent subs newest->oldest */
-  async fetchRecentSubscriptions(): Promise<Result<Schema$Subscription[]>> {
+  /**
+   * updates recent subscription history and returns recent subs newest->oldest
+   *
+   * @param {number [50]} maxResults 1-50 (will coerce numbers outside range)
+   */
+  async fetchRecentSubscriptions(
+    maxResults = 50
+  ): Promise<Result<Schema$Subscription[]>> {
     this.logger.http("fetching recent subscriptions")
     try {
       const response = await this.client.subscriptions.list({
         auth: this.auth,
         part: ["snippet", "subscriberSnippet"],
         myRecentSubscribers: true,
+        // clamp value 1-50
+        maxResults: Math.min(Math.max(Math.floor(maxResults || 1), 1), 50),
       })
-      /** subs not already in memory */
-      const newSubs = response.data.items.filter(
-        (s) => !this.subscriptionSet.has(s.id)
-      )
+      /** subs not already in memory or happen before most recent sub */
+      let newSubs = response.data.items.filter((s) => !this.subIDs.has(s.id))
+      if (this.history.length > 0) {
+        const ToMR = new Date(this.history[0].snippet.publishedAt).getTime()
+        newSubs = newSubs.filter(
+          (s) => new Date(s.snippet.publishedAt).getTime() < ToMR
+        )
+      }
       // add to front of history
       this.history.unshift(...newSubs)
-      newSubs.map((s) => s.id).forEach((id) => this.subscriptionSet.add(id))
+      newSubs.forEach(({ id }) => this.subIDs.add(id))
       return successOf(newSubs)
     } catch (err) {
       this.logger.error("failed to fetch recent subscriptions", { err })
