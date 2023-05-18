@@ -67,27 +67,38 @@ export default class Yuki extends BaseYuki {
         this.logger.error("supplied token loader failed")
         return failure()
       }
+      let failed = false
       if (value === undefined || value === null) {
         this.logger.error("supplied token loader returned undefined or null")
         return failure()
       }
       if (!("expiry_date" in value) || typeof value.expiry_date !== "number") {
         this.logger.error(`supplied token loader is missing "expiry_date"`)
-        return failure()
+        failed = true
       }
-      const keys = ["refresh_token", "access_token", "token_type", "scope"]
-      for (const k of keys) {
-        if (
-          !(k in value) ||
-          typeof value[k] !== "string" ||
-          (value[k] as string).length === 0
-        ) {
-          this.logger.error(`supplied token loader is missing "${k}"`)
-          return failure()
-        }
+      if (
+        !("refresh_token" in value) ||
+        typeof value.refresh_token !== "string"
+      ) {
+        this.logger.error(`supplied token loader is missing "refresh_token"`)
+        failed = true
       }
-
-      return successOf(value)
+      if (
+        !("access_token" in value) ||
+        typeof value.access_token !== "string"
+      ) {
+        this.logger.error(`supplied token loader is missing "access_token"`)
+        failed = true
+      }
+      if (!("token_type" in value) || typeof value.token_type !== "string") {
+        this.logger.error(`supplied token loader is missing "token_type"`)
+        failed = true
+      }
+      if (!("scope" in value) || typeof value.scope !== "string") {
+        this.logger.error(`supplied token loader is missing "scope"`)
+        failed = true
+      }
+      return failed ? failure() : successOf(value)
     }
   }
 
