@@ -9,6 +9,6 @@
   "type": "module",
   "dependencies": {
     "dotenv": "^16.0.3",
-    "yukibot": "link:../"
+    "@pinkilo/yukibot": "link:../../"
   }
 }
