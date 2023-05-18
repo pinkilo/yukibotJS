@@ -163,12 +163,20 @@ export default class YukiBuilder extends BaseYuki {
   }
 
   set googleConfig(config: GoogleConfig) {
-    for (const key in config) {
-      if (typeof config[key] !== "string") {
-        this.logger.error(`${key} of google config is not defined properly`)
-        return
-      }
+    let failed = false
+    if (typeof config.clientId !== "string") {
+      this.logger.error("clientId of google config is not defined properly")
+      failed = true
     }
+    if (typeof config.clientSecret !== "string") {
+      this.logger.error("clientSecret of google config is not defined properly")
+      failed = true
+    }
+    if (typeof config.redirectUri !== "string") {
+      this.logger.error("redirectUri of google config is not defined properly")
+      failed = true
+    }
+    if (failed) return
     this.youtube = new YoutubeWrapper(
       config.clientId,
       config.clientSecret,
