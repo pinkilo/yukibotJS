@@ -1,6 +1,7 @@
 import Yuki from "./Yuki"
 import { YukiConfig } from "./BaseYuki"
 import {
+  AuthEvent,
   createMessage,
   Event,
   Eventbus,
@@ -8,6 +9,7 @@ import {
   Result,
   SubscriptionEvent,
   successOf,
+  YoutubeWrapper,
 } from "../../internal"
 import { Logger } from "winston"
 import { youtube_v3 } from "googleapis"
@@ -21,13 +23,14 @@ export default class TestYuki extends Yuki {
 
   constructor(
     yukiConfig: YukiConfig,
+    youtube: YoutubeWrapper,
     eventbus: Eventbus,
-    userCacheLoader: () => Promise<Record<string, User>>,
-    logger: Logger
+    logger: Logger,
+    userCacheLoader?: () => Promise<Record<string, User>>
   ) {
     super(
       yukiConfig,
-      undefined,
+      youtube,
       () => undefined,
       eventbus,
       logger,
@@ -63,7 +66,11 @@ export default class TestYuki extends Yuki {
 
   private async inputWatcher() {
     console.log(
-      "Select an event to mock:\n1: message\n2: subscription\n0: exit"
+      "Select an event to mock:\n" +
+        "1: new message\n" +
+        "2: new subscription\n" +
+        "3: auth/token update\n" +
+        "0: exit"
     )
     const answer = parseInt(await this.scanner.question("choice:"))
     let event: Event
@@ -76,6 +83,9 @@ export default class TestYuki extends Yuki {
         break
       case 2:
         event = this.mockSubscription()
+        break
+      case 3:
+        event = new AuthEvent(this.youtube.credentials)
         break
       default:
         this.logger.error(`"${answer}" is not a valid choice`)

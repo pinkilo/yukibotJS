@@ -31,6 +31,10 @@ export default class YoutubeWrapper {
     )
   }
 
+  get credentials(): Credentials {
+    return this.auth.credentials
+  }
+
   get tokensLoaded(): boolean {
     return this.auth.credentials?.access_token !== undefined
   }
