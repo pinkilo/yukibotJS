@@ -36,7 +36,7 @@ async function main() {
   })
 
   bot.express.listen(3000, () => console.log(`\nhttp://localhost:${3000}`))
-  bot.onAuthUpdate(() => bot.start())
+  bot.onAuthUpdate(() => bot.restart())
   await bot.start()
 }
 
