@@ -301,9 +301,10 @@ export default class YukiBuilder extends BaseYuki {
     if (this.yukiConfig.test === true) {
       return new TestYuki(
         this.yukiConfig,
+        this.youtube,
         this.eventbus,
-        this.userCacheLoader,
-        this.logger
+        this.logger,
+        this.userCacheLoader
       )
     }
     return new Yuki(
