@@ -31,6 +31,7 @@ if (!existsSync(FILE_HUSKY)) {
 
 const PRECOMMITS = [
   'npx husky add .husky/pre-commit "yarn prettier/check"',
+  'npx husky add .husky/pre-commit "yarn build"',
   'npx husky add .husky/commit-msg  "npx --no -- commitlint --edit ${1}"'
 ]
 

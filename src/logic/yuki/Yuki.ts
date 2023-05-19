@@ -21,6 +21,8 @@ import { join } from "path"
 import BaseYuki, { YukiConfig } from "./BaseYuki"
 
 export default class Yuki extends BaseYuki {
+  private timers: NodeJS.Timer[] = []
+
   protected readonly tokenLoader: () => Promise<Result<Credentials>>
   protected readonly userCacheLoader: () => Promise<
     Result<Record<string, User>>
@@ -145,7 +147,10 @@ export default class Yuki extends BaseYuki {
         })
       await this.eventbus.announce(new MessageBatchEvent(value))
     }
-    setTimeout(() => this.chatWatcher(), this.config.chatPollRate)
+    this.timers[0] = setTimeout(
+      () => this.chatWatcher(),
+      this.config.chatPollRate
+    )
   }
 
   private async broadcastWatcher() {
@@ -153,7 +158,10 @@ export default class Yuki extends BaseYuki {
     const { success, value } = await this.youtube.broadcasts.fetchBroadcast()
     if (success) await this.eventbus.announce(new BroadcastUpdateEvent(value))
     else this.logger.info("no active broadcast found")
-    setTimeout(() => this.broadcastWatcher(), this.config.broadcastPollRate)
+    this.timers[1] = setTimeout(
+      () => this.broadcastWatcher(),
+      this.config.broadcastPollRate
+    )
   }
 
   private async subscriptionWatcher() {
@@ -165,7 +173,7 @@ export default class Yuki extends BaseYuki {
         await this.eventbus.announce(new SubscriptionEvent(sub))
       }
     }
-    setTimeout(
+    this.timers[2] = setTimeout(
       () => this.subscriptionWatcher(),
       this.config.subscriptionPollRate
     )
@@ -214,7 +222,14 @@ export default class Yuki extends BaseYuki {
     return true
   }
 
-  async stop() {
+  restart(): Promise<boolean> {
+    this.stop()
+    return this.start()
+  }
+
+  stop() {
     this.running = false
+    this.timers.forEach(clearTimeout)
+    this.timers = []
   }
 }
