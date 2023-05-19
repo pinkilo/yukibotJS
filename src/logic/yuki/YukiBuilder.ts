@@ -2,12 +2,10 @@ import { createLogger, format, Logger, transports } from "winston"
 import { youtube_v3 } from "googleapis"
 import { Credentials } from "google-auth-library"
 import {
-  AsyncCache,
   BroadcastUpdateEvent,
   createMessage,
   Eventbus,
   EventType,
-  failure,
   MessageBatchEvent,
   SubscriptionEvent,
   successOf,
@@ -40,6 +38,7 @@ export default class YukiBuilder extends BaseYuki {
   private readonly passives: Passive[] = []
 
   tokenLoader: () => Promise<Credentials>
+  userCacheLoader?: () => Promise<Record<string, User>>
   yukiConfig: YukiConfig = {
     name: "yuki",
     chatPollRate: 14.4 * 1000,
@@ -52,12 +51,6 @@ export default class YukiBuilder extends BaseYuki {
     super()
     this.eventbus = new Eventbus()
     this.logLevel = "none"
-    this.usercache = new AsyncCache<User>(async (k) => {
-      const { success, value } = await this.youtube.fetchUsers([k])
-      if (success) return successOf(value[0])
-      this.logger.error("failed to fetch user")
-      return failure()
-    }, this.logger)
   }
 
   private prebuildCheck(): boolean {
@@ -71,6 +64,13 @@ export default class YukiBuilder extends BaseYuki {
       this.logger.error(
         "token loader not set. make sure you've used `builder.tokenLoader = () => ...`"
       )
+      return false
+    }
+    if (
+      this.userCacheLoader !== undefined &&
+      typeof this.userCacheLoader !== "function"
+    ) {
+      this.logger.error("user cache loader must be a function")
       return false
     }
     if (
@@ -302,8 +302,8 @@ export default class YukiBuilder extends BaseYuki {
       return new TestYuki(
         this.yukiConfig,
         this.eventbus,
-        this.logger,
-        this.usercache
+        this.userCacheLoader,
+        this.logger
       )
     }
     return new Yuki(
@@ -312,7 +312,7 @@ export default class YukiBuilder extends BaseYuki {
       this.tokenLoader,
       this.eventbus,
       this.logger,
-      this.usercache
+      this.userCacheLoader
     )
   }
 }

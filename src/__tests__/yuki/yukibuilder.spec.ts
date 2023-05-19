@@ -61,21 +61,23 @@ describe("failure conditions", () => {
   })
 })
 describe("success conditions", () => {
-  it("should build yuki when test is undefined", () => {
+  beforeEach(() => {
     yukiBuilder.googleConfig = googleConfig
     yukiBuilder.tokenLoader = async () => undefined
+  })
+  it("should build yuki when test is undefined", () => {
     yukiBuilder.yukiConfig.test = undefined
     expect(yukiBuilder.build()).toBeInstanceOf(Yuki)
   })
   it("should build yuki when test is false", () => {
-    yukiBuilder.googleConfig = googleConfig
-    yukiBuilder.tokenLoader = async () => undefined
     yukiBuilder.yukiConfig.test = false
     expect(yukiBuilder.build()).toBeInstanceOf(Yuki)
   })
+  it("should build yuki when userCacheLoader is undefined", () => {
+    yukiBuilder.userCacheLoader = undefined
+    expect(yukiBuilder.build()).toBeInstanceOf(Yuki)
+  })
   it("should build test yuki when test is true", () => {
-    yukiBuilder.googleConfig = googleConfig
-    yukiBuilder.tokenLoader = async () => undefined
     yukiBuilder.yukiConfig.test = true
     expect(yukiBuilder.build()).toBeInstanceOf(TestYuki)
   })

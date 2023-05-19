@@ -1,7 +1,6 @@
 import Yuki from "./Yuki"
 import { YukiConfig } from "./BaseYuki"
 import {
-  AsyncCache,
   createMessage,
   Event,
   Eventbus,
@@ -11,10 +10,10 @@ import {
   successOf,
 } from "../../internal"
 import { Logger } from "winston"
-import { User } from "../../models"
 import { youtube_v3 } from "googleapis"
 import * as readline from "readline/promises"
 import { stdin, stdout } from "process"
+import { User } from "../../models"
 import Schema$LiveChatMessage = youtube_v3.Schema$LiveChatMessage
 
 export default class TestYuki extends Yuki {
@@ -23,10 +22,17 @@ export default class TestYuki extends Yuki {
   constructor(
     yukiConfig: YukiConfig,
     eventbus: Eventbus,
-    logger: Logger,
-    usercache: AsyncCache<User>
+    userCacheLoader: () => Promise<Record<string, User>>,
+    logger: Logger
   ) {
-    super(yukiConfig, undefined, () => undefined, eventbus, logger, usercache)
+    super(
+      yukiConfig,
+      undefined,
+      () => undefined,
+      eventbus,
+      logger,
+      userCacheLoader
+    )
   }
 
   private async mockMessage(): Promise<MessageBatchEvent | undefined> {

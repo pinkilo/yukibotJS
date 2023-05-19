@@ -22,6 +22,9 @@ import BaseYuki, { YukiConfig } from "./BaseYuki"
 
 export default class Yuki extends BaseYuki {
   protected readonly tokenLoader: () => Promise<Result<Credentials>>
+  protected readonly userCacheLoader: () => Promise<
+    Result<Record<string, User>>
+  >
   protected running = false
 
   readonly config: YukiConfig
@@ -45,22 +48,29 @@ export default class Yuki extends BaseYuki {
     tokenLoader: () => Promise<Credentials>,
     eventbus: Eventbus,
     logger: Logger,
-    usercache: AsyncCache<User>
+    userCacheLoader?: () => Promise<Record<string, User>>
   ) {
     super()
     this.eventbus = eventbus
     this.config = yukiConfig
     this.logger = logger
     this.youtube = youtube
-    this.usercache = usercache
+    this.tokenLoader = this.wrapTokenLoader(tokenLoader)
+    if (userCacheLoader !== undefined) {
+      this.userCacheLoader = this.wrapUserCacheLoader(userCacheLoader)
+    }
 
     nunjucks.configure(join(__dirname, "../../views"), {
       express: this.express,
     })
+  }
 
-    this.tokenLoader = async () => {
+  private wrapTokenLoader(
+    inner: () => Promise<Credentials>
+  ): () => Promise<Result<Credentials>> {
+    return async () => {
       const { success, value } = await attempt(
-        tokenLoader,
+        inner,
         "supplied token loader failed"
       )
       if (!success) {
@@ -99,6 +109,19 @@ export default class Yuki extends BaseYuki {
         failed = true
       }
       return failed ? failure() : successOf(value)
+    }
+  }
+
+  private wrapUserCacheLoader(
+    inner: () => Promise<Record<string, User>>
+  ): () => Promise<Result<Record<string, User>>> {
+    return async () => {
+      const { success, value } = await attempt(
+        inner,
+        "supplied user cache loader failed"
+      )
+      if (!success) return failure()
+      return successOf(value)
     }
   }
 
@@ -155,13 +178,31 @@ export default class Yuki extends BaseYuki {
     } else if (!this.youtube.tokensLoaded) {
       this.logger.debug("auth tokens not loaded. attempting to use tokenLoader")
       const { success, value: tokens } = await this.tokenLoader()
-      if (success) {
-        this.logger.debug("auth tokens loaded")
-        this.youtube.setTokens(tokens)
-      } else {
+      if (!success) {
         this.logger.info("no auth token available from token loader")
         return false
       }
+      this.logger.debug("auth tokens loaded")
+      this.youtube.setTokens(tokens)
+    }
+    if (this.userCacheLoader !== undefined) {
+      this.logger.info("attempting user cache loading")
+      const { success, value } = await this.userCacheLoader()
+      if (!success) {
+        this.logger.warn("user cache loader failed")
+        // don't fail here, since this isn't a fatal error
+      }
+      this.logger.debug("user cache loaded")
+      this.usercache = new AsyncCache<User>(
+        async (k) => {
+          const { success, value } = await this.youtube.fetchUsers([k])
+          if (success) return successOf(value[0])
+          this.logger.error(`failed to fetch user ${k}`)
+          return failure()
+        },
+        this.logger,
+        value || {}
+      )
     }
     this.running = true
     await this.broadcastWatcher()

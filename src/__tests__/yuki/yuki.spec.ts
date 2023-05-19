@@ -40,6 +40,7 @@ let yuki: Yuki
 let youtubeWrapper: YoutubeWrapper
 let logger: winston.Logger
 let tokenLoader: jest.Mock
+let userCacheLoader: jest.Mock
 let eventbus: Eventbus
 let usercache: AsyncCache<User>
 
@@ -52,6 +53,7 @@ beforeEach(() => {
     scope: null,
   }
   tokenLoader = jest.fn()
+  userCacheLoader = jest.fn()
   logger = winston.createLogger()
   eventbus = new Eventbus()
   youtubeWrapper = new YoutubeWrapper(
@@ -68,7 +70,7 @@ beforeEach(() => {
     tokenLoader,
     eventbus,
     logger,
-    usercache
+    userCacheLoader
   )
 })
 
@@ -120,25 +122,56 @@ describe("startup", () => {
       }
       tokenLoader.mockImplementation(async () => tokens)
     })
-    it("should start with valid token loader", async () => {
-      expect(await yuki.start()).toBe(true)
+    describe("token loader", () => {
+      it("should start with valid token loader", async () => {
+        expect(await yuki.start()).toBe(true)
+      })
+      it("should call token loader", async () => {
+        await yuki.start()
+        expect(tokenLoader).toHaveBeenCalledTimes(1)
+      })
     })
-    it("should call token loader", async () => {
-      await yuki.start()
-      expect(tokenLoader).toHaveBeenCalledTimes(1)
+    describe("user cache loader", () => {
+      it("should call user cache loader", async () => {
+        await yuki.start()
+        expect(userCacheLoader).toHaveBeenCalledTimes(1)
+      })
+      it("should start if user cache loader undefined ", async () => {
+        userCacheLoader = undefined
+        expect(await yuki.start()).toBe(true)
+      })
+      it("should start if user cache loader fails ", async () => {
+        userCacheLoader.mockImplementation(() => {
+          throw new Error()
+        })
+        expect(await yuki.start()).toBe(true)
+      })
+      it("should start if user cache loader returns undefined", async () => {
+        userCacheLoader = jest.fn().mockImplementation(() => undefined)
+        expect(await yuki.start()).toBe(true)
+      })
+      it("should load cache values into internal usercache", async () => {
+        const id = "_id"
+        const user = new User(id, "name")
+        userCacheLoader.mockImplementation(() => ({ _id: user }))
+        await yuki.start()
+        expect(await yuki.getUser(id)).toBe(user)
+      })
     })
-    it("should fetch broadcast", async () => {
-      const spy = jest.spyOn(youtubeWrapper.broadcasts, "fetchBroadcast")
-      await yuki.start()
-      expect(spy).toHaveBeenCalled()
-    })
-    it("should fetch subscriptions", async () => {
-      const spy = jest.spyOn(
-        youtubeWrapper.subscriptions,
-        "fetchRecentSubscriptions"
-      )
-      await yuki.start()
-      expect(spy).toHaveBeenCalled()
+    describe("api calls", () => {
+      it("should fetch broadcast", async () => {
+        const spy = jest.spyOn(youtubeWrapper.broadcasts, "fetchBroadcast")
+        await yuki.start()
+        expect(spy).toHaveBeenCalled()
+      })
+      it("should fetch subscriptions", async () => {
+        const spy = jest.spyOn(
+          youtubeWrapper.subscriptions,
+          "fetchRecentSubscriptions"
+        )
+        await yuki.start()
+        expect(spy).toHaveBeenCalled()
+      })
     })
     it("should should add broadcast listener for chat watcher", async () => {
       const fetchChatSpy = jest.spyOn(
