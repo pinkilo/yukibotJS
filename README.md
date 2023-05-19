@@ -53,6 +53,9 @@ async function main() {
       // provide a way to load auth tokens
       // e.g., from file or a database
     })
+    y.userCacheLoader = async () => ({
+      // use this to load users saved to file or a DB
+    })
 
     // Add a message listener which greets a chatter
     y.onMessage(({ authorDetails: { displayName } }) => {
