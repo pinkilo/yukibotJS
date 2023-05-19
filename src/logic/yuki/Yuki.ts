@@ -131,7 +131,7 @@ export default class Yuki extends BaseYuki {
     return {
       config: this.config,
       listeners: this.eventbus.size,
-      userCacheSize: this.usercache.values.length / 2,
+      userCacheSize: (this.usercache?.values?.length || 0) / 2,
     }
   }
 
