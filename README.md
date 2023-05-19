@@ -80,7 +80,7 @@ async function main() {
   */
   bot.express.listen(3000, () => console.log(`http://localhost:${ 3000 }`))
   // Add a listener that restarts the bot on login
-  bot.onAuthUpdate(() => bot.start())
+  bot.onAuthUpdate(() => bot.restart())
 }
 ```
 
