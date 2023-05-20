@@ -179,7 +179,7 @@ export default class Yuki extends BaseYuki {
     )
   }
 
-  async start(): Promise<boolean> {
+  protected async setup(): Promise<boolean> {
     if (this.running) {
       this.logger.error("bot is already running")
       return false
@@ -212,6 +212,15 @@ export default class Yuki extends BaseYuki {
         value || {}
       )
     }
+    return true
+  }
+
+  async start(): Promise<boolean> {
+    const loaders = await this.setup()
+    if (!loaders) {
+      this.logger.error("failed to start bot")
+      return false
+    }
     this.running = true
     await this.broadcastWatcher()
     // fetch recent history, so that only
@@ -229,7 +238,7 @@ export default class Yuki extends BaseYuki {
 
   stop() {
     this.running = false
-    this.timers.forEach(clearTimeout)
+    this.timers.forEach((t) => clearTimeout(t))
     this.timers = []
   }
 }
