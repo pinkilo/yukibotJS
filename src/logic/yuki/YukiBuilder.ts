@@ -299,9 +299,11 @@ export default class YukiBuilder extends BaseYuki {
     this.addPassiveListener()
 
     if (this.yukiConfig.test === true) {
+      this.logger.warn("running in TEST mode")
       return new TestYuki(
         this.yukiConfig,
         this.youtube,
+        this.tokenLoader,
         this.eventbus,
         this.logger,
         this.userCacheLoader

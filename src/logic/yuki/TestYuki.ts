@@ -17,6 +17,7 @@ import * as readline from "readline/promises"
 import { stdin, stdout } from "process"
 import { User } from "../../models"
 import Schema$LiveChatMessage = youtube_v3.Schema$LiveChatMessage
+import { Credentials } from "google-auth-library"
 
 export default class TestYuki extends Yuki {
   private scanner = readline.createInterface({ input: stdin, output: stdout })
@@ -24,18 +25,12 @@ export default class TestYuki extends Yuki {
   constructor(
     yukiConfig: YukiConfig,
     youtube: YoutubeWrapper,
+    tokenLoader: () => Promise<Credentials>,
     eventbus: Eventbus,
     logger: Logger,
     userCacheLoader?: () => Promise<Record<string, User>>
   ) {
-    super(
-      yukiConfig,
-      youtube,
-      () => undefined,
-      eventbus,
-      logger,
-      userCacheLoader
-    )
+    super(yukiConfig, youtube, tokenLoader, eventbus, logger, userCacheLoader)
   }
 
   private async mockMessage(): Promise<MessageBatchEvent | undefined> {
@@ -66,7 +61,7 @@ export default class TestYuki extends Yuki {
 
   private async inputWatcher() {
     console.log(
-      "Select an event to mock:\n" +
+      "\n\nSelect an event to mock:\n" +
         "1: new message\n" +
         "2: new subscription\n" +
         "3: auth/token update\n" +
@@ -95,13 +90,11 @@ export default class TestYuki extends Yuki {
   }
 
   override async start(): Promise<boolean> {
-    if (this.running) {
-      this.logger.error("bot is already running")
-      return false
-    }
+    const loaders = await this.setup()
+    if (!loaders) return false
     this.inputWatcher().catch((err) => {
       this.logger.error("input watcher failed", { err })
-      this.start()
+      this.restart()
     })
     this.running = true
     return true
