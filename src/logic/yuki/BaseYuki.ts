@@ -21,8 +21,11 @@ export type GoogleConfig = {
 
 export type YukiConfig = {
   name: string
+  /** chat polling rate in seconds */
   chatPollRate: number
+  /** broadcast polling rate in seconds */
   broadcastPollRate: number
+  /** recent subscriptions polling rate in seconds */
   subscriptionPollRate: number
   prefix?: RegExp
   test?: boolean
