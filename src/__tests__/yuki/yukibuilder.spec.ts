@@ -9,9 +9,9 @@ import {
 let googleConfig: GoogleConfig
 const yukiConfig: YukiConfig = {
   name: "yuki",
-  chatPollRate: 14.4 * 1000,
-  broadcastPollRate: 2 * 60 * 1000,
-  subscriptionPollRate: 60 * 1000,
+  chatPollRate: 14.4,
+  broadcastPollRate: 2 * 60,
+  subscriptionPollRate: 60,
   prefix: /^([>!]|y!)$/gi,
 }
 let yukiBuilder: YukiBuilder

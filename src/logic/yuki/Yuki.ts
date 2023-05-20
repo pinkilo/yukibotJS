@@ -149,7 +149,7 @@ export default class Yuki extends BaseYuki {
     }
     this.timers[0] = setTimeout(
       () => this.chatWatcher(),
-      this.config.chatPollRate
+      this.config.chatPollRate * 1000
     )
   }
 
@@ -160,7 +160,7 @@ export default class Yuki extends BaseYuki {
     else this.logger.info("no active broadcast found")
     this.timers[1] = setTimeout(
       () => this.broadcastWatcher(),
-      this.config.broadcastPollRate
+      this.config.broadcastPollRate * 1000
     )
   }
 
@@ -175,7 +175,7 @@ export default class Yuki extends BaseYuki {
     }
     this.timers[2] = setTimeout(
       () => this.subscriptionWatcher(),
-      this.config.subscriptionPollRate
+      this.config.subscriptionPollRate * 1000
     )
   }
 
