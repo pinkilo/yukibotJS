@@ -13,7 +13,7 @@ import {
 } from "../../internal"
 import { Command, CommandBuilder } from "../commands"
 import Yuki from "./Yuki"
-import BaseYuki, { GoogleConfig, YukiConfig } from "./BaseYuki"
+import BaseYuki, { GoogleConfig, RouteConfig, YukiConfig } from "./BaseYuki"
 import { MemoryPassive, Passive } from "../passives"
 import { TokenBin, tokenize } from "../tokenization"
 import { User } from "../../models"
@@ -37,6 +37,7 @@ export default class YukiBuilder extends BaseYuki {
   private readonly commands: Map<string, Command> = new Map()
   private readonly passives: Passive[] = []
 
+  routes?: RouteConfig
   tokenLoader: () => Promise<Credentials>
   userCacheLoader?: () => Promise<Record<string, User>>
   yukiConfig: YukiConfig = {
@@ -306,7 +307,8 @@ export default class YukiBuilder extends BaseYuki {
         this.tokenLoader,
         this.eventbus,
         this.logger,
-        this.userCacheLoader
+        this.userCacheLoader,
+        this.routes
       )
     }
     return new Yuki(
@@ -315,7 +317,8 @@ export default class YukiBuilder extends BaseYuki {
       this.tokenLoader,
       this.eventbus,
       this.logger,
-      this.userCacheLoader
+      this.userCacheLoader,
+      this.routes
     )
   }
 }

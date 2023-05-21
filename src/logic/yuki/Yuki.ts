@@ -18,16 +18,17 @@ import { Credentials } from "google-auth-library"
 import express, { Express } from "express"
 import nunjucks from "nunjucks"
 import { join } from "path"
-import BaseYuki, { YukiConfig } from "./BaseYuki"
+import BaseYuki, { RouteConfig, YukiConfig } from "./BaseYuki"
 
 export default class Yuki extends BaseYuki {
   private timers: NodeJS.Timer[] = []
+  private readonly routes?: RouteConfig
 
+  protected running = false
   protected readonly tokenLoader: () => Promise<Result<Credentials>>
   protected readonly userCacheLoader: () => Promise<
     Result<Record<string, User>>
   >
-  protected running = false
 
   readonly config: YukiConfig
   readonly express: Express = express()
@@ -50,13 +51,15 @@ export default class Yuki extends BaseYuki {
     tokenLoader: () => Promise<Credentials>,
     eventbus: Eventbus,
     logger: Logger,
-    userCacheLoader?: () => Promise<Record<string, User>>
+    userCacheLoader?: () => Promise<Record<string, User>>,
+    routes?: RouteConfig
   ) {
     super()
     this.eventbus = eventbus
     this.config = yukiConfig
     this.logger = logger
     this.youtube = youtube
+    this.routes = routes
     this.tokenLoader = this.wrapTokenLoader(tokenLoader)
     if (userCacheLoader !== undefined) {
       this.userCacheLoader = this.wrapUserCacheLoader(userCacheLoader)
@@ -132,6 +135,7 @@ export default class Yuki extends BaseYuki {
       config: this.config,
       listeners: this.eventbus.size,
       userCacheSize: (this.usercache?.values?.length || 0) / 2,
+      routes: Object.entries(this.routes ?? {}),
     }
   }
 

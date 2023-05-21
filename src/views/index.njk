@@ -5,6 +5,9 @@
   <p id="loading">welcome to {{ config.name }}</p>
   <div class="features">
     <a href="/auth">Login</a>
+    {% for route in routes %}
+    <a href="{{ route[0] }}">{{route[1] | lower }}</a>
+    {% endfor %}
   </div>
 </header>
 <main>

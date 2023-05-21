@@ -1,6 +1,14 @@
 import Yuki from "./Yuki"
 import TestYuki from "./TestYuki"
 import YukiBuilder, { yuki } from "./YukiBuilder"
-import { YukiConfig, GoogleConfig } from "./BaseYuki"
+import { YukiConfig, GoogleConfig, RouteConfig } from "./BaseYuki"
 
-export { yuki, Yuki, TestYuki, YukiBuilder, YukiConfig, GoogleConfig }
+export {
+  yuki,
+  Yuki,
+  TestYuki,
+  YukiBuilder,
+  YukiConfig,
+  GoogleConfig,
+  RouteConfig,
+}

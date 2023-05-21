@@ -31,6 +31,10 @@ export type YukiConfig = {
   test?: boolean
 }
 
+export type RouteConfig = {
+  [name: string]: `${"/"}${string | number}`
+}
+
 export default abstract class BaseYuki {
   protected eventbus: Eventbus
   protected usercache: AsyncCache<User>

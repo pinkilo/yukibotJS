@@ -1,5 +1,7 @@
 import "dotenv/config"
-import yuki, { YukiBuilder } from "@pinkilo/yukibot"
+import yuki, { RouteConfig, YukiBuilder } from "@pinkilo/yukibot"
+
+const routes: RouteConfig = { dashboard: "/dashboard" }
 
 async function main() {
   const bot = await yuki((y) => {
@@ -12,6 +14,7 @@ async function main() {
       clientSecret: process.env.G_CLIENT_SECRET,
       redirectUri: process.env.G_REDIRECT_URI,
     }
+
     y.tokenLoader = async () => ({
       // provide a way to load tokens, e.g., from file or a database
     })
@@ -32,10 +35,16 @@ async function main() {
       }
     })
 
+    // add routes to the home page
+    y.routes = routes
+
     extractedSetup(y)
   })
 
-  bot.express.listen(3000, () => console.log(`\nhttp://localhost:${3000}`))
+  bot.express
+    // add custom routes
+    .get(routes.dashboard, (_, res) => res.status(200))
+    .listen(3000, () => console.log(`\nhttp://localhost:${3000}`))
   bot.onAuthUpdate(() => bot.restart())
   await bot.start()
 }

@@ -1,5 +1,5 @@
 import Yuki from "./Yuki"
-import { YukiConfig } from "./BaseYuki"
+import { RouteConfig, YukiConfig } from "./BaseYuki"
 import {
   AuthEvent,
   createMessage,
@@ -28,9 +28,18 @@ export default class TestYuki extends Yuki {
     tokenLoader: () => Promise<Credentials>,
     eventbus: Eventbus,
     logger: Logger,
-    userCacheLoader?: () => Promise<Record<string, User>>
+    userCacheLoader?: () => Promise<Record<string, User>>,
+    routes?: RouteConfig
   ) {
-    super(yukiConfig, youtube, tokenLoader, eventbus, logger, userCacheLoader)
+    super(
+      yukiConfig,
+      youtube,
+      tokenLoader,
+      eventbus,
+      logger,
+      userCacheLoader,
+      routes
+    )
   }
 
   private async mockMessage(): Promise<MessageBatchEvent | undefined> {

@@ -126,6 +126,27 @@ async function extractedSetup(builder: YukiBuilder) {
 }
 ```
 
+### Custom Routes
+
+Each bot has its own express app which can be added upon
+
+```ts
+import yuki, { RouteConfig } from "@pinkilo/yukibot"
+
+const routes: RouteConfig = { dashboard: "/dashboard" }
+
+const bot = await yuki(async y => {
+  // this will add your routes to the home page for easy access
+  // it is optional, but useful
+  y.routes = routes
+})
+
+bot.express
+  // add custom routes
+  .get(routes.dashboard, (_, res) => res.status(200))
+  .listen(3000, () => console.log(`\nhttp://localhost:${ 3000 }`))
+```
+
 ### Testing
 
 You can run your bot in "test" mode which will let you mock events through the 

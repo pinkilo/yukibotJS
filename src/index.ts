@@ -8,9 +8,11 @@ import {
   TokenBin,
   Command,
   CommandBuilder,
+  RouteConfig,
 } from "./logic"
 import { User } from "./models"
 
+export { yuki }
 export default yuki
 export type {
   TestYuki,
@@ -22,5 +24,5 @@ export type {
   CommandBuilder,
   Command,
   User,
+  RouteConfig,
 }
-export { yuki }
