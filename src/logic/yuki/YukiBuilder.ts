@@ -33,6 +33,17 @@ export const yuki = async (
   return builder.build()
 }
 
+/**
+ * @returns {TestYuki} the constructed test bot or undefined if building failed
+ */
+export const testYuki = async (
+  dsl: (builder: YukiBuilder) => unknown
+): Promise<TestYuki | undefined> => {
+  const builder = new YukiBuilder()
+  await dsl(builder)
+  return builder.buildTest()
+}
+
 export default class YukiBuilder extends BaseYuki {
   private readonly commands: Map<string, Command> = new Map()
   private readonly passives: Passive[] = []
@@ -128,6 +139,50 @@ export default class YukiBuilder extends BaseYuki {
           .map((p) => p.invoke(msg, tokens, p))
       )
     })
+  }
+
+  buildTest(): TestYuki | undefined {
+    if (!this.prebuildCheck()) {
+      this.logger.error("failed to build yukibot")
+      return undefined
+    }
+
+    this.addCommandListener()
+    this.addPassiveListener()
+
+    return new TestYuki(
+      this.yukiConfig,
+      this.youtube,
+      this.tokenLoader,
+      this.eventbus,
+      this.logger,
+      this.userCacheLoader,
+      this.routes
+    )
+  }
+
+  build(): Yuki | undefined {
+    if (this.yukiConfig.test === true) {
+      this.logger.warn("running in TEST mode")
+      return this.buildTest()
+    }
+    if (!this.prebuildCheck()) {
+      this.logger.error("failed to build yukibot")
+      return undefined
+    }
+
+    this.addCommandListener()
+    this.addPassiveListener()
+
+    return new Yuki(
+      this.yukiConfig,
+      this.youtube,
+      this.tokenLoader,
+      this.eventbus,
+      this.logger,
+      this.userCacheLoader,
+      this.routes
+    )
   }
 
   /** @see https://github.com/winstonjs/winston#logging */
@@ -288,37 +343,5 @@ export default class YukiBuilder extends BaseYuki {
     return this.yukiConfig.test === true
       ? successOf(createMessage(messageText))
       : await super.sendMessage(messageText)
-  }
-
-  build(): Yuki | undefined {
-    if (!this.prebuildCheck()) {
-      this.logger.error("failed to build yukibot")
-      return undefined
-    }
-
-    this.addCommandListener()
-    this.addPassiveListener()
-
-    if (this.yukiConfig.test === true) {
-      this.logger.warn("running in TEST mode")
-      return new TestYuki(
-        this.yukiConfig,
-        this.youtube,
-        this.tokenLoader,
-        this.eventbus,
-        this.logger,
-        this.userCacheLoader,
-        this.routes
-      )
-    }
-    return new Yuki(
-      this.yukiConfig,
-      this.youtube,
-      this.tokenLoader,
-      this.eventbus,
-      this.logger,
-      this.userCacheLoader,
-      this.routes
-    )
   }
 }

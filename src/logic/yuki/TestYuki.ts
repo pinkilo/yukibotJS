@@ -98,6 +98,18 @@ export default class TestYuki extends Yuki {
     setTimeout(() => this.inputWatcher())
   }
 
+  async feedMessage(text: string) {
+    await this.eventbus.announce(new MessageBatchEvent([createMessage(text)]))
+  }
+
+  async feedSubscription() {
+    await this.eventbus.announce(this.mockSubscription())
+  }
+
+  async feedAuthUpdate() {
+    await this.eventbus.announce(new AuthEvent(this.youtube.credentials))
+  }
+
   override async start(): Promise<boolean> {
     const loaders = await this.setup()
     if (!loaders) return false

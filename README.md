@@ -17,7 +17,7 @@ and allows extensibility for custom requirements.
     * [Commands & Passives](#commands--passives)
     * [Extending Yukibot](#extending-yukibot)
       * [Custom Routes](#custom-routes)
-    * [Testing](#testing)
+  * [Testing](#testing)
   * [Contributing](#contributing)
 <!-- TOC -->
 
@@ -190,7 +190,9 @@ bot.express
   .listen(3000, () => console.log(`\nhttp://localhost:${3000}`))
 ```
 
-### Testing
+## Testing
+
+### Live Testing
 
 You can run your bot in "test" mode which will let you mock events through the
 cli.
@@ -220,6 +222,27 @@ Select an event to mock:
 3: auth
 0: exit
 choice:
+```
+
+### Programmatic Testing
+
+You can bypass the CLI test mode for programmatic testing, which is useful for
+unit tests and the like:
+
+```ts
+// This jest unit test example should pass
+it("should call mock on command", async () => {
+  const commandName = "test"
+  const mockFn = jest.fn()
+  const ty: TestYuki = testYuki(async (y) => {
+    await y.command(c => {
+      y.name = commandName
+      y.invoke = mockFn
+    })
+  })
+  await ty.feedMessage(`>${commandName}`)
+  expect(mockFn).toHaveBeenCalledTimes(1)
+})
 ```
 
 ## Contributing
