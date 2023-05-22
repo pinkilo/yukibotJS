@@ -30,34 +30,34 @@ describe("failure conditions", () => {
     beforeEach(() => {
       yukiBuilder.tokenLoader = async () => undefined
     })
-    it("should fail if googleConfig is not set", () => {
-      expect(yukiBuilder.build()).toBeUndefined()
+    it("should fail if googleConfig is not set", async () => {
+      expect(await yukiBuilder.buildYuki()).toBeUndefined()
     })
-    it("should fail if clientId is undefined", () => {
+    it("should fail if clientId is undefined", async () => {
       yukiBuilder.googleConfig = {
         ...googleConfig,
         clientId: undefined,
       }
-      expect(yukiBuilder.build()).toBeUndefined()
+      expect(await yukiBuilder.buildYuki()).toBeUndefined()
     })
-    it("should fail if clientSecret is undefined", () => {
+    it("should fail if clientSecret is undefined", async () => {
       yukiBuilder.googleConfig = {
         ...googleConfig,
         clientSecret: undefined,
       }
-      expect(yukiBuilder.build()).toBeUndefined()
+      expect(await yukiBuilder.buildYuki()).toBeUndefined()
     })
-    it("should fail if redirectUri is undefined", () => {
+    it("should fail if redirectUri is undefined", async () => {
       yukiBuilder.googleConfig = {
         ...googleConfig,
         redirectUri: undefined,
       }
-      expect(yukiBuilder.build()).toBeUndefined()
+      expect(await yukiBuilder.buildYuki()).toBeUndefined()
     })
   })
-  it("should fail if tokenLoader is not set", () => {
+  it("should fail if tokenLoader is not set", async () => {
     yukiBuilder.googleConfig = googleConfig
-    expect(yukiBuilder.build()).toBeUndefined()
+    expect(await yukiBuilder.buildYuki()).toBeUndefined()
   })
 })
 describe("success conditions", () => {
@@ -65,28 +65,29 @@ describe("success conditions", () => {
     yukiBuilder.googleConfig = googleConfig
     yukiBuilder.tokenLoader = async () => undefined
   })
-  it("should build yuki when test is undefined", () => {
+  it("should build yuki when test is undefined", async () => {
     yukiBuilder.yukiConfig.test = undefined
-    expect(yukiBuilder.build()).toBeInstanceOf(Yuki)
+    expect(await yukiBuilder.buildYuki()).toBeInstanceOf(Yuki)
   })
-  it("should build yuki when test is false", () => {
+  it("should build yuki when test is false", async () => {
     yukiBuilder.yukiConfig.test = false
-    expect(yukiBuilder.build()).toBeInstanceOf(Yuki)
+    expect(await yukiBuilder.buildYuki()).toBeInstanceOf(Yuki)
   })
-  it("should build yuki when userCacheLoader is undefined", () => {
+  it("should build yuki when userCacheLoader is undefined", async () => {
     yukiBuilder.userCacheLoader = undefined
-    expect(yukiBuilder.build()).toBeInstanceOf(Yuki)
+    expect(await yukiBuilder.buildYuki()).toBeInstanceOf(Yuki)
   })
-  it("should build test yuki when test is true", () => {
+  it("should build test yuki when test is true", async () => {
     yukiBuilder.yukiConfig.test = true
-    expect(yukiBuilder.build()).toBeInstanceOf(TestYuki)
+    expect(await yukiBuilder.buildYuki()).toBeInstanceOf(TestYuki)
   })
 })
 describe("build confirmation", () => {
-  it("should retain config", () => {
+  it("should retain config", async () => {
     yukiBuilder.googleConfig = googleConfig
     yukiBuilder.tokenLoader = async () => undefined
     yukiBuilder.yukiConfig = yukiConfig
-    expect(yukiBuilder.build().config).toEqual(yukiConfig)
+    const yuki = await yukiBuilder.buildYuki()
+    expect(yuki.config).toEqual(yukiConfig)
   })
 })

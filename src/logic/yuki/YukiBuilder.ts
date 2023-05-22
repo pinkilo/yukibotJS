@@ -30,7 +30,7 @@ export const yuki = async (
 ): Promise<Yuki | undefined> => {
   const builder = new YukiBuilder()
   await dsl(builder)
-  return builder.build()
+  return builder.buildYuki()
 }
 
 /**
@@ -45,6 +45,7 @@ export const testYuki = async (
 }
 
 export default class YukiBuilder extends BaseYuki {
+  private readonly commandRecipes: ((cmd: CommandBuilder) => unknown)[] = []
   private readonly commands: Map<string, Command> = new Map()
   private readonly passives: Passive[] = []
 
@@ -141,14 +142,31 @@ export default class YukiBuilder extends BaseYuki {
     })
   }
 
-  buildTest(): TestYuki | undefined {
+  private async buildCommands() {
+    for (const dsl of this.commandRecipes) {
+      const builder = new CommandBuilder(this.logger)
+      await dsl(builder)
+      const command = builder.build()
+      for (const cname of [command.name, ...command.alias]) {
+        this.commands.set(cname, command)
+        this.logger.debug(`registered command "${cname}"`)
+      }
+    }
+  }
+
+  private async prepare(): Promise<boolean> {
     if (!this.prebuildCheck()) {
       this.logger.error("failed to build yukibot")
-      return undefined
+      return false
     }
-
+    await this.buildCommands()
     this.addCommandListener()
     this.addPassiveListener()
+    return true
+  }
+
+  async buildTest(): Promise<TestYuki | undefined> {
+    if (!(await this.prepare())) return undefined
 
     return new TestYuki(
       this.yukiConfig,
@@ -161,18 +179,12 @@ export default class YukiBuilder extends BaseYuki {
     )
   }
 
-  build(): Yuki | undefined {
+  async buildYuki(): Promise<Yuki | undefined> {
     if (this.yukiConfig.test === true) {
       this.logger.warn("running in TEST mode")
       return this.buildTest()
     }
-    if (!this.prebuildCheck()) {
-      this.logger.error("failed to build yukibot")
-      return undefined
-    }
-
-    this.addCommandListener()
-    this.addPassiveListener()
+    if (!(await this.prepare())) return undefined
 
     return new Yuki(
       this.yukiConfig,
@@ -241,14 +253,8 @@ export default class YukiBuilder extends BaseYuki {
     )
   }
 
-  async command(dsl: (builder: CommandBuilder) => unknown) {
-    const builder = new CommandBuilder(this.logger)
-    await dsl(builder)
-    const command = builder.build()
-    for (const cname of [command.name, ...command.alias]) {
-      this.commands.set(cname, command)
-      this.logger.debug(`registered command "${cname}"`)
-    }
+  command(dsl: (builder: CommandBuilder) => unknown) {
+    this.commandRecipes.push(dsl)
   }
 
   passive(
