@@ -17,21 +17,21 @@ beforeEach(() => {
 
 it("should announce message", async () => {
   await yukiBuilder.onMessage(mockFn)
-  const ty = yukiBuilder.buildTest()
+  const ty = await yukiBuilder.buildTest()
   await ty.feedMessage("test")
   expect(mockFn).toHaveBeenCalledTimes(1)
 })
 
 it("should announce subscription", async () => {
   await yukiBuilder.onSubscription(mockFn)
-  const ty = yukiBuilder.buildTest()
+  const ty = await yukiBuilder.buildTest()
   await ty.feedSubscription()
   expect(mockFn).toHaveBeenCalledTimes(1)
 })
 
 it("should announce auth update", async () => {
   await yukiBuilder.onAuthUpdate(mockFn)
-  const ty = yukiBuilder.buildTest()
+  const ty = await yukiBuilder.buildTest()
   await ty.feedAuthUpdate()
   expect(mockFn).toHaveBeenCalledTimes(1)
 })
