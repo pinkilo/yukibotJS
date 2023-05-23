@@ -18,6 +18,8 @@ and allows extensibility for custom requirements.
     * [Extending Yukibot](#extending-yukibot)
       * [Custom Routes](#custom-routes)
   * [Testing](#testing)
+    * [Live Testing](#live-testing)
+    * [Programmatic Testing](#programmatic-testing)
   * [Contributing](#contributing)
 <!-- TOC -->
 
@@ -161,10 +163,10 @@ function extractedSetup(builder: YukiBuilder) {
   // add a message listener which removes itself
   // if the message says "get out"
   builder.onMessage(
-          ({ snippet: { displayMessage } }) => {
-            return displayMessage.match(/^get\s+out$/)
-          },
-          async (_, match) => match !== null
+    ({ snippet: { displayMessage } }) => {
+      return displayMessage.match(/^get\s+out$/)
+    },
+    async (_, match) => match !== null,
   )
 }
 ```
@@ -235,7 +237,7 @@ it("should call mock on command", async () => {
   const commandName = "test"
   const mockFn = jest.fn()
   const ty: TestYuki = testYuki(async (y) => {
-    await y.command(c => {
+    y.command(c => {
       y.name = commandName
       y.invoke = mockFn
     })
