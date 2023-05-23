@@ -166,6 +166,16 @@ export default class YukiBuilder extends BaseYuki {
   }
 
   async buildTest(): Promise<TestYuki | undefined> {
+    if (this.youtube === undefined) {
+      this.googleConfig = {
+        clientId: "mock",
+        clientSecret: "mock",
+        redirectUri: "mock",
+      }
+    }
+
+    this.tokenLoader = this.tokenLoader ?? (() => undefined)
+
     if (!(await this.prepare())) return undefined
 
     return new TestYuki(

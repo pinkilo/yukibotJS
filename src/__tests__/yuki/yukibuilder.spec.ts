@@ -1,5 +1,6 @@
 import {
   GoogleConfig,
+  testYuki,
   TestYuki,
   Yuki,
   YukiBuilder,
@@ -80,6 +81,12 @@ describe("success conditions", () => {
   it("should build test yuki when test is true", async () => {
     yukiBuilder.yukiConfig.test = true
     expect(await yukiBuilder.buildYuki()).toBeInstanceOf(TestYuki)
+  })
+  describe("test dsl", () => {
+    it("should fill required fields", async () => {
+      const ty = await testYuki(jest.fn())
+      expect(ty).toBeInstanceOf(TestYuki)
+    })
   })
 })
 describe("build confirmation", () => {
