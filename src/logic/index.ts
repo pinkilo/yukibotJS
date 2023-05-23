@@ -6,6 +6,7 @@ import {
   GoogleConfig,
   TestYuki,
   RouteConfig,
+  testYuki,
 } from "./yuki"
 import { TokenBin } from "./tokenization"
 import { Command, CommandBuilder } from "./commands"
@@ -21,4 +22,5 @@ export {
   CommandBuilder,
   Command,
   RouteConfig,
+  testYuki,
 }

@@ -9,10 +9,11 @@ import {
   Command,
   CommandBuilder,
   RouteConfig,
+  testYuki,
 } from "./logic"
 import { User } from "./models"
 
-export { yuki }
+export { yuki, testYuki }
 export default yuki
 export type {
   TestYuki,

@@ -1,6 +1,6 @@
 import Yuki from "./Yuki"
 import TestYuki from "./TestYuki"
-import YukiBuilder, { yuki } from "./YukiBuilder"
+import YukiBuilder, { yuki, testYuki } from "./YukiBuilder"
 import { YukiConfig, GoogleConfig, RouteConfig } from "./BaseYuki"
 
 export {
@@ -11,4 +11,5 @@ export {
   YukiConfig,
   GoogleConfig,
   RouteConfig,
+  testYuki,
 }
