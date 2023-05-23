@@ -26,12 +26,16 @@ export default class CommandBuilder {
     this.rateLimit = {}
   }
 
+  get allNames(): string[] {
+    return [this.name, ...(this.alias || [])]
+  }
+
   private prebuildCheck(): boolean {
     if (typeof this.name !== "string") {
       this.logger.error("no name set in command builder")
       return false
     }
-    for (const al of [this.name, ...(this.alias || [])]) {
+    for (const al of this.allNames) {
       if (al.match(/^\S+$/) === null) {
         this.logger.error(
           `invalid name or alias set in command builder name: "${this.name}".` +
@@ -45,6 +49,9 @@ export default class CommandBuilder {
         "command builder invoke function not set. use `builder.invoke = async () => ...`"
       )
       return false
+    }
+    if (this.allNames.length !== new Set(this.allNames).size) {
+      this.logger.warn(`command "${this.name}" has a duplicate alias`)
     }
     return true
   }
