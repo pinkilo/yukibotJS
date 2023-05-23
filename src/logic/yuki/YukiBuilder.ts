@@ -146,6 +146,16 @@ export default class YukiBuilder extends BaseYuki {
     for (const dsl of this.commandRecipes) {
       const builder = new CommandBuilder(this.logger)
       await dsl(builder)
+      const duplicates = builder.allNames.filter((n) => this.commands.has(n))
+      if (duplicates.length > 0) {
+        for (const name of duplicates) {
+          this.logger.warn(
+            `command with name ${name} has already been registered.` +
+              " this duplicate will be skipped"
+          )
+        }
+        continue
+      }
       const command = builder.build()
       for (const cname of [command.name, ...command.alias]) {
         this.commands.set(cname, command)
