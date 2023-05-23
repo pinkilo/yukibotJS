@@ -226,12 +226,12 @@ export default class Yuki extends BaseYuki {
       return false
     }
     this.running = true
-    await this.broadcastWatcher()
     // fetch recent history, so that only
     // subscriptions during runtime are announced
     await this.youtube.subscriptions.fetchRecentSubscriptions(1)
     await this.subscriptionWatcher()
     this.eventbus.listen(EventType.BROADCAST_UPDATE, () => this.chatWatcher())
+    await this.broadcastWatcher()
     return true
   }
 
