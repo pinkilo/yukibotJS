@@ -43,7 +43,7 @@ async function main() {
 
   bot.express
     // add custom routes
-    .get(routes.dashboard, (_, res) => res.status(200))
+    .get(routes.dashboard, (_, res) => res.status(200).end())
     .listen(3000, () => console.log(`\nhttp://localhost:${3000}`))
   bot.onAuthUpdate(() => bot.restart())
   await bot.start()
