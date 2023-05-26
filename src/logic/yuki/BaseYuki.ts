@@ -20,19 +20,22 @@ export type GoogleConfig = {
 }
 
 export type YukiConfig = {
+  /** self-referential name. defaults to `yuki` */
   name: string
-  /** chat polling rate in seconds */
+  /** chat polling rate in seconds. defaults to 14.4 */
   chatPollRate: number
-  /** broadcast polling rate in seconds */
+  /** broadcast polling rate in seconds. defaults to 120 */
   broadcastPollRate: number
-  /** recent subscriptions polling rate in seconds */
+  /** recent subscriptions polling rate in seconds. defaults to 60 */
   subscriptionPollRate: number
-  prefix?: RegExp
+  /** command prefix. defaults to `/^([>!]|y!)/` i.e. `>`,`!`, or `y!` */
+  prefix: RegExp
+  /** running in test-mode */
   test?: boolean
 }
 
 export type RouteConfig = {
-  [name: string]: `${"/"}${string | number}`
+  [name: string | symbol]: `${"/"}${string | number}`
 }
 
 export default abstract class BaseYuki {
