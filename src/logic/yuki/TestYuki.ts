@@ -1,5 +1,5 @@
 import Yuki from "./Yuki"
-import { RouteConfig, YukiConfig } from "./types"
+import { Loader, RouteConfig, YukiConfig } from "./types"
 import {
   AsyncCache,
   AuthEvent,
@@ -18,7 +18,6 @@ import * as readline from "readline/promises"
 import { stdin, stdout } from "process"
 import { User } from "../../models"
 import { Credentials } from "google-auth-library"
-import { Loader } from "./types"
 import Schema$LiveChatMessage = youtube_v3.Schema$LiveChatMessage
 
 export default class TestYuki extends Yuki {
@@ -103,15 +102,21 @@ export default class TestYuki extends Yuki {
   }
 
   async feedMessage(text: string) {
-    await this.eventbus.announce(new MessageBatchEvent([createMessage(text)]))
+    const event = new MessageBatchEvent([createMessage(text)])
+    await this.eventbus.announce(event)
+    return event.incoming[0]
   }
 
   async feedSubscription() {
-    await this.eventbus.announce(this.mockSubscription())
+    const event = this.mockSubscription()
+    await this.eventbus.announce(event)
+    return event.subscription
   }
 
   async feedAuthUpdate() {
-    await this.eventbus.announce(new AuthEvent(this.youtube.credentials))
+    const event = new AuthEvent(this.youtube.credentials)
+    await this.eventbus.announce(event)
+    return event.credentials
   }
 
   override async start(): Promise<boolean> {
