@@ -6,6 +6,7 @@ import {
   YukiBuilder,
   YukiConfig,
 } from "../../logic"
+import { Credentials } from "google-auth-library"
 
 let googleConfig: GoogleConfig
 const yukiConfig: YukiConfig = {
@@ -82,11 +83,9 @@ describe("success conditions", () => {
     yukiBuilder.yukiConfig.test = true
     expect(await yukiBuilder.buildYuki()).toBeInstanceOf(TestYuki)
   })
-  describe("test dsl", () => {
-    it("should fill required fields", async () => {
-      const ty = await testYuki(jest.fn())
-      expect(ty).toBeInstanceOf(TestYuki)
-    })
+  it("should fill required fields in test builder dsl", async () => {
+    const ty = await testYuki(jest.fn())
+    expect(ty).toBeInstanceOf(TestYuki)
   })
 })
 describe("build confirmation", () => {
@@ -96,5 +95,59 @@ describe("build confirmation", () => {
     yukiBuilder.yukiConfig = yukiConfig
     const yuki = await yukiBuilder.buildYuki()
     expect(yuki.config).toEqual(yukiConfig)
+  })
+})
+describe("loader handling", () => {
+  beforeEach(() => {
+    yukiBuilder.googleConfig = googleConfig
+  })
+
+  describe("token loader", () => {
+    const tokenLoader = jest.fn()
+    let yuki: Yuki
+    beforeEach(() => {
+      yukiBuilder.tokenLoader = tokenLoader
+    })
+
+    it("should fail if token loader returns undefined", async () => {
+      tokenLoader.mockImplementation(async () => undefined)
+      yuki = await yukiBuilder.buildYuki()
+      const started = await yuki.start()
+      expect(started).toBe(false)
+    })
+    it("should fail if token loader throws", async () => {
+      tokenLoader.mockImplementation(async () => {
+        throw new Error()
+      })
+      yuki = await yukiBuilder.buildYuki()
+      const started = await yuki.start()
+      expect(started).toBe(false)
+    })
+  })
+  describe("user cache loader", () => {
+    const userCacheLoader = jest.fn()
+    let yuki: Yuki
+    beforeEach(() => {
+      yukiBuilder.userCacheLoader = userCacheLoader
+      yukiBuilder.tokenLoader = async () => ({
+        refresh_token: "null",
+        expiry_date: 123,
+        access_token: "null",
+        token_type: "null",
+        scope: "null",
+      })
+    })
+    it("should start if user cache loader returns undefined", async () => {
+      userCacheLoader.mockImplementation(() => undefined)
+      yuki = await yukiBuilder.buildYuki()
+      expect(await yuki.start()).toBe(true)
+    })
+    it("should start if user cache loader trows", async () => {
+      userCacheLoader.mockImplementation(() => {
+        throw new Error()
+      })
+      yuki = await yukiBuilder.buildYuki()
+      expect(await yuki.start()).toBe(true)
+    })
   })
 })

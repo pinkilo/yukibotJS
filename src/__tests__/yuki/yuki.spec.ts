@@ -4,6 +4,7 @@ import {
   AuthEvent,
   BroadcastUpdateEvent,
   Eventbus,
+  failure,
   successOf,
   YoutubeWrapper,
 } from "../../internal"
@@ -46,14 +47,14 @@ let usercache: AsyncCache<User>
 
 beforeEach(() => {
   tokens = {
-    refresh_token: null,
-    expiry_date: null,
-    access_token: null,
-    token_type: null,
-    scope: null,
+    refresh_token: "123",
+    access_token: "123",
+    expiry_date: 123,
+    scope: "123",
+    token_type: "123",
   }
-  tokenLoader = jest.fn()
-  userCacheLoader = jest.fn()
+  tokenLoader = jest.fn(() => failure())
+  userCacheLoader = jest.fn(() => failure())
   logger = winston.createLogger()
   eventbus = new Eventbus()
   youtubeWrapper = new YoutubeWrapper(
@@ -62,48 +63,47 @@ beforeEach(() => {
     googleConfig.redirectUri,
     logger
   )
-  usercache = new AsyncCache<User>(jest.fn(), logger)
+  usercache = new AsyncCache<User>(logger, jest.fn())
 
   yuki = new Yuki(
     yukiConfig,
     youtubeWrapper,
     tokenLoader,
+    userCacheLoader,
+    undefined,
+    usercache,
     eventbus,
-    logger,
-    userCacheLoader
+    logger
   )
 })
 
 describe("startup", () => {
+  let fetchBroadcastSpy: jest.SpyInstance
+  let fetchSubsSpy: jest.SpyInstance
+
+  beforeEach(() => {
+    fetchBroadcastSpy = jest
+      .spyOn(youtubeWrapper.broadcasts, "fetchBroadcast")
+      .mockImplementation(async () => failure())
+    fetchSubsSpy = jest
+      .spyOn(youtubeWrapper.subscriptions, "fetchRecentSubscriptions")
+      .mockImplementation(async () => failure())
+  })
+
   describe("startup failure", () => {
-    it("should fail if tokenLoader invalid", async () => {
-      tokenLoader.mockImplementation(async () => undefined)
-      const started = await yuki.start()
-      expect(started).toBe(false)
-    })
     it("should fail if tokenLoader fails", async () => {
-      tokenLoader.mockImplementation(async () => {
-        throw new Error()
-      })
+      tokenLoader.mockImplementation(() => failure())
       const started = await yuki.start()
       expect(started).toBe(false)
     })
     it("should fail if already running", async () => {
-      tokens = {
-        refresh_token: "123",
-        access_token: "123",
-        expiry_date: 123,
-        scope: "123",
-        token_type: "123",
-      }
-      tokenLoader.mockImplementation(async () => tokens)
+      tokenLoader.mockImplementation(async () => successOf(tokens))
       expect(await yuki.start()).toBe(true)
       expect(await yuki.start()).toBe(false)
     })
     it("should not fetch broadcast", async () => {
-      const spy = jest.spyOn(youtubeWrapper.broadcasts, "fetchBroadcast")
       await yuki.start()
-      expect(spy).toHaveBeenCalledTimes(0)
+      expect(fetchBroadcastSpy).toHaveBeenCalledTimes(0)
     })
     it("should should not add broadcast listener for chat watcher", async () => {
       const listenSpy = jest.spyOn(eventbus, "listen")
@@ -120,10 +120,10 @@ describe("startup", () => {
         scope: "123",
         token_type: "123",
       }
-      tokenLoader.mockImplementation(async () => tokens)
+      tokenLoader.mockImplementation(async () => successOf(tokens))
     })
     describe("token loader", () => {
-      it("should start with valid token loader", async () => {
+      it("should start with successful token loading", async () => {
         expect(await yuki.start()).toBe(true)
       })
       it("should call token loader", async () => {
@@ -141,19 +141,13 @@ describe("startup", () => {
         expect(await yuki.start()).toBe(true)
       })
       it("should start if user cache loader fails ", async () => {
-        userCacheLoader.mockImplementation(() => {
-          throw new Error()
-        })
-        expect(await yuki.start()).toBe(true)
-      })
-      it("should start if user cache loader returns undefined", async () => {
-        userCacheLoader = jest.fn().mockImplementation(() => undefined)
+        userCacheLoader.mockImplementation(() => failure())
         expect(await yuki.start()).toBe(true)
       })
       it("should load cache values into internal usercache", async () => {
         const id = "_id"
         const user = new User(id, "name")
-        userCacheLoader.mockImplementation(() => ({ _id: user }))
+        userCacheLoader.mockImplementation(() => successOf({ _id: user }))
         await yuki.start()
         expect(await yuki.getUser(id)).toBe(user)
       })
@@ -165,12 +159,8 @@ describe("startup", () => {
         expect(spy).toHaveBeenCalled()
       })
       it("should fetch subscriptions", async () => {
-        const spy = jest.spyOn(
-          youtubeWrapper.subscriptions,
-          "fetchRecentSubscriptions"
-        )
         await yuki.start()
-        expect(spy).toHaveBeenCalled()
+        expect(fetchSubsSpy).toHaveBeenCalled()
       })
     })
     it("should should add broadcast listener for chat watcher", async () => {
@@ -186,9 +176,6 @@ describe("startup", () => {
 })
 
 describe("express app", () => {
-  beforeEach(() => {
-    tokenLoader.mockImplementation(async () => tokens)
-  })
   it("GET root returns html page", () => {
     supertest
       .agent(yuki.express)
