@@ -1,5 +1,5 @@
 import Yuki from "./Yuki"
-import { RouteConfig, YukiConfig } from "./BaseYuki"
+import { RouteConfig, YukiConfig } from "./types"
 import {
   AuthEvent,
   createMessage,
