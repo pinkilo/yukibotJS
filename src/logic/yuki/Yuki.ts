@@ -18,7 +18,8 @@ import { Credentials } from "google-auth-library"
 import express, { Express } from "express"
 import nunjucks from "nunjucks"
 import { join } from "path"
-import BaseYuki, { RouteConfig, YukiConfig } from "./BaseYuki"
+import BaseYuki from "./BaseYuki"
+import { Loader, RouteConfig, YukiConfig } from "./types"
 
 export default class Yuki extends BaseYuki {
   private timers: NodeJS.Timer[] = []
