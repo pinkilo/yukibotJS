@@ -2,10 +2,13 @@ import { createLogger, format, Logger, transports } from "winston"
 import { youtube_v3 } from "googleapis"
 import { Credentials } from "google-auth-library"
 import {
+  AsyncCache,
+  attempt,
   BroadcastUpdateEvent,
   createMessage,
   Eventbus,
   EventType,
+  failure,
   MessageBatchEvent,
   SubscriptionEvent,
   successOf,
@@ -50,9 +53,9 @@ export default class YukiBuilder extends BaseYuki {
   private readonly commands: Map<string, Command> = new Map()
   private readonly passives: Passive[] = []
 
-  routes?: RouteConfig
   tokenLoader: () => Promise<Credentials>
   userCacheLoader?: () => Promise<Record<string, User>>
+  routes?: RouteConfig
   yukiConfig: YukiConfig = {
     name: "yuki",
     chatPollRate: 14.4,
@@ -65,6 +68,66 @@ export default class YukiBuilder extends BaseYuki {
     super()
     this.eventbus = new Eventbus()
     this.logLevel = "info"
+  }
+
+  private wrapTokenLoader(
+    inner: () => Promise<Credentials>
+  ): Loader<Credentials> {
+    return async () => {
+      const { success, value } = await attempt(
+        inner,
+        "supplied token loader failed"
+      )
+      if (!success) {
+        this.logger.error("supplied token loader failed")
+        return failure()
+      }
+      let failed = false
+      if (value === undefined || value === null) {
+        this.logger.error("supplied token loader returned undefined or null")
+        return failure()
+      }
+      if (!("expiry_date" in value) || typeof value.expiry_date !== "number") {
+        this.logger.error(`supplied token loader is missing "expiry_date"`)
+        failed = true
+      }
+      if (
+        !("refresh_token" in value) ||
+        typeof value.refresh_token !== "string"
+      ) {
+        this.logger.error(`supplied token loader is missing "refresh_token"`)
+        failed = true
+      }
+      if (
+        !("access_token" in value) ||
+        typeof value.access_token !== "string"
+      ) {
+        this.logger.error(`supplied token loader is missing "access_token"`)
+        failed = true
+      }
+      if (!("token_type" in value) || typeof value.token_type !== "string") {
+        this.logger.error(`supplied token loader is missing "token_type"`)
+        failed = true
+      }
+      if (!("scope" in value) || typeof value.scope !== "string") {
+        this.logger.error(`supplied token loader is missing "scope"`)
+        failed = true
+      }
+      return failed ? failure() : successOf(value)
+    }
+  }
+
+  private wrapUserCacheLoader(
+    inner: () => Promise<Record<string, User>>
+  ): Loader<Record<string, User>> {
+    return async () => {
+      const { success, value } = await attempt(
+        inner,
+        "supplied user cache loader failed"
+      )
+      if (!success || typeof value !== "object") return failure()
+      return successOf(value)
+    }
   }
 
   private prebuildCheck(): boolean {
@@ -173,10 +236,17 @@ export default class YukiBuilder extends BaseYuki {
     await this.buildCommands()
     this.addCommandListener()
     this.addPassiveListener()
+    this.usercache = new AsyncCache<User>(this.logger, async (k) => {
+      const { success, value } = await this.youtube.fetchUsers([k])
+      if (success) return successOf(value[0])
+      this.logger.error(`failed to fetch user ${k}`)
+      return failure()
+    })
     return true
   }
 
   async buildTest(): Promise<TestYuki | undefined> {
+    // fill google config
     if (this.youtube === undefined) {
       this.googleConfig = {
         clientId: "mock",
@@ -185,6 +255,7 @@ export default class YukiBuilder extends BaseYuki {
       }
     }
 
+    // fill token loader
     this.tokenLoader = this.tokenLoader ?? (() => undefined)
 
     if (!(await this.prepare())) return undefined
@@ -192,11 +263,12 @@ export default class YukiBuilder extends BaseYuki {
     return new TestYuki(
       this.yukiConfig,
       this.youtube,
-      this.tokenLoader,
+      this.wrapTokenLoader(this.tokenLoader),
+      this.userCacheLoader && this.wrapUserCacheLoader(this.userCacheLoader),
+      this.routes,
+      this.usercache,
       this.eventbus,
-      this.logger,
-      this.userCacheLoader,
-      this.routes
+      this.logger
     )
   }
 
@@ -210,11 +282,12 @@ export default class YukiBuilder extends BaseYuki {
     return new Yuki(
       this.yukiConfig,
       this.youtube,
-      this.tokenLoader,
+      this.wrapTokenLoader(this.tokenLoader),
+      this.userCacheLoader && this.wrapUserCacheLoader(this.userCacheLoader),
+      this.routes,
+      this.usercache,
       this.eventbus,
-      this.logger,
-      this.userCacheLoader,
-      this.routes
+      this.logger
     )
   }
 

@@ -2,16 +2,12 @@ import { Logger } from "winston"
 import { User } from "../../models"
 import {
   AsyncCache,
-  attempt,
   AuthEvent,
   BroadcastUpdateEvent,
   Eventbus,
   EventType,
-  failure,
   MessageBatchEvent,
-  Result,
   SubscriptionEvent,
-  successOf,
   YoutubeWrapper,
 } from "../../internal"
 import { Credentials } from "google-auth-library"
@@ -26,10 +22,8 @@ export default class Yuki extends BaseYuki {
   private readonly routes?: RouteConfig
 
   protected running = false
-  protected readonly tokenLoader: () => Promise<Result<Credentials>>
-  protected readonly userCacheLoader: () => Promise<
-    Result<Record<string, User>>
-  >
+  protected readonly tokenLoader: Loader<Credentials>
+  protected readonly userCacheLoader: Loader<Record<string, User>>
 
   readonly config: YukiConfig
   readonly express: Express = express()
@@ -49,86 +43,25 @@ export default class Yuki extends BaseYuki {
   constructor(
     yukiConfig: YukiConfig,
     youtube: YoutubeWrapper,
-    tokenLoader: () => Promise<Credentials>,
+    tokenLoader: Loader<Credentials>,
+    userCacheLoader: Loader<Record<string, User>> | undefined,
+    routes: RouteConfig | undefined,
+    usercache: AsyncCache<User>,
     eventbus: Eventbus,
-    logger: Logger,
-    userCacheLoader?: () => Promise<Record<string, User>>,
-    routes?: RouteConfig
+    logger: Logger
   ) {
     super()
+    this.usercache = usercache
     this.eventbus = eventbus
     this.config = yukiConfig
     this.logger = logger
     this.youtube = youtube
     this.routes = routes
-    this.tokenLoader = this.wrapTokenLoader(tokenLoader)
-    if (userCacheLoader !== undefined) {
-      this.userCacheLoader = this.wrapUserCacheLoader(userCacheLoader)
-    }
-
+    this.tokenLoader = tokenLoader
+    if (userCacheLoader !== undefined) this.userCacheLoader = userCacheLoader
     nunjucks.configure(join(__dirname, "../../views"), {
       express: this.express,
     })
-  }
-
-  private wrapTokenLoader(
-    inner: () => Promise<Credentials>
-  ): () => Promise<Result<Credentials>> {
-    return async () => {
-      const { success, value } = await attempt(
-        inner,
-        "supplied token loader failed"
-      )
-      if (!success) {
-        this.logger.error("supplied token loader failed")
-        return failure()
-      }
-      let failed = false
-      if (value === undefined || value === null) {
-        this.logger.error("supplied token loader returned undefined or null")
-        return failure()
-      }
-      if (!("expiry_date" in value) || typeof value.expiry_date !== "number") {
-        this.logger.error(`supplied token loader is missing "expiry_date"`)
-        failed = true
-      }
-      if (
-        !("refresh_token" in value) ||
-        typeof value.refresh_token !== "string"
-      ) {
-        this.logger.error(`supplied token loader is missing "refresh_token"`)
-        failed = true
-      }
-      if (
-        !("access_token" in value) ||
-        typeof value.access_token !== "string"
-      ) {
-        this.logger.error(`supplied token loader is missing "access_token"`)
-        failed = true
-      }
-      if (!("token_type" in value) || typeof value.token_type !== "string") {
-        this.logger.error(`supplied token loader is missing "token_type"`)
-        failed = true
-      }
-      if (!("scope" in value) || typeof value.scope !== "string") {
-        this.logger.error(`supplied token loader is missing "scope"`)
-        failed = true
-      }
-      return failed ? failure() : successOf(value)
-    }
-  }
-
-  private wrapUserCacheLoader(
-    inner: () => Promise<Record<string, User>>
-  ): () => Promise<Result<Record<string, User>>> {
-    return async () => {
-      const { success, value } = await attempt(
-        inner,
-        "supplied user cache loader failed"
-      )
-      if (!success) return failure()
-      return successOf(value)
-    }
   }
 
   private get pageData() {
@@ -201,21 +134,14 @@ export default class Yuki extends BaseYuki {
     if (this.userCacheLoader !== undefined) {
       this.logger.info("attempting user cache loading")
       const { success, value } = await this.userCacheLoader()
-      if (!success) {
-        this.logger.warn("user cache loader failed")
-        // don't fail here, since this isn't a fatal error
+      // don't fail here, since this isn't a fatal error
+      if (!success) this.logger.warn("user cache loader failed")
+      else {
+        Object.entries(value).forEach(([uid, user]) =>
+          this.usercache.put(uid, user)
+        )
+        this.logger.debug("user cache loaded")
       }
-      this.logger.debug("user cache loaded")
-      this.usercache = new AsyncCache<User>(
-        async (k) => {
-          const { success, value } = await this.youtube.fetchUsers([k])
-          if (success) return successOf(value[0])
-          this.logger.error(`failed to fetch user ${k}`)
-          return failure()
-        },
-        this.logger,
-        value || {}
-      )
     }
     return true
   }

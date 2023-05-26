@@ -18,13 +18,13 @@ describe("Async Cache", () => {
     fetchMock = jest
       .fn()
       .mockImplementation(async (key) => successOf(parseInt(key)))
-    cache = new AsyncCache<number>(fetchMock, createLogger())
+    cache = new AsyncCache<number>(createLogger(), fetchMock)
     expect(await cache.get("10")).toBe(10)
   })
 
   it("should not add on failed fetches", async () => {
     fetchMock = jest.fn().mockImplementation(async () => failure())
-    cache = new AsyncCache<number>(fetchMock, createLogger())
+    cache = new AsyncCache<number>(createLogger(), fetchMock)
     expect(await cache.get("10")).toBe(undefined)
   })
 })

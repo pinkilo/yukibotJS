@@ -1,6 +1,7 @@
 import Yuki from "./Yuki"
 import { RouteConfig, YukiConfig } from "./types"
 import {
+  AsyncCache,
   AuthEvent,
   createMessage,
   Event,
@@ -16,8 +17,9 @@ import { youtube_v3 } from "googleapis"
 import * as readline from "readline/promises"
 import { stdin, stdout } from "process"
 import { User } from "../../models"
-import Schema$LiveChatMessage = youtube_v3.Schema$LiveChatMessage
 import { Credentials } from "google-auth-library"
+import { Loader } from "./types"
+import Schema$LiveChatMessage = youtube_v3.Schema$LiveChatMessage
 
 export default class TestYuki extends Yuki {
   private scanner = readline.createInterface({ input: stdin, output: stdout })
@@ -25,20 +27,22 @@ export default class TestYuki extends Yuki {
   constructor(
     yukiConfig: YukiConfig,
     youtube: YoutubeWrapper,
-    tokenLoader: () => Promise<Credentials>,
+    tokenLoader: Loader<Credentials>,
+    userCacheLoader: Loader<Record<string, User>> | undefined,
+    routes: RouteConfig | undefined,
+    usercache: AsyncCache<User>,
     eventbus: Eventbus,
-    logger: Logger,
-    userCacheLoader?: () => Promise<Record<string, User>>,
-    routes?: RouteConfig
+    logger: Logger
   ) {
     super(
       yukiConfig,
       youtube,
       tokenLoader,
-      eventbus,
-      logger,
       userCacheLoader,
-      routes
+      routes,
+      usercache,
+      eventbus,
+      logger
     )
   }
 

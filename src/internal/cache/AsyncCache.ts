@@ -7,8 +7,8 @@ export default class AsyncCache<V> extends Cache<V> {
   private readonly logger: Logger
 
   constructor(
-    fetch: (key: string) => Promise<Result<V>>,
     logger: Logger,
+    fetch: (key: string) => Promise<Result<V>>,
     map: Record<string, V> = {}
   ) {
     super(map)
