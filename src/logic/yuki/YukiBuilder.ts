@@ -63,7 +63,7 @@ export default class YukiBuilder extends BaseYuki {
   constructor() {
     super()
     this.eventbus = new Eventbus()
-    this.logLevel = "none"
+    this.logLevel = "info"
   }
 
   private prebuildCheck(): boolean {
@@ -217,7 +217,10 @@ export default class YukiBuilder extends BaseYuki {
     )
   }
 
-  /** @see https://github.com/winstonjs/winston#logging */
+  /**
+   * defaults to "info"
+   * @see https://github.com/winstonjs/winston#logging
+   */
   set logLevel(
     logLevel:
       | "error"
