@@ -19,6 +19,7 @@ import { stdin, stdout } from "process"
 import { User } from "../../models"
 import { Credentials } from "google-auth-library"
 import Schema$LiveChatMessage = youtube_v3.Schema$LiveChatMessage
+import Schema$Subscription = youtube_v3.Schema$Subscription
 
 export default class TestYuki extends Yuki {
   private scanner = readline.createInterface({ input: stdin, output: stdout })
@@ -101,19 +102,19 @@ export default class TestYuki extends Yuki {
     setTimeout(() => this.inputWatcher())
   }
 
-  async feedMessage(text: string) {
+  async feedMessage(text: string): Promise<Schema$LiveChatMessage> {
     const event = new MessageBatchEvent([createMessage(text)])
     await this.eventbus.announce(event)
     return event.incoming[0]
   }
 
-  async feedSubscription() {
+  async feedSubscription(): Promise<Schema$Subscription> {
     const event = this.mockSubscription()
     await this.eventbus.announce(event)
     return event.subscription
   }
 
-  async feedAuthUpdate() {
+  async feedAuthUpdate(): Promise<Credentials> {
     const event = new AuthEvent(this.youtube.credentials)
     await this.eventbus.announce(event)
     return event.credentials
