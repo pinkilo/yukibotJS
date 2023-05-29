@@ -56,7 +56,9 @@ export default class BroadcastHandler {
   }
 
   /**
-   * Retrieves any new chat messages and updates chat history
+   * Retrieves any new chat messages and updates chat history.
+   *
+   * Messages in the response are ordered from oldest to newest.
    *
    * @returns a list of new messages
    */
