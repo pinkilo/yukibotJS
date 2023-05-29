@@ -21,9 +21,10 @@ export default class Yuki extends BaseYuki {
   private timers: NodeJS.Timer[] = []
   private readonly routes?: RouteConfig
 
-  protected running = false
   protected readonly tokenLoader: Loader<Credentials>
   protected readonly userCacheLoader: Loader<Record<string, User>>
+  protected running = false
+  protected startTime: Date
 
   readonly config: YukiConfig
   readonly express: Express = express()
@@ -83,7 +84,10 @@ export default class Yuki extends BaseYuki {
           this.usercache.put(user.id, user)
           this.usercache.put(user.name, user)
         })
-      await this.eventbus.announce(new MessageBatchEvent(value))
+      const recent = value.filter(
+        (m) => new Date(m.snippet.publishedAt) > this.startTime
+      )
+      await this.eventbus.announce(new MessageBatchEvent(recent))
     }
     this.timers[0] = setTimeout(
       () => this.chatWatcher(),
@@ -104,10 +108,14 @@ export default class Yuki extends BaseYuki {
 
   private async subscriptionWatcher() {
     if (!this.running) return
+    const firstCall = this.youtube.subscriptions.history.length == 0
     const { success, value } =
       await this.youtube.subscriptions.fetchRecentSubscriptions(50)
     if (success) {
-      for (const sub of value) {
+      const recent = firstCall
+        ? value.filter((s) => new Date(s.snippet.publishedAt) > this.startTime)
+        : value
+      for (const sub of recent) {
         await this.eventbus.announce(new SubscriptionEvent(sub))
       }
     }
@@ -153,9 +161,7 @@ export default class Yuki extends BaseYuki {
       return false
     }
     this.running = true
-    // fetch recent history, so that only
-    // subscriptions during runtime are announced
-    await this.youtube.subscriptions.fetchRecentSubscriptions(1)
+    this.startTime = new Date()
     await this.subscriptionWatcher()
     this.eventbus.listen(EventType.BROADCAST_UPDATE, () => this.chatWatcher())
     await this.broadcastWatcher()

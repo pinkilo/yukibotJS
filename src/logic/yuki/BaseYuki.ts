@@ -73,6 +73,10 @@ export default abstract class BaseYuki {
   async sendMessage(
     messageText: string
   ): Promise<Result<Schema$LiveChatMessage>> {
+    if (this.youtube.broadcasts.broadcast === undefined) {
+      this.logger.error("message cannot be sent without an active broadcast")
+      return undefined
+    }
     return this.youtube.broadcasts.sendMessage(messageText)
   }
 }

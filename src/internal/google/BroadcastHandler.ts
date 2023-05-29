@@ -10,7 +10,7 @@ export default class BroadcastHandler {
   private readonly auth: OAuth2Client
   private readonly logger: Logger
 
-  private broadcast: Schema$LiveBroadcast | undefined
+  private _broadcast: Schema$LiveBroadcast | undefined
   private chatHistory: Schema$LiveChatMessage[] = []
   private chatNextPage: string
 
@@ -21,7 +21,11 @@ export default class BroadcastHandler {
   }
 
   private get liveChatID(): string | undefined {
-    return this.broadcast?.snippet?.liveChatId
+    return this._broadcast?.snippet?.liveChatId
+  }
+
+  get broadcast(): Schema$LiveBroadcast {
+    return Object.freeze(this._broadcast)
   }
 
   chatPage(index: number, max = 0): Schema$LiveChatMessage[] {
@@ -46,7 +50,7 @@ export default class BroadcastHandler {
         broadcastType: "all",
       })
       if (response.data.items.length > 0) {
-        this.broadcast = response.data.items[0]
+        this._broadcast = response.data.items[0]
         return successOf(response.data.items[0])
       }
     } catch (err) {
