@@ -6,7 +6,7 @@
   <div class="features">
     <a href="/auth">Login</a>
     {% for route in routes %}
-    <a href="{{ route[0] }}">{{route[1] | lower }}</a>
+    <a href="{{ route[1] }}">{{route[0] | lower }}</a>
     {% endfor %}
   </div>
 </header>
