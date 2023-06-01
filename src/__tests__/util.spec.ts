@@ -1,4 +1,4 @@
-import { attempt } from "../internal"
+import { attempt, secondsOf } from "../internal"
 import { tokenize } from "../logic/tokenization"
 
 describe("Attempt block", () => {
@@ -49,5 +49,12 @@ describe("Tokenization", () => {
     const tokens = tokenize("!cmd", prefix)
     expect(tokens.isCommand).toBe(false)
     expect(tokens.command).toBeNull()
+  })
+})
+
+describe("Seconds", () => {
+  it("should multiply by 1000", () => {
+    const sec = 1
+    expect(secondsOf(sec)).toEqual(sec * 1000)
   })
 })

@@ -4,6 +4,7 @@ import {
   AsyncCache,
   AuthEvent,
   createMessage,
+  createSubscription,
   Event,
   Eventbus,
   MessageBatchEvent,
@@ -55,21 +56,7 @@ export default class TestYuki extends Yuki {
   }
 
   private mockSubscription(): SubscriptionEvent {
-    return new SubscriptionEvent({
-      kind: "youtube#subscription",
-      etag: "ENTITY_TAG",
-      id: "SUBSCRIPTION_ID",
-      subscriberSnippet: {
-        title: "CHANNEL_TITLE",
-        description: "CHANNEL_DESCRIPTION",
-        channelId: "CHANNEL_ID",
-        thumbnails: {
-          default: { url: "" },
-          medium: { url: "" },
-          high: { url: "" },
-        },
-      },
-    })
+    return new SubscriptionEvent(createSubscription())
   }
 
   private async inputWatcher() {

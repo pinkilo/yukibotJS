@@ -1,3 +1,6 @@
+export const cIntervalOf = (delay: number, callback: () => Promise<void>) =>
+  new ConditionalInterval(delay, callback)
+
 export default class ConditionalInterval {
   private readonly looper: () => Promise<void>
   private running = false
@@ -10,12 +13,13 @@ export default class ConditionalInterval {
     }
   }
 
-  run() {
+  async run(): Promise<void> {
+    if (this.running === true) return
     this.running = true
-    return this.looper()
+    await this.looper()
   }
 
-  stop() {
+  stop(): void {
     this.running = false
   }
 }

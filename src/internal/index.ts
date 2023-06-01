@@ -9,7 +9,16 @@ import {
   MessageBatchEvent,
   SubscriptionEvent,
 } from "./events"
-import { attempt, createMessage, failure, Result, successOf } from "./util"
+import {
+  attempt,
+  createMessage,
+  failure,
+  Result,
+  successOf,
+  createSubscription,
+  secondsOf,
+} from "./util"
+import ConditionalInterval, { cIntervalOf } from "./ConditionalInterval"
 
 export {
   Event,
@@ -27,4 +36,8 @@ export {
   attempt,
   failure,
   createMessage,
+  createSubscription,
+  secondsOf,
+  ConditionalInterval,
+  cIntervalOf,
 }

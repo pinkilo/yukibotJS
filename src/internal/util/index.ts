@@ -1,4 +1,14 @@
 import { Result, failure, successOf, attempt } from "./functional"
-import { createMessage } from "./mocking"
+import { createMessage, createSubscription } from "./mocking"
+import { secondsOf, SECOND } from "./time"
 
-export { Result, failure, successOf, attempt, createMessage }
+export {
+  Result,
+  failure,
+  successOf,
+  attempt,
+  createMessage,
+  createSubscription,
+  secondsOf,
+  SECOND,
+}
