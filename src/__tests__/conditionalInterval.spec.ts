@@ -4,11 +4,20 @@ jest.useFakeTimers()
 
 const delay = 1000
 const callback = jest.fn()
+
 let watcher: ConditionalInterval
 
 beforeEach(() => {
   watcher = new ConditionalInterval(delay, callback)
   jest.clearAllTimers()
+  jest.restoreAllMocks()
+})
+
+it("should set interval for given delay", async () => {
+  const timerSpy = jest.spyOn(global, "setTimeout")
+  await watcher.run()
+  watcher.stop()
+  expect(timerSpy).toHaveBeenCalledWith(expect.any(Function), delay)
 })
 
 it("should wait between each invocation", async () => {
