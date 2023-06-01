@@ -11,7 +11,7 @@
     "target": "esnext",
     "module": "esnext",
     "declaration": true,
-    "sourceMap": false,
+    "sourceMap": true,
     "lib": ["ES5", "ES6"],
     "resolveJsonModule": true,
     "moduleResolution": "node",
