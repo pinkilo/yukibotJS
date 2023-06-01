@@ -4,9 +4,12 @@ import {
   AsyncCache,
   AuthEvent,
   BroadcastUpdateEvent,
+  cIntervalOf,
+  ConditionalInterval,
   Eventbus,
   EventType,
   MessageBatchEvent,
+  secondsOf,
   SubscriptionEvent,
   YoutubeWrapper,
 } from "../../internal"
@@ -18,8 +21,10 @@ import BaseYuki from "./BaseYuki"
 import { Loader, RouteConfig, YukiConfig } from "./types"
 
 export default class Yuki extends BaseYuki {
-  private timers: NodeJS.Timer[] = []
   private readonly routes?: RouteConfig
+  private readonly chatWatcher: ConditionalInterval
+  private readonly broadcastWatcher: ConditionalInterval
+  private readonly subscriptionWatcher: ConditionalInterval
 
   protected readonly tokenLoader: Loader<Credentials>
   protected readonly userCacheLoader: Loader<Record<string, User>>
@@ -63,6 +68,52 @@ export default class Yuki extends BaseYuki {
     nunjucks.configure(join(__dirname, "../../views"), {
       express: this.express,
     })
+
+    this.chatWatcher = cIntervalOf(
+      secondsOf(this.config.chatPollRate),
+      async () => {
+        const { success, value } =
+          await this.youtube.broadcasts.fetchChatMessages()
+        if (!(success && value.length > 0)) return
+        value
+          .map((m) => User.fromAuthor(m.authorDetails))
+          .forEach((user) => {
+            this.usercache.put(user.id, user)
+            this.usercache.put(user.name, user)
+          })
+        const recent = value.filter(
+          (m) => new Date(m.snippet.publishedAt) >= this.startTime
+        )
+        if (recent.length > 0)
+          await this.eventbus.announce(new MessageBatchEvent(recent))
+      }
+    )
+    this.broadcastWatcher = cIntervalOf(
+      secondsOf(this.config.broadcastPollRate),
+      async () => {
+        const { success, value } =
+          await this.youtube.broadcasts.fetchBroadcast()
+        if (!success) this.logger.info("no active broadcast found")
+        else await this.eventbus.announce(new BroadcastUpdateEvent(value))
+      }
+    )
+    this.subscriptionWatcher = cIntervalOf(
+      secondsOf(this.config.subscriptionPollRate),
+      async () => {
+        const firstCall = this.youtube.subscriptions.history.length == 0
+        const { success, value } =
+          await this.youtube.subscriptions.fetchRecentSubscriptions(50)
+        if (!success) return
+        const recent = firstCall
+          ? value.filter(
+              (s) => new Date(s.snippet.publishedAt) >= this.startTime
+            )
+          : value
+        for (const sub of recent) {
+          await this.eventbus.announce(new SubscriptionEvent(sub))
+        }
+      }
+    )
   }
 
   private get pageData() {
@@ -72,57 +123,6 @@ export default class Yuki extends BaseYuki {
       userCacheSize: (this.usercache?.values?.length || 0) / 2,
       routes: Object.entries(this.routes ?? {}),
     }
-  }
-
-  private async chatWatcher() {
-    if (!this.running) return
-    const { success, value } = await this.youtube.broadcasts.fetchChatMessages()
-    if (success && value.length > 0) {
-      value
-        .map((m) => User.fromAuthor(m.authorDetails))
-        .forEach((user) => {
-          this.usercache.put(user.id, user)
-          this.usercache.put(user.name, user)
-        })
-      const recent = value.filter(
-        (m) => new Date(m.snippet.publishedAt) > this.startTime
-      )
-      await this.eventbus.announce(new MessageBatchEvent(recent))
-    }
-    this.timers[0] = setTimeout(
-      () => this.chatWatcher(),
-      this.config.chatPollRate * 1000
-    )
-  }
-
-  private async broadcastWatcher() {
-    if (!this.running) return
-    const { success, value } = await this.youtube.broadcasts.fetchBroadcast()
-    if (success) await this.eventbus.announce(new BroadcastUpdateEvent(value))
-    else this.logger.info("no active broadcast found")
-    this.timers[1] = setTimeout(
-      () => this.broadcastWatcher(),
-      this.config.broadcastPollRate * 1000
-    )
-  }
-
-  private async subscriptionWatcher() {
-    if (!this.running) return
-    const firstCall = this.youtube.subscriptions.history.length == 0
-    const { success, value } =
-      await this.youtube.subscriptions.fetchRecentSubscriptions(50)
-    if (success) {
-      const recent = firstCall
-        ? value.filter((s) => new Date(s.snippet.publishedAt) > this.startTime)
-        : value
-      for (const sub of recent) {
-        await this.eventbus.announce(new SubscriptionEvent(sub))
-      }
-    }
-    this.timers[2] = setTimeout(
-      () => this.subscriptionWatcher(),
-      this.config.subscriptionPollRate * 1000
-    )
   }
 
   protected async setup(): Promise<boolean> {
@@ -162,9 +162,11 @@ export default class Yuki extends BaseYuki {
     }
     this.running = true
     this.startTime = new Date()
-    await this.subscriptionWatcher()
-    this.eventbus.listen(EventType.BROADCAST_UPDATE, () => this.chatWatcher())
-    await this.broadcastWatcher()
+    await this.subscriptionWatcher.run()
+    await this.broadcastWatcher.run()
+    this.eventbus.listen(EventType.BROADCAST_UPDATE, () =>
+      this.chatWatcher.run()
+    )
     return true
   }
 
@@ -175,7 +177,8 @@ export default class Yuki extends BaseYuki {
 
   stop() {
     this.running = false
-    this.timers.forEach((t) => clearTimeout(t))
-    this.timers = []
+    this.chatWatcher.stop()
+    this.broadcastWatcher.stop()
+    this.subscriptionWatcher.stop()
   }
 }
