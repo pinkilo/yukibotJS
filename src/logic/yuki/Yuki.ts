@@ -122,6 +122,7 @@ export default class Yuki extends BaseYuki {
       listeners: this.eventbus.size,
       userCacheSize: (this.usercache?.values?.length || 0) / 2,
       routes: Object.entries(this.routes ?? {}),
+      callHistory: this.ytApiCallHistory,
     }
   }
 

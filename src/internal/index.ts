@@ -1,5 +1,5 @@
 import { AsyncCache, SyncCache } from "./cache"
-import { YoutubeWrapper } from "./google"
+import { CallRecord, YoutubeWrapper } from "./google"
 import {
   AuthEvent,
   BroadcastUpdateEvent,
@@ -12,11 +12,11 @@ import {
 import {
   attempt,
   createMessage,
+  createSubscription,
   failure,
   Result,
-  successOf,
-  createSubscription,
   secondsOf,
+  successOf,
 } from "./util"
 import ConditionalInterval, { cIntervalOf } from "./ConditionalInterval"
 
@@ -40,4 +40,5 @@ export {
   secondsOf,
   ConditionalInterval,
   cIntervalOf,
+  CallRecord,
 }
