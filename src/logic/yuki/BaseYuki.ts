@@ -2,6 +2,7 @@ import { youtube_v3 } from "googleapis"
 import {
   AsyncCache,
   AuthEvent,
+  CallRecord,
   Eventbus,
   EventType,
   Result,
@@ -9,9 +10,9 @@ import {
 } from "../../internal"
 import { User } from "../../models"
 import { Logger } from "winston"
+import { Credentials } from "google-auth-library"
 import Schema$LiveChatMessage = youtube_v3.Schema$LiveChatMessage
 import Schema$Subscription = youtube_v3.Schema$Subscription
-import { Credentials } from "google-auth-library"
 
 export default abstract class BaseYuki {
   protected eventbus: Eventbus
@@ -34,6 +35,11 @@ export default abstract class BaseYuki {
   /** The entire chat history */
   get chatHistory(): Schema$LiveChatMessage[] {
     return this.youtube.broadcasts.chatPage(0)
+  }
+
+  /** A record of each API call made, most recent -> oldest */
+  get ytApiCallHistory(): CallRecord[] {
+    return this.youtube.callHistory
   }
 
   /**

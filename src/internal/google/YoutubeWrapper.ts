@@ -5,8 +5,9 @@ import BroadcastHandler from "./BroadcastHandler"
 import { User } from "../../models"
 import { failure, Result, successOf } from "../util"
 import SubscriptionsHandler from "./SubscriptionsHandler"
+import ApiHandler, { CallRecord } from "./ApiHandler"
 
-export default class YoutubeWrapper {
+export default class YoutubeWrapper extends ApiHandler {
   private readonly client: youtube_v3.Youtube
   private readonly auth: OAuth2Client
   private readonly logger: Logger
@@ -20,6 +21,7 @@ export default class YoutubeWrapper {
     redirectUri: string,
     logger: Logger
   ) {
+    super()
     this.logger = logger
     this.auth = new google.auth.OAuth2(clientId, clientSecret, redirectUri)
     this.client = google.youtube("v3")
@@ -39,6 +41,14 @@ export default class YoutubeWrapper {
     return this.auth.credentials?.access_token !== undefined
   }
 
+  override get callHistory(): CallRecord[] {
+    return [
+      ...this.calls,
+      ...this.broadcasts.callHistory,
+      ...this.subscriptions.callHistory,
+    ].sort((a, b) => b.time.getTime() - a.time.getTime())
+  }
+
   setTokens(tokens: Credentials) {
     this.auth.setCredentials(tokens)
   }
@@ -47,10 +57,20 @@ export default class YoutubeWrapper {
     this.logger.http("fetching token with code")
     try {
       const credentials = await this.auth.getToken(code)
+      this.calls.unshift({
+        type: "get/token",
+        success: true,
+        time: new Date(),
+      })
       return successOf(credentials.tokens)
     } catch (err) {
       this.logger.error("failed to fetch token with code", { err })
     }
+    this.calls.unshift({
+      type: "get/token",
+      success: false,
+      time: new Date(),
+    })
     return failure()
   }
 
@@ -74,10 +94,20 @@ export default class YoutubeWrapper {
         part: ["snippet"],
         auth: this.auth,
       })
+      this.calls.unshift({
+        type: "list/user",
+        success: true,
+        time: new Date(),
+      })
       return successOf(result.data.items.map((c) => User.fromChannel(c)) || [])
     } catch (err) {
       this.logger.error("failed to fetch channels", { err })
     }
+    this.calls.unshift({
+      type: "list/user",
+      success: false,
+      time: new Date(),
+    })
     return failure()
   }
 }
