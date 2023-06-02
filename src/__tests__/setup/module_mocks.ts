@@ -1,7 +1,7 @@
 jest.mock("winston", () => ({
   esModule: true,
   createLogger: jest.fn().mockImplementation(() => ({
-    error: jest.fn((err) => console.log(err)),
+    error: jest.fn(),
     info: jest.fn(),
     http: jest.fn(),
     debug: jest.fn(),

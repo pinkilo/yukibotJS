@@ -14,7 +14,6 @@ import { Credentials } from "google-auth-library"
 import Schema$LiveChatMessage = youtube_v3.Schema$LiveChatMessage
 import Schema$Subscription = youtube_v3.Schema$Subscription
 
-
 export default abstract class BaseYuki {
   protected eventbus: Eventbus
   protected usercache: AsyncCache<User>

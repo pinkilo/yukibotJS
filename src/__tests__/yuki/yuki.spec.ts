@@ -7,7 +7,6 @@ import {
   createMessage,
   createSubscription,
   Eventbus,
-  failure,
   EventType,
   failure,
   MessageBatchEvent,
