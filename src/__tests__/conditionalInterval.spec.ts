@@ -9,8 +9,11 @@ let watcher: ConditionalInterval
 
 beforeEach(() => {
   watcher = new ConditionalInterval(delay, callback)
-  jest.clearAllTimers()
   jest.restoreAllMocks()
+})
+
+afterEach(() => {
+  jest.clearAllTimers()
 })
 
 it("should set interval for given delay", async () => {

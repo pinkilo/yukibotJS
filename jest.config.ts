@@ -8,8 +8,6 @@ const config: JestConfigWithTsJest = {
   // bail: 0,
   // Automatically clear mock calls, instances, contexts and results before every test
   clearMocks: true,
-  // Indicates whether the coverage information should be collected while executing the test
-  collectCoverage: true,
   // An array of glob patterns indicating a set of files for which coverage information should be collected
   // collectCoverageFrom: undefined,
   // The directory where Jest should output its coverage files
@@ -24,7 +22,7 @@ const config: JestConfigWithTsJest = {
   moduleDirectories: ["node_modules", __dirname],
   injectGlobals: true,
   testEnvironment: "node",
-  setupFiles: ["<rootDir>/src/__tests__/setup/module_mocks.ts"],
+  setupFiles: ["<rootDir>/src/__tests__/module_mocks.ts"],
 }
 
 export default config

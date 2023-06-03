@@ -27,6 +27,10 @@ import Schema$LiveChatMessage = youtube_v3.Schema$LiveChatMessage
 jest.useFakeTimers()
 jest.mock("google-auth-library")
 jest.mock("googleapis")
+jest.mock("nunjucks", () => ({
+  ...jest.requireActual("nunjucks"),
+  render: jest.fn(() => `<html lang="en"></html>`),
+}))
 jest.mock("../../internal/events/Event", () => {
   const actual: typeof import("../../internal/events/Event") =
     jest.requireActual("../../internal/events/Event")
@@ -352,32 +356,32 @@ describe("event announcements", () => {
 })
 
 describe("express app", () => {
-  it("GET root returns html page", () => {
+  it("GET root returns html page", (done) => {
     supertest
       .agent(yuki.express)
       .get("/")
       .expect("Content-Type", /html/)
-      .expect(200)
+      .expect(200, done)
   })
-  it("GET /auth redirects to generated url", async () => {
+  it("GET /auth redirects to generated url", (done) => {
     const redirect = "/redirect"
-    const authUrlSpy = jest
+    jest
       .spyOn(youtubeWrapper, "getAuthUrl")
       .mockName("getAuthUrl")
       .mockImplementation(() => redirect)
-    await supertest
+    supertest
       .agent(yuki.express)
       .get("/auth")
-      .expect("Location", new RegExp(redirect))
-    expect(authUrlSpy).toHaveBeenCalledTimes(1)
+      .expect("Location", redirect)
+      .expect(302, done)
   })
   describe("GET /callback", () => {
-    it("should redirect home", () => {
+    it("should redirect home", (done) => {
       supertest
         .agent(yuki.express)
         .get("/callback")
-        .expect(200)
-        .expect("Location", new RegExp("/"))
+        .expect("Location", "/")
+        .expect(302, done)
     })
     describe("with code", () => {
       const code = "code"

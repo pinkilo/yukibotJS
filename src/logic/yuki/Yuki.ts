@@ -15,7 +15,7 @@ import {
 } from "../../internal"
 import { Credentials } from "google-auth-library"
 import express, { Express } from "express"
-import nunjucks from "nunjucks"
+import nj from "nunjucks"
 import { join } from "path"
 import BaseYuki from "./BaseYuki"
 import { Loader, RouteConfig, YukiConfig } from "./types"
@@ -33,7 +33,11 @@ export default class Yuki extends BaseYuki {
 
   readonly config: YukiConfig
   readonly express: Express = express()
-    .get("/", (_, res) => res.render("index.njk", this.pageData))
+    .get("/", (_, res) => {
+      res
+        .setHeader("Content-Type", "text/html")
+        .send(nj.render("index.njk", this.pageData))
+    })
     .get("/auth", (_, res) => res.redirect(this.youtube.getAuthUrl()))
     .get("/callback", async (req, res) => {
       const code = req.query.code as string
@@ -65,9 +69,7 @@ export default class Yuki extends BaseYuki {
     this.routes = routes
     this.tokenLoader = tokenLoader
     if (userCacheLoader !== undefined) this.userCacheLoader = userCacheLoader
-    nunjucks.configure(join(__dirname, "../../views"), {
-      express: this.express,
-    })
+    nj.configure(join(__dirname, "../../views"))
 
     this.chatWatcher = cIntervalOf(
       secondsOf(this.config.chatPollRate),

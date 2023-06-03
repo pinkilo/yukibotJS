@@ -22,7 +22,8 @@
     "watch/views": "nodemon --watch src -e njk,css --exec yarn build/views",
     "watch/ts": "tsc -p tsconfig.build.json --watch",
     "watch": "yarn watch/ts & yarn watch/views",
-    "test": "jest",
+    "test/coverage": "jest --coverage",
+    "test": "jest --ci --no-cache",
     "prepublishOnly": "yarn build",
     "semantic-release": "semantic-release"
   },

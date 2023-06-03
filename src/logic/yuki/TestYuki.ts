@@ -23,7 +23,7 @@ import Schema$LiveChatMessage = youtube_v3.Schema$LiveChatMessage
 import Schema$Subscription = youtube_v3.Schema$Subscription
 
 export default class TestYuki extends Yuki {
-  private scanner = readline.createInterface({ input: stdin, output: stdout })
+  private scanner: readline.Interface
 
   constructor(
     yukiConfig: YukiConfig,
@@ -110,6 +110,7 @@ export default class TestYuki extends Yuki {
   override async start(): Promise<boolean> {
     const loaders = await this.setup()
     if (!loaders) return false
+    this.scanner = readline.createInterface({ input: stdin, output: stdout })
     this.inputWatcher().catch((err) => {
       this.logger.error("input watcher failed", { err })
       this.restart()
