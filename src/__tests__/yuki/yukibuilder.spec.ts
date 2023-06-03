@@ -6,7 +6,10 @@ import {
   YukiBuilder,
   YukiConfig,
 } from "../../logic"
-import { Credentials } from "google-auth-library"
+
+jest.useFakeTimers()
+jest.mock("google-auth-library")
+jest.mock("googleapis")
 
 let googleConfig: GoogleConfig
 const yukiConfig: YukiConfig = {
@@ -25,6 +28,10 @@ beforeEach(() => {
     redirectUri: "redirect_uri",
   }
   yukiBuilder = new YukiBuilder()
+})
+
+afterEach(() => {
+  jest.clearAllTimers()
 })
 
 describe("failure conditions", () => {

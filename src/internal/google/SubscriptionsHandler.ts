@@ -3,8 +3,9 @@ import { OAuth2Client } from "google-auth-library"
 import { failure, Result, successOf } from "../util"
 import { Logger } from "winston"
 import Schema$Subscription = youtube_v3.Schema$Subscription
+import ApiHandler from "./ApiHandler"
 
-export default class SubscriptionsHandler {
+export default class SubscriptionsHandler extends ApiHandler {
   private readonly client: youtube_v3.Youtube
   private readonly auth: OAuth2Client
   private readonly logger: Logger
@@ -13,6 +14,7 @@ export default class SubscriptionsHandler {
   readonly history: Schema$Subscription[] = []
 
   constructor(client: youtube_v3.Youtube, auth: OAuth2Client, logger: Logger) {
+    super()
     this.auth = auth
     this.client = client
     this.logger = logger
@@ -55,10 +57,20 @@ export default class SubscriptionsHandler {
       // add to front of history
       this.history.unshift(...newSubs)
       this.history.sort((a, b) => this.timeOf(b) - this.timeOf(a))
+      this.calls.unshift({
+        type: "list/subscription",
+        success: true,
+        time: new Date(),
+      })
       return successOf(newSubs)
     } catch (err) {
       this.logger.error("failed to fetch recent subscriptions", { err })
     }
+    this.calls.unshift({
+      type: "list/subscription",
+      success: false,
+      time: new Date(),
+    })
     return failure()
   }
 }

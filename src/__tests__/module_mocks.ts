@@ -1,7 +1,7 @@
 jest.mock("winston", () => ({
   esModule: true,
   createLogger: jest.fn().mockImplementation(() => ({
-    error: jest.fn((err) => console.log(err)),
+    error: jest.fn(),
     info: jest.fn(),
     http: jest.fn(),
     debug: jest.fn(),
@@ -20,4 +20,4 @@ jest.mock("winston", () => ({
   },
 }))
 
-jest.useFakeTimers()
+jest.spyOn(global.console, "trace").mockImplementation(() => {})

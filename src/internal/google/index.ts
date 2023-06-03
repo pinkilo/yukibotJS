@@ -1,3 +1,4 @@
 import YoutubeWrapper from "./YoutubeWrapper"
+import { CallRecord } from "./ApiHandler"
 
-export { YoutubeWrapper }
+export { YoutubeWrapper, CallRecord }

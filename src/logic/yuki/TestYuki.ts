@@ -1,9 +1,10 @@
 import Yuki from "./Yuki"
-import { RouteConfig, YukiConfig } from "./types"
+import { Loader, RouteConfig, YukiConfig } from "./types"
 import {
   AsyncCache,
   AuthEvent,
   createMessage,
+  createSubscription,
   Event,
   Eventbus,
   MessageBatchEvent,
@@ -18,11 +19,11 @@ import * as readline from "readline/promises"
 import { stdin, stdout } from "process"
 import { User } from "../../models"
 import { Credentials } from "google-auth-library"
-import { Loader } from "./types"
 import Schema$LiveChatMessage = youtube_v3.Schema$LiveChatMessage
+import Schema$Subscription = youtube_v3.Schema$Subscription
 
 export default class TestYuki extends Yuki {
-  private scanner = readline.createInterface({ input: stdin, output: stdout })
+  private scanner: readline.Interface
 
   constructor(
     yukiConfig: YukiConfig,
@@ -55,21 +56,7 @@ export default class TestYuki extends Yuki {
   }
 
   private mockSubscription(): SubscriptionEvent {
-    return new SubscriptionEvent({
-      kind: "youtube#subscription",
-      etag: "ENTITY_TAG",
-      id: "SUBSCRIPTION_ID",
-      subscriberSnippet: {
-        title: "CHANNEL_TITLE",
-        description: "CHANNEL_DESCRIPTION",
-        channelId: "CHANNEL_ID",
-        thumbnails: {
-          default: { url: "" },
-          medium: { url: "" },
-          high: { url: "" },
-        },
-      },
-    })
+    return new SubscriptionEvent(createSubscription())
   }
 
   private async inputWatcher() {
@@ -102,21 +89,28 @@ export default class TestYuki extends Yuki {
     setTimeout(() => this.inputWatcher())
   }
 
-  async feedMessage(text: string) {
-    await this.eventbus.announce(new MessageBatchEvent([createMessage(text)]))
+  async feedMessage(text: string): Promise<Schema$LiveChatMessage> {
+    const event = new MessageBatchEvent([createMessage(text)])
+    await this.eventbus.announce(event)
+    return event.incoming[0]
   }
 
-  async feedSubscription() {
-    await this.eventbus.announce(this.mockSubscription())
+  async feedSubscription(): Promise<Schema$Subscription> {
+    const event = this.mockSubscription()
+    await this.eventbus.announce(event)
+    return event.subscription
   }
 
-  async feedAuthUpdate() {
-    await this.eventbus.announce(new AuthEvent(this.youtube.credentials))
+  async feedAuthUpdate(): Promise<Credentials> {
+    const event = new AuthEvent(this.youtube.credentials)
+    await this.eventbus.announce(event)
+    return event.credentials
   }
 
   override async start(): Promise<boolean> {
     const loaders = await this.setup()
     if (!loaders) return false
+    this.scanner = readline.createInterface({ input: stdin, output: stdout })
     this.inputWatcher().catch((err) => {
       this.logger.error("input watcher failed", { err })
       this.restart()

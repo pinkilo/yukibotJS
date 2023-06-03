@@ -3,8 +3,15 @@ import {
   AsyncCache,
   AuthEvent,
   BroadcastUpdateEvent,
+  cIntervalOf,
+  createMessage,
+  createSubscription,
   Eventbus,
+  EventType,
   failure,
+  MessageBatchEvent,
+  secondsOf,
+  SubscriptionEvent,
   successOf,
   YoutubeWrapper,
 } from "../../internal"
@@ -14,20 +21,52 @@ import winston from "winston"
 import { Credentials } from "google-auth-library"
 import * as supertest from "supertest"
 import { User } from "../../models"
+import { youtube_v3 } from "googleapis"
+import Schema$LiveChatMessage = youtube_v3.Schema$LiveChatMessage
 
+jest.useFakeTimers()
 jest.mock("google-auth-library")
 jest.mock("googleapis")
+jest.mock("nunjucks", () => ({
+  ...jest.requireActual("nunjucks"),
+  render: jest.fn(() => `<html lang="en"></html>`),
+}))
+jest.mock("../../internal/events/Event", () => {
+  const actual: typeof import("../../internal/events/Event") =
+    jest.requireActual("../../internal/events/Event")
+  return {
+    __esModule: true,
+    ...actual,
+    MessageBatchEvent: jest
+      .fn((incoming) => new actual.MessageBatchEvent(incoming))
+      .mockName("MessageBatchEvent.Constructor"),
+    SubscriptionEvent: jest
+      .fn((incoming) => new actual.SubscriptionEvent(incoming))
+      .mockName("SubscriptionEvent.Constructor"),
+  }
+})
+jest.mock("../../internal/ConditionalInterval", () => {
+  const actual: typeof import("../../internal/ConditionalInterval") =
+    jest.requireActual("../../internal/ConditionalInterval")
+  return {
+    __esModule: true,
+    cIntervalOf: jest.fn((a, b) => actual.cIntervalOf(a, b)),
+    default: jest
+      .fn((delay, callback) => new actual.default(delay, callback))
+      .mockName("ConditionalInterval.Constructor"),
+  }
+})
 
 const googleConfig: GoogleConfig = {
   clientId: "client_id",
   clientSecret: "client_secret",
   redirectUri: "redirect_uri",
 }
-const yukiConfig: YukiConfig = {
+const yConfig: YukiConfig = {
   name: "yuki",
-  chatPollRate: 14.4 * 1000,
-  broadcastPollRate: 2 * 60 * 1000,
-  subscriptionPollRate: 60 * 1000,
+  chatPollRate: 14.4,
+  broadcastPollRate: 2 * 60,
+  subscriptionPollRate: 60,
   prefix: /^([>!]|y!)$/gi,
 }
 let tokens: Credentials = {
@@ -40,10 +79,13 @@ let tokens: Credentials = {
 let yuki: Yuki
 let youtubeWrapper: YoutubeWrapper
 let logger: winston.Logger
-let tokenLoader: jest.Mock
-let userCacheLoader: jest.Mock
 let eventbus: Eventbus
 let usercache: AsyncCache<User>
+let tokenLoader: jest.Mock
+let userCacheLoader: jest.Mock
+let fetchBroadcastSpy: jest.SpyInstance
+let fetchSubsSpy: jest.SpyInstance
+let fetchChatSpy: jest.SpyInstance
 
 beforeEach(() => {
   tokens = {
@@ -66,7 +108,7 @@ beforeEach(() => {
   usercache = new AsyncCache<User>(logger, jest.fn())
 
   yuki = new Yuki(
-    yukiConfig,
+    yConfig,
     youtubeWrapper,
     tokenLoader,
     userCacheLoader,
@@ -75,21 +117,23 @@ beforeEach(() => {
     eventbus,
     logger
   )
+
+  fetchBroadcastSpy = jest
+    .spyOn(youtubeWrapper.broadcasts, "fetchBroadcast")
+    .mockImplementation(async () => failure())
+  fetchSubsSpy = jest
+    .spyOn(youtubeWrapper.subscriptions, "fetchRecentSubscriptions")
+    .mockImplementation(async () => failure())
+  fetchChatSpy = jest
+    .spyOn(youtubeWrapper.broadcasts, "fetchChatMessages")
+    .mockImplementation(async () => failure())
+})
+
+afterEach(() => {
+  jest.clearAllTimers()
 })
 
 describe("startup", () => {
-  let fetchBroadcastSpy: jest.SpyInstance
-  let fetchSubsSpy: jest.SpyInstance
-
-  beforeEach(() => {
-    fetchBroadcastSpy = jest
-      .spyOn(youtubeWrapper.broadcasts, "fetchBroadcast")
-      .mockImplementation(async () => failure())
-    fetchSubsSpy = jest
-      .spyOn(youtubeWrapper.subscriptions, "fetchRecentSubscriptions")
-      .mockImplementation(async () => failure())
-  })
-
   describe("startup failure", () => {
     it("should fail if tokenLoader fails", async () => {
       tokenLoader.mockImplementation(() => failure())
@@ -152,56 +196,192 @@ describe("startup", () => {
         expect(await yuki.getUser(id)).toBe(user)
       })
     })
-    describe("api calls", () => {
-      it("should fetch broadcast", async () => {
-        const spy = jest.spyOn(youtubeWrapper.broadcasts, "fetchBroadcast")
-        await yuki.start()
-        expect(spy).toHaveBeenCalled()
-      })
-      it("should fetch subscriptions", async () => {
-        await yuki.start()
-        expect(fetchSubsSpy).toHaveBeenCalled()
-      })
-    })
-    it("should should add broadcast listener for chat watcher", async () => {
-      const fetchChatSpy = jest.spyOn(
-        youtubeWrapper.broadcasts,
-        "fetchChatMessages"
+  })
+})
+
+describe("watchers", () => {
+  beforeEach(() => {
+    tokens = {
+      refresh_token: "123",
+      access_token: "123",
+      expiry_date: 123,
+      scope: "123",
+      token_type: "123",
+    }
+    tokenLoader.mockImplementation(async () => successOf(tokens))
+  })
+
+  describe("subscription", () => {
+    it(`should make interval of delay ${yConfig.subscriptionPollRate}sec`, async () => {
+      yuki = new Yuki(
+        yConfig,
+        youtubeWrapper,
+        tokenLoader,
+        userCacheLoader,
+        undefined,
+        usercache,
+        eventbus,
+        logger
       )
+      expect(cIntervalOf).toHaveBeenCalledWith(
+        secondsOf(yConfig.subscriptionPollRate),
+        expect.any(Function)
+      )
+    })
+    it("should stop loop when not running", async () => {
+      await yuki.start()
+      yuki.stop()
+      await jest.advanceTimersToNextTimerAsync()
+      expect(fetchSubsSpy).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe("broadcast", () => {
+    it(`should make interval of delay ${yConfig.broadcastPollRate}sec`, async () => {
+      expect(cIntervalOf).toHaveBeenCalledWith(
+        secondsOf(yConfig.broadcastPollRate),
+        expect.any(Function)
+      )
+    })
+    it("should stop loop when not running", async () => {
+      await yuki.start()
+      yuki.stop()
+      await jest.advanceTimersToNextTimerAsync()
+      expect(fetchBroadcastSpy).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe("chat", () => {
+    it("should start chat watcher after broadcast update", async () => {
+      const eventListenSpy = jest.spyOn(eventbus, "listen")
+      await yuki.start()
+      expect(eventListenSpy).toHaveBeenCalledWith(
+        EventType.BROADCAST_UPDATE,
+        expect.any(Function)
+      )
+      await eventbus.announce(new BroadcastUpdateEvent(undefined))
+      expect(fetchChatSpy).toHaveBeenCalledTimes(1)
+    })
+    it(`should make interval of delay ${yConfig.broadcastPollRate}sec`, async () => {
+      expect(cIntervalOf).toHaveBeenCalledWith(
+        secondsOf(yConfig.broadcastPollRate),
+        expect.any(Function)
+      )
+    })
+    it("should stop loop when not running", async () => {
       await yuki.start()
       await eventbus.announce(new BroadcastUpdateEvent(undefined))
+      yuki.stop()
+      await jest.advanceTimersToNextTimerAsync()
       expect(fetchChatSpy).toHaveBeenCalledTimes(1)
     })
   })
 })
 
+describe("event announcements", () => {
+  const oldDate = new Date(Date.now() / 2)
+  const newDate = new Date(Date.now() * 2)
+  let announceSpy
+
+  beforeEach(() => {
+    announceSpy = jest.spyOn(eventbus, "announce").mockName("announce")
+    tokens = {
+      refresh_token: "123",
+      access_token: "123",
+      expiry_date: 123,
+      scope: "123",
+      token_type: "123",
+    }
+    tokenLoader.mockImplementation(async () => successOf(tokens))
+  })
+
+  describe("Broadcast Update Event", () => {
+    //it("should not announce if no broadcast", async () => {})
+    it("should announce new broadcast", async () => {
+      const bc = {}
+      fetchBroadcastSpy.mockImplementation(async () => successOf(bc))
+      await yuki.start()
+      expect(announceSpy).toHaveBeenLastCalledWith(
+        expect.objectContaining<BroadcastUpdateEvent>({
+          type: EventType.BROADCAST_UPDATE,
+          broadcast: bc,
+        })
+      )
+    })
+  })
+  describe("Message Batch Event", () => {
+    it("should not announce old messages", async () => {
+      fetchChatSpy.mockImplementationOnce(async () => {
+        return successOf([createMessage("old", oldDate.toISOString())])
+      })
+      await yuki.start()
+      await eventbus.announce(new BroadcastUpdateEvent(undefined))
+      expect(announceSpy).toHaveBeenCalledTimes(1)
+      expect(MessageBatchEvent).toHaveBeenCalledTimes(0)
+    })
+    it("should announce new messages", async () => {
+      const msg = createMessage("new", newDate.toISOString())
+      await yuki.start()
+      fetchChatSpy.mockImplementation(() => successOf([msg]))
+      await eventbus.announce(new BroadcastUpdateEvent(undefined))
+      expect(announceSpy).toHaveBeenLastCalledWith(
+        expect.objectContaining<MessageBatchEvent>({
+          type: EventType.MESSAGE_BATCH,
+          incoming: expect.arrayContaining<Schema$LiveChatMessage>([msg]),
+        })
+      )
+    })
+  })
+  describe("Subscription Event", () => {
+    it("should not announce old subscription", async () => {
+      fetchSubsSpy.mockImplementationOnce(async () => {
+        return successOf([createSubscription(oldDate.toISOString())])
+      })
+      await yuki.start()
+      expect(announceSpy).toHaveBeenCalledTimes(0)
+      expect(SubscriptionEvent).toHaveBeenCalledTimes(0)
+    })
+    it("should announce new subscription", async () => {
+      const sub = createSubscription(newDate.toISOString())
+      fetchSubsSpy.mockImplementationOnce(async () => successOf([sub]))
+      await yuki.start()
+      expect(announceSpy).toHaveBeenLastCalledWith(
+        expect.objectContaining<SubscriptionEvent>({
+          type: EventType.SUBSCRIPTION,
+          subscription: sub,
+        })
+      )
+    })
+  })
+})
+
 describe("express app", () => {
-  it("GET root returns html page", () => {
+  it("GET root returns html page", (done) => {
     supertest
       .agent(yuki.express)
       .get("/")
       .expect("Content-Type", /html/)
-      .expect(200)
+      .expect(200, done)
   })
-  it("GET /auth redirects to generated url", async () => {
+  it("GET /auth redirects to generated url", (done) => {
     const redirect = "/redirect"
-    const authUrlSpy = jest
+    jest
       .spyOn(youtubeWrapper, "getAuthUrl")
       .mockName("getAuthUrl")
       .mockImplementation(() => redirect)
-    await supertest
+    supertest
       .agent(yuki.express)
       .get("/auth")
-      .expect("Location", new RegExp(redirect))
-    expect(authUrlSpy).toHaveBeenCalledTimes(1)
+      .expect("Location", redirect)
+      .expect(302, done)
   })
   describe("GET /callback", () => {
-    it("should redirect home", () => {
+    it("should redirect home", (done) => {
       supertest
         .agent(yuki.express)
         .get("/callback")
-        .expect(200)
-        .expect("Location", new RegExp("/"))
+        .expect("Location", "/")
+        .expect(302, done)
     })
     describe("with code", () => {
       const code = "code"
