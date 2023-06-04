@@ -260,6 +260,9 @@ export default class YukiBuilder extends BaseYuki {
 
     if (!(await this.prepare())) return undefined
 
+    // force test mode config
+    this.yukiConfig.test = true
+
     return new TestYuki(
       this.yukiConfig,
       this.youtube,
