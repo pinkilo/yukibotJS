@@ -306,7 +306,7 @@ export default class YukiBuilder extends BaseYuki {
       | "http"
       | "verbose"
       | "debug"
-      | "sill"
+      | "silly"
       | "none"
   ) {
     this.logger = createLogger({
